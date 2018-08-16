@@ -8,15 +8,15 @@ namespace EWork.Models
     public abstract class User : IdentityUser
     {
         [Required]
+        [StringLength(24, MinimumLength = 2)]
         public string Name { get; set; }
+
         [Required]
+        [StringLength(24, MinimumLength = 2)]
         public string Surname { get; set; }
-        [Required]
-        [Range(0d, 10d, ErrorMessage = "{0} must be in the range 0..10")]
-        [Display(Name="Rate")]
-        public double Rate { get; set; }
-        [Required]
+
         public Balance Balance { get; set; }
+        public List<Reference> References { get; set; }
         public List<Job> Jobs { get; set; }
     }
 }

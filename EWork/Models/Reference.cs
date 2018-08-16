@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 
 namespace EWork.Models
 {
-    public class Message
+    public class Reference
     {
         public int Id { get; set; }
 
+        [Range(0d, 10d, ErrorMessage = "{0} must be in the range 0..10")]
+        [Display(Name = "Rating")]
+        public double Value { get; set; }
+
         [Required]
-        [StringLength(4096, MinimumLength = 1, ErrorMessage = "{0} length must be less then 4096")]
+        [StringLength(20, MinimumLength = 1, ErrorMessage = "{0} length must be in the range 1..20")]
+        [Display(Name = "Tag text")]
         public string Text { get; set; }
 
         [Required]
         public User Sender { get; set; }
-
-        [Required]
-        public User Receiver { get; set; }
-
     }
 }
