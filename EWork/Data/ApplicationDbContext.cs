@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public DbSet<Employeer> Employeers { get; set; }
         public DbSet<Freelancer> Freelancers { get; set; }
