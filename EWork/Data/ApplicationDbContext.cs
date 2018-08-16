@@ -28,6 +28,9 @@ namespace EWork.Data
             {
                 userBuilder.HasIndex(u => u.UserName).IsUnique();
                 userBuilder.HasIndex(u => u.Email).IsUnique();
+                userBuilder.HasOne(u => u.Balance)
+                    .WithOne(b => b.User)
+                    .HasForeignKey<Balance>(b => b.UserId);
             });
 
             modelBuilder.Entity<Job>()

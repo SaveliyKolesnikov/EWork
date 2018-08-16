@@ -7,7 +7,7 @@ namespace EWork.Models
         public int Id { get; set; }
         [DataType(DataType.Currency)]
         public decimal Money { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
     }
 }
