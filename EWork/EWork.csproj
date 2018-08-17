@@ -13,6 +13,7 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Services\" />
     <Folder Include="Data\Migrations\" />
+    <Folder Include="Pages\Home\" />
   </ItemGroup>
 
 </Project>
