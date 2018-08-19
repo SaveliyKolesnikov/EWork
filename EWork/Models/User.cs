@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
 namespace EWork.Models
 {
@@ -18,5 +20,8 @@ namespace EWork.Models
         public Balance Balance { get; set; }
         public List<Reference> References { get; set; }
         public List<Job> Jobs { get; set; }
+
+        [NotMapped]
+        public string FullName => $"{Name} {Surname}";
     }
 }

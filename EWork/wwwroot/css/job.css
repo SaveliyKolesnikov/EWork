@@ -1,0 +1,48 @@
+﻿.job-emloyer-info {
+    background: white;
+    font-size: 1.2em;
+    font-family: Helvetica, Arial, sans-serif;
+    color: #545353;
+}
+
+.profile-photo {
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+}
+
+.row-eq-height {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#jobs-container {
+    background: white;
+}
+
+.job-container {
+    background: white;
+}
+.job-container:hover {
+    background: inherit;
+}
+.cover-letter {
+    resize: none;
+}
+
+.additional-details {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 2em;
+    color: #47D1F8;
+    text-align: center;
+}
+
+button.sendProposal,
+input.sendProposal{
+    width: 100%;
+    height: 50px;
+    font-size: 1.15em;
+}

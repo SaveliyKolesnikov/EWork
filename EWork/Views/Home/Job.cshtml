@@ -1,0 +1,90 @@
+﻿@model Job
+
+@{
+    ViewData["Title"] = "Job";
+}
+@section Styles
+    {
+    <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
+    <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/job.css" rel="stylesheet" type="text/css" />
+    <link href="/css/button.css" rel="stylesheet" type="text/css" />
+}
+<div class="container-fluid">
+    <div class="row">
+        <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">Submit a proposal</h2>
+    </div>
+    <div class="row row-eq-height">
+        <div class="col-xs-12 col-md-8" id="jobs-container">
+            <div class="job-container">
+                <h4 class="job-title">
+                    @Model.Title
+                </h4>
+                <h5 class="job-posted-date">
+                    Posted <span>08/19/2018 6:04 PM</span>
+                </h5>
+                <div class="space-10"></div>
+                <div class="job-budget">
+                    @Model.Budget$ <br />
+                </div>
+                <p class="fixed-price">Fixed price</p>
+                <div class="job-description">
+                    @Model.Description
+                </div>
+                <div class="space-30"></div>
+                <div class="job-tags">
+                    @foreach (var tag in Model.JobTags.Select(jt => jt.Tag))
+                    {
+                        <div class="job-tag">@tag.Text</div>
+                    }
+                </div>
+                <div class="space-20"></div>
+                @{
+                    var employerRating = 0d;
+                    try
+                    {
+                        employerRating = Model.Employer.References.Average(r => r.Value);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                }
+                <div class="employer-rating">Employer rating: <span>@employerRating</span></div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 job-emloyer-info">
+            <div class="row ">
+                <div class="col-xs-12 text-center">
+                    <img class="profile-photo" src="/images/unknownUser.jpeg" alt="Profile photo" />
+                </div>
+            </div>
+            <div class="space-10"></div>
+            <h4 class="text-center">
+                <a asp-action="Profile" asp-route-id="@Model.Employer.Id">
+                    @@@Model.Employer.UserName
+                </a>
+            </h4>
+            <h4 class="text-center">@Model.Employer.FullName</h4>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-xs-12 col-md-offset-1 col-md-10">
+            <h2 class="additional-details">Additional details</h2>
+            <form class="form-group" asp-controller="Home" asp-action="AddProposal">
+                <input type="hidden" value="@Model.Id" name="JobId" />
+                <label for="comment">Cover Letter:</label>
+                <textarea class="form-control cover-letter" rows="5" id="comment"></textarea>
+                <div class="space-10"></div>
+                <div class="row">
+                    <div class="col-xs-12 col-md-offset-3 col-md-3">
+                        <input type="submit" class="button blue sendProposal" value="Submit A Proposal"/>
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        <button asp-action="JobBoard" class="button sendProposal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

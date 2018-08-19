@@ -87,6 +87,19 @@ namespace EWork.Controllers
             return Redirect("JobBoard");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Job(int id)
+        {
+            var job = await _db.Jobs
+                .Include(j => j.Employer)
+                .ThenInclude(e => e.References)
+                .Include(j => j.JobTags)
+                .ThenInclude(jt => jt.Tag)
+                .FirstOrDefaultAsync(j => j.Id == id);
+
+            return job is null ? Error() : View(job);
+        }
+
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
