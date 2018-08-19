@@ -19,6 +19,7 @@ namespace EWork.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<RegisterModel> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _emailSender;
 
         public enum UserStatus
@@ -31,11 +32,13 @@ namespace EWork.Areas.Identity.Pages.Account
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
+            RoleManager<IdentityRole> roleManager,
             IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _roleManager = roleManager;
             _emailSender = emailSender;
         }
 
@@ -83,7 +86,7 @@ namespace EWork.Areas.Identity.Pages.Account
         }
 
         public void OnGet(string returnUrl = null) => ReturnUrl = returnUrl;
-    
+
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
@@ -91,10 +94,11 @@ namespace EWork.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 User user = null;
+
                 switch (Input.UserStatus)
                 {
                     case UserStatus.Freelancer:
-                        user = new Freelancer {Offers = new List<Offer>()};
+                        user = new Freelancer { Offers = new List<Offer>() };
                         break;
                     case UserStatus.Employeer:
                         user = new Employeer();
@@ -113,6 +117,9 @@ namespace EWork.Areas.Identity.Pages.Account
                 user.References = new List<Reference>();
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
+                await AddUserToRole();
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
@@ -133,6 +140,23 @@ namespace EWork.Areas.Identity.Pages.Account
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                async Task AddUserToRole()
+                {
+                    switch (Input.UserStatus)
+                    {
+                        case UserStatus.Freelancer:
+                            if (!await _roleManager.RoleExistsAsync("freelancer"))
+                                await _roleManager.CreateAsync(new IdentityRole("freelancer"));
+                            await _userManager.AddToRoleAsync(user, "freelancer");
+                            break;
+                        case UserStatus.Employeer:
+                            if (!await _roleManager.RoleExistsAsync("employer"))
+                                await _roleManager.CreateAsync(new IdentityRole("employer"));
+                            await _userManager.AddToRoleAsync(user, "employer");
+                            break;
+                    }
                 }
             }
 

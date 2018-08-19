@@ -16,6 +16,10 @@
     <Compile Remove="Migrations\20180819094809_offer-cascade-delete-edits.Designer.cs" />
     <Compile Remove="Migrations\20180819102641_test.cs" />
     <Compile Remove="Migrations\20180819102641_test.Designer.cs" />
+    <Compile Remove="Migrations\20180819123338_CustomeRole.cs" />
+    <Compile Remove="Migrations\20180819123338_CustomeRole.Designer.cs" />
+    <Compile Remove="Migrations\20180819123536_CustomRole.cs" />
+    <Compile Remove="Migrations\20180819123536_CustomRole.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +30,6 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Services\" />
     <Folder Include="Data\Migrations\" />
-    <Folder Include="Pages\Home\" />
   </ItemGroup>
 
 </Project>
