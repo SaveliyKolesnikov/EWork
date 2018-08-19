@@ -1,0 +1,97 @@
+﻿@import url('https://fonts.googleapis.com/css?family=Poppins');
+
+#jobs-container {
+    background: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em;
+}
+
+    #jobs-container > * {
+        font-size: 1em;
+    }
+
+.job-container {
+    padding: 10px 30px;
+    background: #F9FCFF;
+    margin-bottom: 20px;
+}
+
+    .job-container:hover {
+        background: #F7FBFF;
+    }
+
+.job-title {
+    color: #75DEFC;
+    font-size: 2em;
+}
+
+    .job-title > a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+        .job-title > a:hover {
+            color: #47D1F8;
+            text-decoration: underline;
+        }
+
+.job-posted-date {
+    font-size: 0.8em;
+    color: #545353;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.job-budget {
+    font-size: 1.3em;
+    font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.fixed-price {
+    font-size: 0.65em;
+    margin-left: 1.5px;
+    color: #545353;
+    padding: 0;
+}
+
+.job-description {
+    color: #333;
+    font-size: 1em;
+    line-height: 1.42857;
+}
+
+.employer-rating {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+
+    .employer-rating > span {
+        font-size: 1.05em;
+        color: #222;
+    }
+
+
+.page-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 5em;
+    text-align: center;
+    color: #61CFFF;
+}
+
+.job-tag {
+    display: inline-block;
+    padding: 5px 8px;
+    font-size: 0.9em;
+    background: gainsboro;
+    -ms-border-radius: 6px;
+    border-radius: 6px;
+    margin-right: 15px;
+    margin-bottom: 5px;
+    color: #545353;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.job-tag:hover {
+    color: white;
+    background: #47d1f8;
+    cursor: pointer;
+}

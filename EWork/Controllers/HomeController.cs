@@ -31,8 +31,9 @@ namespace EWork.Controllers
 
         public IActionResult JobBoard()
         {
-            var jobs = _db.Jobs
+            var jobs = _db.Jobs.Where(j => j.HiredFreelancer == null)
                 .Include(j => j.Employer)
+                .ThenInclude(e => e.References)
                 .Include(j => j.Offers)
                 .Include(j => j.JobTags)
                     .ThenInclude(jt => jt.Tag);
