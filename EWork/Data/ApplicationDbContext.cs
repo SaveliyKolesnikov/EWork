@@ -14,6 +14,7 @@ namespace EWork.Data
 
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<Offer> Offers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -30,50 +31,8 @@ namespace EWork.Data
                 userBuilder.HasIndex(u => u.Email).IsUnique();
                 userBuilder.HasOne(u => u.Balance)
                     .WithOne(b => b.User)
-                    .HasForeignKey<Balance>(b => b.UserId);
-            });
-
-            modelBuilder.Entity<Job>()
-                .HasMany(j => j.Offers)
-                .WithOne(o => o.Job)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Job>()
-                .HasOne(j => j.HiredFreelancer)
-                .WithMany(f => f.Jobs)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Freelancer>(freelancerBuilder =>
-            {
-                freelancerBuilder
-                    .HasMany(f => f.Offers)
-                    .WithOne(o => o.Sender)
                     .OnDelete(DeleteBehavior.Cascade);
-
-                freelancerBuilder
-                    .HasMany(f => f.Jobs)
-                    .WithOne(j => j.HiredFreelancer)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
-
-            modelBuilder.Entity<Offer>(offerBuilder =>
-            {
-                // offerBuilder.HasAlternateKey(offer => new {offer.Sender, offer.Job});
-
-                offerBuilder
-                    .HasOne(o => o.Job)
-                    .WithMany(j => j.Offers)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-
-                offerBuilder
-                    .HasOne(o => o.Sender)
-                    .WithMany(freelancer => freelancer.Offers)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-
-            modelBuilder.Entity<Tag>()
-                .HasAlternateKey(tag => tag.Text);
 
             base.OnModelCreating(modelBuilder);
 
