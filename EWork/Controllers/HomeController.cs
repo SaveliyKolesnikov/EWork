@@ -110,5 +110,15 @@ namespace EWork.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [AllowAnonymous]
+        [Route("Home/Test")]
+        [Route("Test")]
+        public async Task<IActionResult> Test()
+        {
+            var test = new Tests(_db);
+            
+            return Content((await test.Test1()).ToString());
+        }
     }
 }
