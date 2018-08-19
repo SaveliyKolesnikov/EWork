@@ -6,6 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20180819083742_add-delete-cascade-job-freelancer.cs" />
+    <Compile Remove="Migrations\20180819083742_add-delete-cascade-job-freelancer.Designer.cs" />
+    <Compile Remove="Migrations\20180819084847_clean-all.cs" />
+    <Compile Remove="Migrations\20180819084847_clean-all.Designer.cs" />
+    <Compile Remove="Migrations\20180819094514_offer-cascade-delete.cs" />
+    <Compile Remove="Migrations\20180819094514_offer-cascade-delete.Designer.cs" />
+    <Compile Remove="Migrations\20180819094809_offer-cascade-delete-edits.cs" />
+    <Compile Remove="Migrations\20180819094809_offer-cascade-delete-edits.Designer.cs" />
+    <Compile Remove="Migrations\20180819102641_test.cs" />
+    <Compile Remove="Migrations\20180819102641_test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" PrivateAssets="All" />
   </ItemGroup>

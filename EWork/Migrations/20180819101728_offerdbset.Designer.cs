@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EWork.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180816195012_add-reference-field")]
-    partial class addreferencefield
+    [Migration("20180819101728_offerdbset")]
+    partial class offerdbset
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -91,10 +91,9 @@ namespace EWork.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("JobId");
+                    b.Property<int?>("JobId");
 
-                    b.Property<string>("SenderId")
-                        .IsRequired();
+                    b.Property<string>("SenderId");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -106,7 +105,7 @@ namespace EWork.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Offer");
+                    b.ToTable("Offers");
                 });
 
             modelBuilder.Entity("EWork.Models.Reference", b =>
@@ -142,8 +141,6 @@ namespace EWork.Migrations
                         .HasMaxLength(20);
 
                     b.HasKey("Id");
-
-                    b.HasAlternateKey("Text");
 
                     b.ToTable("Tags");
                 });
@@ -358,7 +355,8 @@ namespace EWork.Migrations
                 {
                     b.HasOne("EWork.Models.User", "User")
                         .WithOne("Balance")
-                        .HasForeignKey("EWork.Models.Balance", "UserId");
+                        .HasForeignKey("EWork.Models.Balance", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EWork.Models.Job", b =>
@@ -370,8 +368,7 @@ namespace EWork.Migrations
 
                     b.HasOne("EWork.Models.Freelancer", "HiredFreelancer")
                         .WithMany("Jobs")
-                        .HasForeignKey("HiredFreelancerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("HiredFreelancerId");
                 });
 
             modelBuilder.Entity("EWork.Models.JobTags", b =>
@@ -391,13 +388,11 @@ namespace EWork.Migrations
                 {
                     b.HasOne("EWork.Models.Job", "Job")
                         .WithMany("Offers")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("JobId");
 
                     b.HasOne("EWork.Models.Freelancer", "Sender")
                         .WithMany("Offers")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("SenderId");
                 });
 
             modelBuilder.Entity("EWork.Models.Reference", b =>

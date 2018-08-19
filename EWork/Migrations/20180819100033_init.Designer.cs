@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EWork.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180816175835_init")]
+    [Migration("20180819100033_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,10 +91,9 @@ namespace EWork.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("JobId");
+                    b.Property<int?>("JobId");
 
-                    b.Property<string>("SenderId")
-                        .IsRequired();
+                    b.Property<string>("SenderId");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -109,6 +108,28 @@ namespace EWork.Migrations
                     b.ToTable("Offer");
                 });
 
+            modelBuilder.Entity("EWork.Models.Reference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("SenderId")
+                        .IsRequired();
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.Property<double>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Reference");
+                });
+
             modelBuilder.Entity("EWork.Models.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -120,8 +141,6 @@ namespace EWork.Migrations
                         .HasMaxLength(20);
 
                     b.HasKey("Id");
-
-                    b.HasAlternateKey("Text");
 
                     b.ToTable("Tags");
                 });
@@ -149,7 +168,8 @@ namespace EWork.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(24);
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
@@ -163,12 +183,11 @@ namespace EWork.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed");
 
-                    b.Property<double>("Rate");
-
                     b.Property<string>("SecurityStamp");
 
                     b.Property<string>("Surname")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(24);
 
                     b.Property<bool>("TwoFactorEnabled");
 
@@ -336,7 +355,8 @@ namespace EWork.Migrations
                 {
                     b.HasOne("EWork.Models.User", "User")
                         .WithOne("Balance")
-                        .HasForeignKey("EWork.Models.Balance", "UserId");
+                        .HasForeignKey("EWork.Models.Balance", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EWork.Models.Job", b =>
@@ -348,8 +368,7 @@ namespace EWork.Migrations
 
                     b.HasOne("EWork.Models.Freelancer", "HiredFreelancer")
                         .WithMany("Jobs")
-                        .HasForeignKey("HiredFreelancerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("HiredFreelancerId");
                 });
 
             modelBuilder.Entity("EWork.Models.JobTags", b =>
@@ -369,13 +388,19 @@ namespace EWork.Migrations
                 {
                     b.HasOne("EWork.Models.Job", "Job")
                         .WithMany("Offers")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("JobId");
 
                     b.HasOne("EWork.Models.Freelancer", "Sender")
                         .WithMany("Offers")
+                        .HasForeignKey("SenderId");
+                });
+
+            modelBuilder.Entity("EWork.Models.Reference", b =>
+                {
+                    b.HasOne("EWork.Models.User", "Sender")
+                        .WithMany("References")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

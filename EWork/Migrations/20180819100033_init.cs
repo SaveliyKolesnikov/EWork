@@ -41,9 +41,8 @@ namespace EWork.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Surname = table.Column<string>(nullable: false),
-                    Rate = table.Column<double>(nullable: false),
+                    Name = table.Column<string>(maxLength: 24, nullable: false),
+                    Surname = table.Column<string>(maxLength: 24, nullable: false),
                     Discriminator = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -62,7 +61,6 @@ namespace EWork.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
-                    table.UniqueConstraint("AK_Tags_Text", x => x.Text);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,7 +186,7 @@ namespace EWork.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,6 +220,27 @@ namespace EWork.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reference",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Value = table.Column<double>(nullable: false),
+                    Text = table.Column<string>(maxLength: 20, nullable: false),
+                    SenderId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reference", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reference_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "JobTags",
                 columns: table => new
                 {
@@ -252,8 +271,8 @@ namespace EWork.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Text = table.Column<string>(maxLength: 4096, nullable: false),
-                    SenderId = table.Column<string>(nullable: false),
-                    JobId = table.Column<int>(nullable: false)
+                    SenderId = table.Column<string>(nullable: true),
+                    JobId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -356,6 +375,11 @@ namespace EWork.Migrations
                 name: "IX_Offer_SenderId",
                 table: "Offer",
                 column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reference_SenderId",
+                table: "Reference",
+                column: "SenderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -383,6 +407,9 @@ namespace EWork.Migrations
 
             migrationBuilder.DropTable(
                 name: "Offer");
+
+            migrationBuilder.DropTable(
+                name: "Reference");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
