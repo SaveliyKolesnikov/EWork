@@ -20,7 +20,7 @@ namespace EWork
         public async Task<bool> Test1()
         {
             await TruncateAllTables(_db);
-            var employeer1 = new Employeer
+            var employeer1 = new Employer
             {
                 UserName = "Saveliy.K",
                 PasswordHash = "qwerty123",
@@ -37,7 +37,7 @@ namespace EWork
                 Title = "Test job",
                 Description = "Just test job",
                 Budget = 5000.99m,
-                Deadline = DateTime.Now.AddDays(5),
+                CreationDate = DateTime.Now.AddDays(5),
                 JobTags = new List<JobTags>()
             };
 
@@ -72,10 +72,10 @@ namespace EWork
                 References = new List<Reference>(),
                 Balance = new Balance(),
                 Jobs = new List<Job>(),
-                Offers = new List<Offer>()
+                Proposals = new List<Proposal>()
             };
 
-            freelancer1.Offers.Add(new Offer
+            freelancer1.Proposals.Add(new Proposal
             {
                 Job = userJob,
                 Text = "All will be good"
@@ -91,7 +91,7 @@ namespace EWork
                 References = new List<Reference>() { new Reference() { Sender = employeer1, Text = "goog", Value = 9 } },
                 Balance = new Balance(),
                 Jobs = new List<Job>() { userJob },
-                Offers = new List<Offer>() //{ new Offer() {Job = userJob, Text = "I'm Dimon." } }
+                Proposals = new List<Proposal>() //{ new Proposal() {Job = userJob, Text = "I'm Dimon." } }
             };
 
             await _db.Employeers.AddAsync(employeer1);
@@ -107,7 +107,7 @@ namespace EWork
         {
             var employeers = context.Employeers
                 .Include(e => e.Jobs)
-                .ThenInclude(j => j.Offers)
+                .ThenInclude(j => j.Proposals)
                 .Include(e => e.References);
 
             foreach (var employeer in employeers)
@@ -115,14 +115,14 @@ namespace EWork
                 foreach (var employeerJob in employeer.Jobs)
                 {
                     _db.Offers
-                        .RemoveRange(employeerJob.Offers);
+                        .RemoveRange(employeerJob.Proposals);
                 }
             }
 
             context.Employeers.RemoveRange(employeers);
-            var freelancers = context.Freelancers.Include(f => f.Offers).Include(f => f.References);
+            var freelancers = context.Freelancers.Include(f => f.Proposals).Include(f => f.References);
             _db.Offers
-                .RemoveRange(freelancers.SelectMany(f => f.Offers, (freelancer, offer) => offer));
+                .RemoveRange(freelancers.SelectMany(f => f.Proposals, (freelancer, offer) => offer));
             context.Freelancers.RemoveRange(freelancers);
             await context.SaveChangesAsync();
         }

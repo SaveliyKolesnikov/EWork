@@ -9,12 +9,12 @@ namespace EWork.Data
 {
     public class ApplicationDbContext : IdentityDbContext<User>
     {
-        public DbSet<Employeer> Employeers { get; set; }
+        public DbSet<Employer> Employeers { get; set; }
         public DbSet<Freelancer> Freelancers { get; set; }
 
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<Offer> Offers { get; set; }
+        public DbSet<Proposal> Offers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

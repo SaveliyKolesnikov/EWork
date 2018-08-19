@@ -46,7 +46,7 @@ namespace EWork.Migrations
 
                     b.Property<decimal>("Budget");
 
-                    b.Property<DateTime>("Deadline");
+                    b.Property<DateTime>("CreationDate");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -83,13 +83,15 @@ namespace EWork.Migrations
                     b.ToTable("JobTags");
                 });
 
-            modelBuilder.Entity("EWork.Models.Offer", b =>
+            modelBuilder.Entity("EWork.Models.Proposal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("JobId");
+
+                    b.Property<DateTime>("SendDate");
 
                     b.Property<string>("SenderId");
 
@@ -182,6 +184,8 @@ namespace EWork.Migrations
                     b.Property<bool>("PhoneNumberConfirmed");
 
                     b.Property<string>("SecurityStamp");
+
+                    b.Property<DateTime>("SingUpDate");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -325,14 +329,14 @@ namespace EWork.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("EWork.Models.Employeer", b =>
+            modelBuilder.Entity("EWork.Models.Employer", b =>
                 {
                     b.HasBaseType("EWork.Models.User");
 
 
-                    b.ToTable("Employeer");
+                    b.ToTable("Employer");
 
-                    b.HasDiscriminator().HasValue("Employeer");
+                    b.HasDiscriminator().HasValue("Employer");
                 });
 
             modelBuilder.Entity("EWork.Models.Freelancer", b =>
@@ -355,7 +359,7 @@ namespace EWork.Migrations
 
             modelBuilder.Entity("EWork.Models.Job", b =>
                 {
-                    b.HasOne("EWork.Models.Employeer", "Employer")
+                    b.HasOne("EWork.Models.Employer", "Employer")
                         .WithMany("Jobs")
                         .HasForeignKey("EmployerId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -378,14 +382,14 @@ namespace EWork.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("EWork.Models.Offer", b =>
+            modelBuilder.Entity("EWork.Models.Proposal", b =>
                 {
                     b.HasOne("EWork.Models.Job", "Job")
-                        .WithMany("Offers")
+                        .WithMany("Proposals")
                         .HasForeignKey("JobId");
 
                     b.HasOne("EWork.Models.Freelancer", "Sender")
-                        .WithMany("Offers")
+                        .WithMany("Proposals")
                         .HasForeignKey("SenderId");
                 });
 

@@ -6,6 +6,6 @@ namespace EWork.Models
     public class Freelancer : User
     {
         [Required]
-        public List<Offer> Offers { get; set; }
+        public List<Proposal> Proposals { get; set; }
     }
 }

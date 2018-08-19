@@ -43,6 +43,7 @@ namespace EWork.Migrations
                     AccessFailedCount = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 24, nullable: false),
                     Surname = table.Column<string>(maxLength: 24, nullable: false),
+                    SingUpDate = table.Column<DateTime>(nullable: false),
                     Discriminator = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -200,7 +201,7 @@ namespace EWork.Migrations
                     Title = table.Column<string>(maxLength: 50, nullable: false),
                     Description = table.Column<string>(maxLength: 4096, nullable: false),
                     Budget = table.Column<decimal>(nullable: false),
-                    Deadline = table.Column<DateTime>(nullable: false)
+                    CreationDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -271,6 +272,7 @@ namespace EWork.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Text = table.Column<string>(maxLength: 4096, nullable: false),
+                    SendDate = table.Column<DateTime>(nullable: false),
                     SenderId = table.Column<string>(nullable: true),
                     JobId = table.Column<int>(nullable: true)
                 },

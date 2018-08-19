@@ -34,7 +34,7 @@ namespace EWork.Controllers
             var jobs = _db.Jobs.Where(j => j.HiredFreelancer == null)
                 .Include(j => j.Employer)
                 .ThenInclude(e => e.References)
-                .Include(j => j.Offers)
+                .Include(j => j.Proposals)
                 .Include(j => j.JobTags)
                     .ThenInclude(jt => jt.Tag);
             return View(jobs);
@@ -54,7 +54,7 @@ namespace EWork.Controllers
 
         public async Task<IActionResult> CreateJob()
         {
-            if (!(await _userManager.GetUserAsync(User) is Employeer))
+            if (!(await _userManager.GetUserAsync(User) is Employer))
                 return NotFound();
 
             return View();
@@ -64,12 +64,12 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateJob(Job job, string tags)
         {
-            var currentUser = await _userManager.GetUserAsync(User) as Employeer;
+            var currentUser = await _userManager.GetUserAsync(User) as Employer;
             if (currentUser is null)
                 return Redirect("JobBoard");
 
             job.Employer = currentUser;
-            job.Offers = new List<Offer>();
+            job.Proposals = new List<Proposal>();
             var tagsInDb = _db.Tags;
             var inputTags = tags.Trim().Split(' ');
             var commonTags = tagsInDb.Where(tag => inputTags.Any(t => t == tag.Text));

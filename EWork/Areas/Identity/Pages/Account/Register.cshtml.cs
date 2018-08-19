@@ -98,10 +98,10 @@ namespace EWork.Areas.Identity.Pages.Account
                 switch (Input.UserStatus)
                 {
                     case UserStatus.Freelancer:
-                        user = new Freelancer { Offers = new List<Offer>() };
+                        user = new Freelancer { Proposals = new List<Proposal>() };
                         break;
                     case UserStatus.Employeer:
-                        user = new Employeer();
+                        user = new Employer();
                         break;
                 }
 
@@ -115,6 +115,7 @@ namespace EWork.Areas.Identity.Pages.Account
                 user.Balance = new Balance();
                 user.Jobs = new List<Job>();
                 user.References = new List<Reference>();
+                user.SingUpDate = DateTime.Now;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

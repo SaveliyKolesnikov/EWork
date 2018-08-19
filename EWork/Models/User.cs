@@ -16,7 +16,8 @@ namespace EWork.Models
         [Required]
         [StringLength(24, MinimumLength = 2)]
         public string Surname { get; set; }
-
+        
+        public DateTime SingUpDate { get; set; }
         public Balance Balance { get; set; }
         public List<Reference> References { get; set; }
         public List<Job> Jobs { get; set; }

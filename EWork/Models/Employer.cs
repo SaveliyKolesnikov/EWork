@@ -1,6 +1,6 @@
 ﻿namespace EWork.Models
 {
-    public class Employeer : User
+    public class Employer : User
     {
     }
 }
