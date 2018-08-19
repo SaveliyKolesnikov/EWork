@@ -29,6 +29,7 @@ namespace EWork.Models
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime Deadline { get; set; }
+        [Required]
         public List<Offer> Offers { get; set; }
         public List<JobTags> JobTags { get; set; }
     }

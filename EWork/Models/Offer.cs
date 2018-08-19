@@ -11,10 +11,8 @@ namespace EWork.Models
         [Display(Name = "Offer")]
         public string Text { get; set; }
 
-        [Required]
         public Freelancer Sender { get; set; }
 
-        [Required]
         public Job Job { get; set; }
     }
 }
