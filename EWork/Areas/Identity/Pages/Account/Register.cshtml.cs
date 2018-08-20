@@ -94,6 +94,7 @@ namespace EWork.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 User user = null;
+                var role = string.Empty;
 
                 switch (Input.UserStatus)
                 {
@@ -145,19 +146,10 @@ namespace EWork.Areas.Identity.Pages.Account
 
                 async Task AddUserToRole()
                 {
-                    switch (Input.UserStatus)
-                    {
-                        case UserStatus.Freelancer:
-                            if (!await _roleManager.RoleExistsAsync("freelancer"))
-                                await _roleManager.CreateAsync(new IdentityRole("freelancer"));
-                            await _userManager.AddToRoleAsync(user, "freelancer");
-                            break;
-                        case UserStatus.Employeer:
-                            if (!await _roleManager.RoleExistsAsync("employer"))
-                                await _roleManager.CreateAsync(new IdentityRole("employer"));
-                            await _userManager.AddToRoleAsync(user, "employer");
-                            break;
-                    }
+                    if (!await _roleManager.RoleExistsAsync(user.Role))
+                        await _roleManager.CreateAsync(new IdentityRole(user.Role));
+
+                    await _userManager.AddToRoleAsync(user, user.Role);
                 }
             }
 

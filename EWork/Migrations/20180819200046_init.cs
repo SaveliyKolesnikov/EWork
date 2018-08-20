@@ -266,7 +266,7 @@ namespace EWork.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Offers",
+                name: "Proposals",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -370,12 +370,12 @@ namespace EWork.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Offers_JobId",
-                table: "Offers",
+                table: "Proposals",
                 column: "JobId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Offers_SenderId",
-                table: "Offers",
+                table: "Proposals",
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
@@ -408,7 +408,7 @@ namespace EWork.Migrations
                 name: "JobTags");
 
             migrationBuilder.DropTable(
-                name: "Offers");
+                name: "Proposals");
 
             migrationBuilder.DropTable(
                 name: "Reference");

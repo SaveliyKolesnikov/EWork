@@ -114,14 +114,14 @@ namespace EWork
             {
                 foreach (var employeerJob in employeer.Jobs)
                 {
-                    _db.Offers
+                    _db.Proposals
                         .RemoveRange(employeerJob.Proposals);
                 }
             }
 
             context.Employeers.RemoveRange(employeers);
             var freelancers = context.Freelancers.Include(f => f.Proposals).Include(f => f.References);
-            _db.Offers
+            _db.Proposals
                 .RemoveRange(freelancers.SelectMany(f => f.Proposals, (freelancer, offer) => offer));
             context.Freelancers.RemoveRange(freelancers);
             await context.SaveChangesAsync();

@@ -24,5 +24,7 @@ namespace EWork.Models
 
         [NotMapped]
         public string FullName => $"{Name} {Surname}";
+        [NotMapped]
+        public abstract string Role { get; }
     }
 }

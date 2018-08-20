@@ -107,7 +107,7 @@ namespace EWork.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Offers");
+                    b.ToTable("Proposals");
                 });
 
             modelBuilder.Entity("EWork.Models.Reference", b =>

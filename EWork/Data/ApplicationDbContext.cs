@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using EWork.Models;
+using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<User>, IFreelancingPlatiformDbContext
     {
+        public DbSet<Job> Jobs { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Proposal> Proposals { get; set; }
         public DbSet<Employer> Employeers { get; set; }
         public DbSet<Freelancer> Freelancers { get; set; }
 
-        public DbSet<Job> Jobs { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<Proposal> Offers { get; set; }
+        async Task IFreelancingPlatiformDbContext.SaveChangesAsync() => await SaveChangesAsync();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -52,5 +56,6 @@ namespace EWork.Data
                     .HasForeignKey(jt => jt.TagId);
             }
         }
+
     }
 }
