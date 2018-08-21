@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EWork.Data;
 using Microsoft.AspNetCore.Mvc;
 using EWork.Models;
+using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,12 @@ namespace EWork.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
-        public HomeController(ApplicationDbContext db, UserManager<User> userManager)
+
+        public HomeController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager)
         {
-            _db = db;
+            _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
         }
 
@@ -31,71 +33,53 @@ namespace EWork.Controllers
 
         public IActionResult JobBoard()
         {
-            var jobs = _db.Jobs.Where(j => j.HiredFreelancer == null)
-                .Include(j => j.Employer)
-                .ThenInclude(e => e.References)
-                .Include(j => j.Proposals)
-                .Include(j => j.JobTags)
-                    .ThenInclude(jt => jt.Tag);
+            var jobs = _freelancingPlatform.JobManager.GetAll();
             return View(jobs);
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteJob(int jobId)
         {
-            var deletedJob = await _db.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
+            var deletedJob = await _freelancingPlatform.JobManager.FindAsync(job => job.Id == jobId);
             if (deletedJob is null)
-                return Error();
+                return BadRequest();
 
-            _db.Jobs.Remove(deletedJob);
-            await _db.SaveChangesAsync();
+            await _freelancingPlatform.JobManager.DeleteAsync(deletedJob);
             return Ok();
         }
 
-        public async Task<IActionResult> CreateJob()
+        public IActionResult CreateJob()
         {
-            if (!(await _userManager.GetUserAsync(User) is Employer))
+            if (!User.IsInRole("employer"))
                 return NotFound();
 
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "employer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateJob(Job job, string tags)
         {
-            var currentUser = await _userManager.GetUserAsync(User) as Employer;
-            if (currentUser is null)
+            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Redirect("JobBoard");
 
             job.Employer = currentUser;
             job.Proposals = new List<Proposal>();
-            var tagsInDb = _db.Tags;
-            var inputTags = tags.Trim().Split(' ');
-            var commonTags = tagsInDb.Where(tag => inputTags.Any(t => t == tag.Text));
-            var newTagsValues = inputTags.Where(tag => tagsInDb.All(t => tag != t.Text)).Distinct().ToArray();
-            var newTags = newTagsValues.Select(tagValue => new Tag {Text = tagValue});
             job.JobTags = new List<JobTags>();
-            await _db.Tags.AddRangeAsync(newTags);
-            await _db.SaveChangesAsync();
-            var newTagsFromBd = _db.Tags.Where(tag => newTagsValues.Contains(tag.Text));
-            foreach (var tag in commonTags.Union(newTagsFromBd))
-                job.JobTags.Add(new JobTags {Tag = tag});
 
-            await _db.Jobs.AddAsync(job);
-            await _db.SaveChangesAsync();
+            var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(tags.Trim().Split(' '));
+            foreach (var tag in newTags)
+                job.JobTags.Add(new JobTags { Tag = tag });
+
+            await _freelancingPlatform.JobManager.AddAsync(job);
             return Redirect("JobBoard");
         }
 
         [HttpGet]
         public async Task<IActionResult> Job(int id)
         {
-            var job = await _db.Jobs
-                .Include(j => j.Employer)
-                .ThenInclude(e => e.References)
-                .Include(j => j.JobTags)
-                .ThenInclude(jt => jt.Tag)
-                .FirstOrDefaultAsync(j => j.Id == id);
+            var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == id);
 
             return job is null ? Error() : View(job);
         }
@@ -125,14 +109,14 @@ namespace EWork.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [AllowAnonymous]
-        [Route("Home/Test")]
-        [Route("Test")]
-        public async Task<IActionResult> Test()
-        {
-            var test = new Tests(_db);
-            
-            return Content((await test.Test1()).ToString());
-        }
+        //[AllowAnonymous]
+        //[Route("Home/Test")]
+        //[Route("Test")]
+        //public async Task<IActionResult> Test()
+        //{
+        //    var test = new Tests(_db);
+
+        //    return Content((await test.Test1()).ToString());
+        //}
     }
 }
