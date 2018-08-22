@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -27,9 +28,17 @@ namespace EWork.Data.Repositories
             if (!await _userManager.IsInRoleAsync(job.Employer, job.Employer.Role))
                 throw new AuthenticationException($"User must be {job.Employer.Role} for doing this action.");
 
-            _db.Employeers.Attach(job.Employer);
-            if (!(job.HiredFreelancer is null))
-                _db.Freelancers.Attach(job.HiredFreelancer);
+            try
+            {
+                _db.Employeers.Attach(job.Employer);
+                if (!(job.HiredFreelancer is null))
+                    _db.Freelancers.Attach(job.HiredFreelancer);
+            }
+            catch (InvalidOperationException e)
+            {
+                Trace.WriteLine(e);
+            }
+
             await _db.Jobs.AddAsync(job);
             await _db.SaveChangesAsync();
         }
