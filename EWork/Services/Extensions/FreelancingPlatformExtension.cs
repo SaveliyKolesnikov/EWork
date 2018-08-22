@@ -23,7 +23,7 @@ namespace EWork.Services.Extensions
             var proposalManager = serviceProvider.GetService<IProposalManager>();
             var tagManager = serviceProvider.GetService<ITagManager>();
 
-            return service.AddSingleton<IFreelancingPlatform>(provider => new EWork(jobManager, proposalManager, tagManager));
+            return service.AddScoped<IFreelancingPlatform>(provider => new EWork(jobManager, proposalManager, tagManager));
         }
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service, ApplicationDbContext db = null, UserManager<User> userManager = null)
@@ -48,7 +48,7 @@ namespace EWork.Services.Extensions
                 userManager = GetUserManager(service);
 
             var jobRepository = new JobRepository(db, userManager);
-            return service.AddSingleton<IJobManager>(provider => new JobManager(jobRepository));
+            return service.AddScoped<IJobManager>(provider => new JobManager(jobRepository));
         }
 
         private static IServiceCollection AddTagManager(this IServiceCollection service, ApplicationDbContext db = null)
@@ -56,7 +56,7 @@ namespace EWork.Services.Extensions
             if (db is null)
                 db = GetAppDbContext(service);
 
-            return service.AddSingleton<ITagManager>(provider => new TagManager(db));
+            return service.AddScoped<ITagManager>(provider => new TagManager(db));
         }
 
         private static IServiceCollection AddProposalManager(this IServiceCollection service, ApplicationDbContext db = null, UserManager<User> userManager = null)
@@ -68,7 +68,7 @@ namespace EWork.Services.Extensions
                 userManager = GetUserManager(service);
 
             var proposalRepository = new ProposalRepository(db, userManager);
-            return service.AddSingleton<IProposalManager>(provider => new ProposalManager(proposalRepository));
+            return service.AddScoped<IProposalManager>(provider => new ProposalManager(proposalRepository));
         }
 
         private static ApplicationDbContext GetAppDbContext(IServiceCollection service) =>
