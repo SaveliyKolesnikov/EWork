@@ -278,15 +278,15 @@ namespace EWork.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Offers", x => x.Id);
+                    table.PrimaryKey("PK_Proposals", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Offers_Jobs_JobId",
+                        name: "FK_Proposals_Jobs_JobId",
                         column: x => x.JobId,
                         principalTable: "Jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Offers_AspNetUsers_SenderId",
+                        name: "FK_Proposals_AspNetUsers_SenderId",
                         column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -369,12 +369,12 @@ namespace EWork.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Offers_JobId",
+                name: "IX_Proposals_JobId",
                 table: "Proposals",
                 column: "JobId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Offers_SenderId",
+                name: "IX_Proposals_SenderId",
                 table: "Proposals",
                 column: "SenderId");
 

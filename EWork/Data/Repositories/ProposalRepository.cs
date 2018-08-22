@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -26,6 +27,15 @@ namespace EWork.Data.Repositories
         {
             if (!await _userManager.IsInRoleAsync(proposal.Sender, proposal.Sender.Role))
                 throw new AuthenticationException($"User must be {proposal.Sender.Role} for doing this action.");
+
+            try
+            {
+                _db.Freelancers.Attach(proposal.Sender);
+            }
+            catch (InvalidOperationException e)
+            {
+                Trace.WriteLine(e);
+            }
 
             await _db.Proposals.AddAsync(proposal);
             await _db.SaveChangesAsync();
