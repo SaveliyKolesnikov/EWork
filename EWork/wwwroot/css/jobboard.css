@@ -23,6 +23,7 @@
 .job-title {
     color: #75DEFC;
     font-size: 2em;
+    word-wrap: break-word;
 }
 
     .job-title > a {
