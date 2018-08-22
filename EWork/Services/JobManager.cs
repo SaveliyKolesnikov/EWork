@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EWork.Data.Interfaces;
@@ -16,6 +17,8 @@ namespace EWork.Services
         public Task AddAsync(Job item) => _repository.AddAsync(item);
 
         public Task DeleteAsync(Job item) => _repository.DeleteAsync(item);
+
+        public async Task DeleteRangeAsync(IEnumerable<Job> items) => await _repository.DeleteRangeAsync(items);
 
         public Task<Job> FindAsync(Predicate<Job> predicate) => _repository.FindAsync(predicate);
 

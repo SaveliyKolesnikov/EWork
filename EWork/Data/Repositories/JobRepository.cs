@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Authentication;
@@ -49,6 +50,15 @@ namespace EWork.Data.Repositories
                 return;
 
             _db.Jobs.Remove(job);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<Job> items)
+        {
+            if (items is null)
+                return;
+
+            _db.Jobs.RemoveRange(items);
             await _db.SaveChangesAsync();
         }
 
