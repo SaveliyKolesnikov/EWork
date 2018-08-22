@@ -1,0 +1,178 @@
+﻿@using EWork.ViewModels
+@model EWork.ViewModels.JobInfoViewModel
+
+@{
+    if (ViewData["Title"] is null)
+    {
+        ViewData["Title"] = "Job";
+    }
+
+    if (ViewBag.Heading is null)
+    {
+        ViewBag.Heading = "Submit a proposal";
+    }
+
+    var job = Model.Job;
+    var proposal = Model.Proposal;
+}
+@section Styles
+    {
+    <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
+    <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/job.css" rel="stylesheet" type="text/css" />
+    <link href="/css/proposal.css" rel="stylesheet" type="text/css" />
+    <link href="/css/button.css" rel="stylesheet" type="text/css" />
+}
+<div class="container-fluid">
+    <div class="row">
+        <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
+    </div>
+    <div class="row row-eq-height">
+        <div class="col-xs-12 col-md-8" id="jobs-container">
+            <div class="job-container">
+                <h4 class="job-title">
+                    @job.Title
+                </h4>
+                <h5 class="posted-date">
+                    Posted <span>@job.CreationDate</span>
+                </h5>
+                <div class="space-10"></div>
+                <div class="job-budget">
+                    @job.Budget$ <br />
+                </div>
+                <p class="fixed-price">Fixed price</p>
+                <div class="job-description">
+                    @job.Description
+                </div>
+                <div class="space-30"></div>
+                <div class="job-tags">
+                    @foreach (var tag in job.JobTags.Select(jt => jt.Tag))
+                    {
+                        <div class="job-tag">@tag.Text</div>
+                    }
+                </div>
+                <div class="space-20"></div>
+                @{
+                    var employerRating = 0d;
+                    try
+                    {
+                        employerRating = job.Employer.References.Average(r => r.Value);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                }
+                <div class="user-rating">Employer rating: <span>@employerRating</span></div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 profile-info padding-20">
+            <div class="row ">
+                <div class="col-xs-12 text-center">
+                    <img class="profile-photo" src="/images/unknownUser.jpeg" alt="Profile photo" />
+                </div>
+            </div>
+            <div class="space-10"></div>
+            <h4 class="text-center">
+                <a asp-controller="Profile" asp-action="ProfileInfo" asp-route-id="@job.Employer.Id">
+                    @@@job.Employer.UserName
+                </a>
+            </h4>
+            <h4 class="text-center">@job.Employer.FullName</h4>
+        </div>
+    </div>
+    <hr />
+    @if (User.IsInRole("freelancer"))
+    {
+        var hasProposalBeenSent = !(proposal is null);
+        <div class="row">
+            <div class="col-xs-12 col-md-offset-1 col-md-10">
+                <h2 class="additional-details">Additional details</h2>
+                @if (hasProposalBeenSent)
+                {
+                    <form class="form-group" asp-controller="Proposal" asp-action="UpdateProposal">
+                        <input type="hidden" value="@proposal.Id" name="Proposal.Id" />
+                        <input type="hidden" value="false" name="isDeleting" id="isDeleting" />
+                        <label for="comment">Cover Letter:</label>
+                        <textarea class="form-control cover-letter" rows="5" id="comment" name="Proposal.Text">@proposal.Text</textarea>
+                        <div class="space-10"></div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-offset-3 col-md-3">
+                                <input type="submit" class="button blue sendProposal" value="Update A Proposal" />
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <input type="submit" class="button sendProposal" value="Delete a proposal" onclick="$('#isDeleting').val(true);" />
+                            </div>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <form class="form-group" asp-controller="Proposal" asp-action="CreateProposal">
+                        <input type="hidden" value="@job.Id" name="JobId" />
+                        <label for="comment">Cover Letter:</label>
+                        <textarea class="form-control cover-letter" rows="5" id="comment" name="Text"></textarea>
+                        <div class="space-10"></div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-offset-3 col-md-3">
+                                <input type="submit" class="button blue sendProposal" value="Submit A Proposal" />
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <button asp-action="JobBoard" class="button sendProposal">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+
+    }
+    else if (User.IsInRole("employer"))
+    {
+        <div class="row">
+            <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">Proposals</h2>
+        </div>
+        <div id="proposals-container">
+            @foreach (var prop in Model.Job.Proposals)
+            {
+                <div class="proposal">
+                    <div class="row margin-bottom-25" style="background: aliceblue;">
+                        <div class="col-xs-12 col-md-4 profile-info padding-20">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <img class="profile-photo" src="/images/unknownUser.jpeg" alt="Profile photo" />
+                                </div>
+                            </div>
+                            <div class="space-10"></div>
+                            <h4 class="text-center">
+                                <a asp-controller="Profile" asp-action="ProfileInfo" asp-route-id="@prop.Sender.Id">
+                                    @@@prop.Sender.UserName
+                                </a>
+                            </h4>
+                            <h4 class="text-center">@prop.Sender.FullName</h4>
+                        </div>
+                        <div class="col-xs-12 col-md-8">
+                            <h3 class="proposal-cover-letter">Cover Letter:</h3>
+                            <div class="job-description">
+                                @prop.Text
+                            </div>
+                            <h5 class="posted-date">
+                                Posted <span>@prop.SendDate</span>
+                            </h5>
+                            @{
+                                var freelancerRating = 0d;
+                                try
+                                {
+                                    freelancerRating = prop.Sender.References.Average(r => r.Value);
+                                }
+                                catch (InvalidOperationException)
+                                {
+                                }
+                            }
+                            <div class="user-rating">Freelancer rating: <span>@freelancerRating</span></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -33,10 +33,14 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="JobBoard">Job Board</a></li>
+                    <li><a asp-area="" asp-controller="Job" asp-action="JobBoard">Job Board</a></li>
                     @if (User.IsInRole("employer"))
                     {
-                        <li><a asp-area="" asp-controller="Home" asp-action="CreateJob">Create Job</a></li>
+                        <li><a asp-area="" asp-controller="Job" asp-action="CreateJob">Create Job</a></li>
+                    }
+                    else if (User.IsInRole("freelancer"))
+                    {
+                        <li><a asp-area="" asp-controller="Job" asp-action="AllFreelancerProposals">My Proposals</a></li>
                     }
                 </ul>
                 <partial name="_LoginPartial" />
