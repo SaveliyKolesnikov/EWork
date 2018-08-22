@@ -35,7 +35,7 @@
             text-decoration: underline;
         }
 
-.job-posted-date {
+.posted-date {
     font-size: 0.8em;
     color: #545353;
     font-family: Helvetica, Arial, sans-serif;
@@ -59,12 +59,12 @@
     line-height: 1.42857;
 }
 
-.employer-rating {
+.user-rating {
     font-family: Helvetica, Arial, sans-serif;
 }
 
 
-    .employer-rating > span {
+    .user-rating > span {
         font-size: 1.05em;
         color: #222;
     }
