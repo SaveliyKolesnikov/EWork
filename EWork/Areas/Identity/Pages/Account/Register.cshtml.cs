@@ -117,6 +117,7 @@ namespace EWork.Areas.Identity.Pages.Account
                 user.Jobs = new List<Job>();
                 user.References = new List<Reference>();
                 user.SingUpDate = DateTime.Now;
+                user.Notifications = new List<Notification>();
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
