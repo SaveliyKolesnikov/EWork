@@ -201,6 +201,7 @@ namespace EWork.Migrations
                     Title = table.Column<string>(maxLength: 50, nullable: false),
                     Description = table.Column<string>(maxLength: 4096, nullable: false),
                     Budget = table.Column<decimal>(nullable: false),
+                    IsPaymentDenied = table.Column<bool>(nullable: false),
                     CreationDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -218,6 +219,28 @@ namespace EWork.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notification",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(maxLength: 100, nullable: false),
+                    Source = table.Column<string>(nullable: false),
+                    CreatedDate = table.Column<DateTime>(nullable: false),
+                    ReceiverId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notification", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notification_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -369,6 +392,11 @@ namespace EWork.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notification_ReceiverId",
+                table: "Notification",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Proposals_JobId",
                 table: "Proposals",
                 column: "JobId");
@@ -406,6 +434,9 @@ namespace EWork.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobTags");
+
+            migrationBuilder.DropTable(
+                name: "Notification");
 
             migrationBuilder.DropTable(
                 name: "Proposals");
