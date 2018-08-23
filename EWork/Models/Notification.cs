@@ -17,5 +17,8 @@ namespace EWork.Models
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime CreatedDate { get; set; }
+
+        [Required]
+        public User Receiver { get; set; }
     }
 }
