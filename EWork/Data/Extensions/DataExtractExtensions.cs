@@ -13,12 +13,13 @@ namespace EWork.Data.Extensions
         {
             return dbSet
                 .Include(j => j.Employer)
-                .ThenInclude(e => e.References)
+                    .ThenInclude(e => e.References)
                 .Include(j => j.JobTags)
-                .ThenInclude(jt => jt.Tag)
+                    .ThenInclude(jt => jt.Tag)
                 .Include(j => j.Proposals)
-                .ThenInclude(p => p.Sender)
-                .ThenInclude(f => f.References);
+                    .ThenInclude(p => p.Sender)
+                        .ThenInclude(f => f.References)
+                .Include(j => j.HiredFreelancer);
         }
 
         public static IQueryable<Proposal> ExtractAll(this DbSet<Proposal> dbSet)
