@@ -58,6 +58,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
 
+            // TODO: Transfer money from employer balance to platform balance
             job.Employer = currentUser;
             job.Proposals = new List<Proposal>();
             job.JobTags = new List<JobTags>();
@@ -71,6 +72,42 @@ namespace EWork.Controllers
             }
 
             await _freelancingPlatform.JobManager.AddAsync(job);
+            return Redirect("JobBoard");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "employer")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveJob(int jobId)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
+                return BadRequest();
+
+            var job = currentUser.Jobs.FirstOrDefault(j => j.Id == jobId);
+            if (job?.HiredFreelancer is null)
+                return BadRequest();
+
+            // TODO: Transfer money from platform balance to freelancer balance
+            await _freelancingPlatform.ProposalManager.DeleteRangeAsync(job.Proposals);
+            await _freelancingPlatform.JobManager.DeleteAsync(job);
+
+            return Redirect("JobBoard");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "employer")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DenyFreelancersWork(int jobId)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
+                return BadRequest();
+
+            var job = currentUser.Jobs.FirstOrDefault(j => j.Id == jobId);
+            if (job?.HiredFreelancer is null)
+                return BadRequest();
+
+            // TODO: Send an accepting job denying notification to the hired freelancer.
+
             return Redirect("JobBoard");
         }
 

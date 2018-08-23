@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EWork.Controllers
 {
-    [Authorize(Roles = "freelancer")]
     public class ProposalController : Controller
     {
         private readonly IFreelancingPlatform _freelancingPlatform;
@@ -23,6 +22,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "freelancer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProposal(int proposalId)
         {
@@ -39,6 +39,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "freelancer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateProposal(Proposal proposal, int jobId)
         {
@@ -60,6 +61,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "freelancer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProposal(Proposal proposal, bool isDeleting)
         {
@@ -75,6 +77,33 @@ namespace EWork.Controllers
 
             await _freelancingPlatform.ProposalManager.UpdateAsync(oldProposal);
             return RedirectToAction("JobBoard", "Job");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "employer")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AcceptProposal(int jobId, int proposalId)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
+                return BadRequest();
+
+            var job = currentUser.Jobs.FirstOrDefault(j => j.Id == jobId);
+            if (job is null || !(job.HiredFreelancer is null) || job.Employer.Id != currentUser.Id)
+                return BadRequest();
+
+            var proposal = job.Proposals.FirstOrDefault(p => p.Id == proposalId);
+            if (proposal?.Sender is null)
+                return BadRequest();
+
+            job.HiredFreelancer = proposal.Sender;
+            var deletedProposals = job.Proposals.Except(new[] { proposal });
+            job.Proposals.Clear();
+            job.Proposals.Add(proposal);
+
+            await _freelancingPlatform.ProposalManager.DeleteRangeAsync(deletedProposals);
+            await _freelancingPlatform.JobManager.UpdateAsync(job);
+
+            return RedirectToAction("JobInfo", "Job", jobId);
         }
     }
 }

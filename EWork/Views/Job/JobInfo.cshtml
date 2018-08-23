@@ -13,7 +13,7 @@
     }
 
     var job = Model.Job;
-    var proposal = Model.Proposal;
+    var modelProposal = Model.Proposal;
 }
 @section Styles
     {
@@ -83,24 +83,24 @@
     <hr />
     @if (User.IsInRole("freelancer"))
     {
-        var hasProposalBeenSent = !(proposal is null);
+        var hasProposalBeenSent = !(modelProposal is null);
         <div class="row">
             <div class="col-xs-12 col-md-offset-1 col-md-10">
                 <h2 class="additional-details">Additional details</h2>
                 @if (hasProposalBeenSent)
                 {
                     <form class="form-group" asp-controller="Proposal" asp-action="UpdateProposal">
-                        <input type="hidden" value="@proposal.Id" name="Proposal.Id" />
+                        <input type="hidden" value="@modelProposal.Id" name="Proposal.Id" />
                         <input type="hidden" value="false" name="isDeleting" id="isDeleting" />
                         <label for="comment">Cover Letter:</label>
-                        <textarea class="form-control cover-letter" rows="5" id="comment" name="Proposal.Text">@proposal.Text</textarea>
+                        <textarea class="form-control cover-letter" rows="5" id="comment" name="Proposal.Text">@modelProposal.Text</textarea>
                         <div class="space-10"></div>
                         <div class="row">
                             <div class="col-xs-12 col-md-offset-3 col-md-3">
-                                <input type="submit" class="button blue sendProposal" value="Update A Proposal" />
+                                <input type="submit" class="button blue submit-input" value="Update A Proposal" />
                             </div>
                             <div class="col-xs-12 col-md-3">
-                                <input type="submit" class="button sendProposal" value="Delete a proposal" onclick="$('#isDeleting').val(true);" />
+                                <input type="submit" class="button submit-input" value="Delete a proposal" onclick="$('#isDeleting').val(true);" />
                             </div>
                         </div>
                     </form>
@@ -114,10 +114,10 @@
                         <div class="space-10"></div>
                         <div class="row">
                             <div class="col-xs-12 col-md-offset-3 col-md-3">
-                                <input type="submit" class="button blue sendProposal" value="Submit A Proposal" />
+                                <input type="submit" class="button blue submit-input" value="Submit A Proposal" />
                             </div>
                             <div class="col-xs-12 col-md-3">
-                                <button asp-action="JobBoard" class="button sendProposal">Cancel</button>
+                                <button asp-action="JobBoard" class="button submit-input">Cancel</button>
                             </div>
                         </div>
                     </form>
@@ -128,14 +128,24 @@
     }
     else if (User.IsInRole("employer"))
     {
+         var isFirstProposal = true;
+         var isFreelancerHired = !(job.HiredFreelancer is null);
         <div class="row">
-            <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">Proposals</h2>
+            <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@(isFreelancerHired ? "Accepted proposal" : "Proposals")</h2>
         </div>
         <div id="proposals-container">
-            @foreach (var prop in Model.Job.Proposals)
+            @foreach (var proposal in Model.Job.Proposals)
             {
+                if (!isFirstProposal)
+                {
+                    <hr />
+                }
+                else
+                {
+                    isFirstProposal = false;
+                }
                 <div class="proposal">
-                    <div class="row margin-bottom-25" style="background: aliceblue;">
+                    <div class="row margin-bottom-25" style="">
                         <div class="col-xs-12 col-md-4 profile-info padding-20">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
@@ -144,31 +154,64 @@
                             </div>
                             <div class="space-10"></div>
                             <h4 class="text-center">
-                                <a asp-controller="Profile" asp-action="ProfileInfo" asp-route-id="@prop.Sender.Id">
-                                    @@@prop.Sender.UserName
+                                <a asp-controller="Profile" asp-action="ProfileInfo" asp-route-id="@proposal.Sender.Id">
+                                    @@@proposal.Sender.UserName
                                 </a>
                             </h4>
-                            <h4 class="text-center">@prop.Sender.FullName</h4>
+                            <h4 class="text-center">@proposal.Sender.FullName</h4>
                         </div>
                         <div class="col-xs-12 col-md-8">
-                            <h3 class="proposal-cover-letter">Cover Letter:</h3>
-                            <div class="job-description">
-                                @prop.Text
+                            <div class="row">
+                                <h3 class="proposal-cover-letter">Cover Letter:</h3>
+                                <div class="job-description">
+                                    @proposal.Text
+                                </div>
+                                <h5 class="posted-date">
+                                    Posted <span>@proposal.SendDate</span>
+                                </h5>
+                                @{
+                                    var freelancerRating = 0d;
+                                    try
+                                    {
+                                        freelancerRating = proposal.Sender.References.Average(r => r.Value);
+                                    }
+                                    catch (InvalidOperationException)
+                                    {
+                                    }
+                                }
+                                <div class="user-rating">Freelancer rating: <span>@freelancerRating</span></div>
                             </div>
-                            <h5 class="posted-date">
-                                Posted <span>@prop.SendDate</span>
-                            </h5>
-                            @{
-                                var freelancerRating = 0d;
-                                try
+                            <div class="row" style="margin-top: 50px;">
+                                @if (!isFreelancerHired)
                                 {
-                                    freelancerRating = prop.Sender.References.Average(r => r.Value);
+                                    <div class="col-xs-12 col-md-offset-4 col-md-4">
+                                        <form asp-controller="Proposal" asp-action="AcceptProposal">
+                                            <input type="hidden" value="@job.Id" name="JobId" />
+                                            <input type="hidden" value="@proposal.Id" name="ProposalId" />
+                                            <input type="submit" class="button blue submit-input" value="Hire Now" />
+                                        </form>
+                                    </div>
                                 }
-                                catch (InvalidOperationException)
+                                else
                                 {
+                                    <div class="col-xs-12 col-md-offset-1 col-md-8">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <form asp-controller="Job" asp-action="ApproveJob">
+                                                    <input type="hidden" value="@job.Id" name="JobId" />
+                                                    <input type="submit" class="button blue submit-input" value="Approve" />
+                                                </form>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <form asp-controller="Job" asp-action="DenyFreelancersWork">
+                                                    <input type="hidden" value="@job.Id" name="JobId" />
+                                                    <input type="submit" class="button red submit-input" value="Deny" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                            }
-                            <div class="user-rating">Freelancer rating: <span>@freelancerRating</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>

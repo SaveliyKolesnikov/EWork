@@ -40,8 +40,8 @@
     text-align: center;
 }
 
-button.sendProposal,
-input.sendProposal{
+button.submit-input,
+input.submit-input{
     width: 100%;
     height: 50px;
     font-size: 1.15em;
