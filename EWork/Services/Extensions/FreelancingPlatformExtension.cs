@@ -22,8 +22,9 @@ namespace EWork.Services.Extensions
             var jobManager = serviceProvider.GetService<IJobManager>();
             var proposalManager = serviceProvider.GetService<IProposalManager>();
             var tagManager = serviceProvider.GetService<ITagManager>();
+            var notificationManager = serviceProvider.GetService<INotificationManager>();
 
-            return service.AddScoped<IFreelancingPlatform>(provider => new EWork(jobManager, proposalManager, tagManager));
+            return service.AddScoped<IFreelancingPlatform>(provider => new EWork(jobManager, proposalManager, tagManager, notificationManager));
         }
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service, ApplicationDbContext db = null, UserManager<User> userManager = null)
@@ -36,7 +37,8 @@ namespace EWork.Services.Extensions
 
             return service.AddJobManager(db, userManager)
                 .AddProposalManager(db, userManager)
-                .AddTagManager(db);
+                .AddTagManager(db)
+                .AddNotificationManager(userManager);
         }
 
         private static IServiceCollection AddJobManager(this IServiceCollection service, ApplicationDbContext db = null, UserManager<User> userManager = null)
@@ -71,6 +73,14 @@ namespace EWork.Services.Extensions
             return service.AddScoped<IProposalManager>(provider => new ProposalManager(proposalRepository));
         }
 
+        private static IServiceCollection AddNotificationManager(this IServiceCollection service, UserManager<User> userManager = null)
+        {
+            if (userManager is null)
+                userManager = GetUserManager(service);
+
+            return service.AddScoped<INotificationManager>(provider => new NotificationManager(userManager));
+        }
+
         private static ApplicationDbContext GetAppDbContext(IServiceCollection service) =>
             GetAppDbContext(service.BuildServiceProvider());
 
@@ -82,6 +92,5 @@ namespace EWork.Services.Extensions
 
         private static UserManager<User> GetUserManager(IServiceProvider serviceProvider) =>
             serviceProvider.GetService<UserManager<User>>();
-
     }
 }

@@ -20,6 +20,8 @@
     <Compile Remove="Migrations\20180819123338_CustomeRole.Designer.cs" />
     <Compile Remove="Migrations\20180819123536_CustomRole.cs" />
     <Compile Remove="Migrations\20180819123536_CustomRole.Designer.cs" />
+    <Compile Remove="Migrations\20180823124531_AddNotificationDbSet.cs" />
+    <Compile Remove="Migrations\20180823124531_AddNotificationDbSet.Designer.cs" />
     <Compile Remove="Tests.cs" />
   </ItemGroup>
 
