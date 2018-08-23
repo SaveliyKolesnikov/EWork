@@ -5,5 +5,6 @@
         ITagManager TagManager { get; }
         IJobManager JobManager { get; }
         IProposalManager ProposalManager { get; }
+        INotificationManager NotificationManager { get; }
     }
 }

@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using EWork.Services.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<User> UserManager
+@inject IFreelancingPlatform FreelancingPlatform
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -34,13 +39,35 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                     <li><a asp-area="" asp-controller="Job" asp-action="JobBoard">Job Board</a></li>
-                    @if (User.IsInRole("employer"))
+
+                    @if (User.Identity.IsAuthenticated)
                     {
-                        <li><a asp-area="" asp-controller="Job" asp-action="CreateJob">Create Job</a></li>
-                    }
-                    else if (User.IsInRole("freelancer"))
-                    {
-                        <li><a asp-area="" asp-controller="Job" asp-action="AllFreelancerProposals">My Proposals</a></li>
+                        if (User.IsInRole("employer"))
+                        {
+                            <li><a asp-area="" asp-controller="Job" asp-action="CreateJob">Create Job</a></li>
+                        }
+                        else if (User.IsInRole("freelancer"))
+                        {
+                            <li><a asp-area="" asp-controller="Proposal" asp-action="AllFreelancerProposals">My Proposals</a></li>
+                        }
+
+                        var currentUser = await UserManager.GetUserAsync(User);
+                        var numOfNotifications = 
+                            await FreelancingPlatform.NotificationManager.GetAll().CountAsync(n => n.Receiver.Id == currentUser.Id);
+
+                        <li>
+                            <a asp-area="" asp-controller="Notification" asp-action="UserNotificationsPage">
+                                Notifications:
+                                @if (numOfNotifications != 0)
+                                {
+                                    <span style="color: red;">@numOfNotifications</span>
+                                }
+                                else
+                                {
+                                    @numOfNotifications
+                                }
+                            </a>
+                        </li>
                     }
                 </ul>
                 <partial name="_LoginPartial" />

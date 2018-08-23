@@ -26,6 +26,8 @@ namespace EWork.Models
         [DataType(DataType.Currency)]
         public decimal Budget { get; set; }
 
+        public bool IsPaymentDenied { get; set; } = false;
+
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime CreationDate { get; set; }

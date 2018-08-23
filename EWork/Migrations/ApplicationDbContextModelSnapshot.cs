@@ -57,6 +57,8 @@ namespace EWork.Migrations
 
                     b.Property<string>("HiredFreelancerId");
 
+                    b.Property<bool>("IsPaymentDenied");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50);
@@ -81,6 +83,31 @@ namespace EWork.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("JobTags");
+                });
+
+            modelBuilder.Entity("EWork.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired();
+
+                    b.Property<string>("Source")
+                        .IsRequired();
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("EWork.Models.Proposal", b =>
@@ -379,6 +406,14 @@ namespace EWork.Migrations
                     b.HasOne("EWork.Models.Tag", "Tag")
                         .WithMany("JobTags")
                         .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("EWork.Models.Notification", b =>
+                {
+                    b.HasOne("EWork.Models.User", "Receiver")
+                        .WithMany("Notifications")
+                        .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
