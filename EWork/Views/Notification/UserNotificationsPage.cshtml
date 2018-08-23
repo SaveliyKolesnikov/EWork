@@ -1,0 +1,54 @@
+﻿@model IEnumerable<EWork.Models.Notification>
+
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+@section Styles {
+    <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
+    <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+}
+
+<h2 class="page-title">Your Notifications</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                Source link
+            </th>
+            <th>
+                Send date
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    <a href="@item.Source">link</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    <a class="delete-notification" data-notificationid="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        <div id="antiForegeryToken">
+            @Html.AntiForgeryToken();
+        </div>
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="/js/deleteNotification.js"></script>
+}
