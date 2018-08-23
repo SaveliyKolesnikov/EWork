@@ -31,7 +31,7 @@ namespace EWork.Data.Repositories
 
             try
             {
-                _db.Employeers.Attach(job.Employer);
+                _db.Employers.Attach(job.Employer);
                 if (!(job.HiredFreelancer is null))
                     _db.Freelancers.Attach(job.HiredFreelancer);
             }

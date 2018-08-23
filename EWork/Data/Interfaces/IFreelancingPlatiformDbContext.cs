@@ -12,8 +12,9 @@ namespace EWork.Services.Interfaces
         DbSet<Job> Jobs { get; set; }
         DbSet<Tag> Tags { get; set; }
         DbSet<Proposal> Proposals { get; set; }
-        DbSet<Employer> Employeers { get; set; }
+        DbSet<Employer> Employers { get; set; }
         DbSet<Freelancer> Freelancers { get; set; }
+        DbSet<Notification> Notifications { get; set; }
 
         Task SaveChangesAsync();
         EntityEntry<T> Entry<T>(T obj) where T : class;
