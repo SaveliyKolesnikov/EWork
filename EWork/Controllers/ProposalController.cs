@@ -79,6 +79,20 @@ namespace EWork.Controllers
             return RedirectToAction("JobBoard", "Job");
         }
 
+        [Authorize(Roles = "freelancer")]
+        public async Task<IActionResult> AllFreelancerProposals()
+        {
+            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
+                return BadRequest();
+
+            var jobs = _freelancingPlatform.JobManager.GetAll()
+                .Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id));
+
+            ViewData["Title"] = "Proposals";
+            ViewBag.Heading = "Jobs with Your Proposal";
+            return View("JobBoard", jobs);
+        }
+
         [HttpPost]
         [Authorize(Roles = "employer")]
         [ValidateAntiForgeryToken]
@@ -87,7 +101,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
 
-            var job = currentUser.Jobs.FirstOrDefault(j => j.Id == jobId);
+            var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job is null || !(job.HiredFreelancer is null) || job.Employer.Id != currentUser.Id)
                 return BadRequest();
 
@@ -103,7 +117,7 @@ namespace EWork.Controllers
             await _freelancingPlatform.ProposalManager.DeleteRangeAsync(deletedProposals);
             await _freelancingPlatform.JobManager.UpdateAsync(job);
 
-            return RedirectToAction("JobInfo", "Job", jobId);
+            return RedirectToAction("JobInfo", "Job", new { jobId });
         }
     }
 }
