@@ -1,10 +1,8 @@
-﻿using System;
-using EWork.Data;
+﻿using EWork.Data;
 using EWork.Data.Interfaces;
 using EWork.Data.Repositories;
 using EWork.Models;
 using EWork.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EWork.Services.Extensions

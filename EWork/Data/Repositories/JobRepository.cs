@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using EWork.Data.Extensions;
 using EWork.Data.Interfaces;
 using EWork.Models;
-using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

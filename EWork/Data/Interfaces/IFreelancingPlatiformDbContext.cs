@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using EWork.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace EWork.Services.Interfaces
+namespace EWork.Data.Interfaces
 {
     public interface IFreelancingPlatiformDbContext : IDisposable
     {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EWork.Models;
@@ -90,7 +89,7 @@ namespace EWork.Controllers
 
             ViewData["Title"] = "Proposals";
             ViewBag.Heading = "Jobs with Your Proposal";
-            return View("JobBoard", jobs);
+            return View("Job/JobBoard", jobs);
         }
 
         [HttpPost]

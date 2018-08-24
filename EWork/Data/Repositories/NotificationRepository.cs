@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 using EWork.Data.Extensions;
 using EWork.Data.Interfaces;
 using EWork.Models;
-using EWork.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Data.Repositories

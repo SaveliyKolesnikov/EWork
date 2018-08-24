@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using EWork.Data;
-using EWork.Data.Extensions;
-using EWork.Models;
-using EWork.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+﻿using EWork.Services.Interfaces;
 
 namespace EWork.Services
 {

@@ -1,5 +1,3 @@
-using System;
-
 namespace EWork.Models
 {
     public class ErrorViewModel

@@ -1,12 +1,4 @@
-﻿using System;
-using EWork.Data;
-using EWork.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Hosting;
 
 [assembly: HostingStartup(typeof(EWork.Areas.Identity.IdentityHostingStartup))]
 namespace EWork.Areas.Identity

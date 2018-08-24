@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using EWork.Data;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using EWork.Models;
-using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Controllers
 {
