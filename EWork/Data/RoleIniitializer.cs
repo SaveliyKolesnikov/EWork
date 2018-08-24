@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using EWork.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,7 +12,7 @@ namespace EWork.Data
         {
             const string moderatorEmail = "moderator@gmail.com";
             const string username = "moderator";
-            const string password = "asdzxc123456";
+            const string password = "asdzxc";
 
             await AddRoleAsync(roleManager, "moderator");
             await AddRoleAsync(roleManager, "emoloyer");
@@ -23,7 +25,11 @@ namespace EWork.Data
                     Name = "Moderator",
                     Surname = "Moderator",
                     Email = moderatorEmail,
-                    UserName = username
+                    UserName = username,
+                    SingUpDate = DateTime.Now,
+                    Balance = new Balance(),
+                    Jobs = new List<Job>(),
+                    Notifications = new List<Notification>()
                 };
 
                 var result = await userManager.CreateAsync(moderator, password);
