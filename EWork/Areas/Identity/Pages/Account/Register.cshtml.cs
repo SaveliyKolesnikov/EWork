@@ -121,7 +121,7 @@ namespace EWork.Areas.Identity.Pages.Account
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
-                await AddUserToRole();
+                await _userManager.AddToRoleAsync(user, user.Role);
 
                 if (result.Succeeded)
                 {
@@ -143,14 +143,6 @@ namespace EWork.Areas.Identity.Pages.Account
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
-                }
-
-                async Task AddUserToRole()
-                {
-                    if (!await _roleManager.RoleExistsAsync(user.Role))
-                        await _roleManager.CreateAsync(new IdentityRole(user.Role));
-
-                    await _userManager.AddToRoleAsync(user, user.Role);
                 }
             }
 
