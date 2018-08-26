@@ -16,7 +16,8 @@ namespace EWork.Services.Extensions
         #region Managers
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
-            service.AddJobManager().AddProposalManager().AddTagManager().AddNotificationManager();
+            service.AddJobManager().AddProposalManager().AddModeratorManager()
+                .AddTagManager().AddNotificationManager();
 
         private static IServiceCollection AddJobManager(this IServiceCollection service) =>
             service.AddScoped<IJobManager, JobManager>();
@@ -29,6 +30,9 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddNotificationManager(this IServiceCollection service) =>
             service.AddScoped<INotificationManager, NotificationManager>();
+
+        private static IServiceCollection AddModeratorManager(this IServiceCollection service) =>
+            service.AddScoped<IModeratorManager, ModeratorManager>();
 
         #endregion
 
