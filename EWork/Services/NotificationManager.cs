@@ -21,30 +21,16 @@ namespace EWork.Services
             _userManager = userManager;
         }
 
-        public async Task AddNotificationAsync(User user, Notification notification)
+        public async Task AddNotificationAsync(Notification notification, User user = null)
         {
-            if (user is null)
-                throw new ArgumentNullException(nameof(user));
-
-            if (notification is null)
-                throw new ArgumentNullException(nameof(notification));
-
-            if (user.Notifications is null)
-            {
-                if (await _repository.GetAll().AnyAsync(n => n.Receiver.Id == user.Id))
-                {
-                    await _repository.AddAsync(notification);
-                    return;
-                }
-
-                user.Notifications = new List<Notification>();
+            if (!(user?.Notifications is null) &&
+                user.Notifications.Any(n => n.Receiver.Id == notification.Receiver.Id &&
+                                            n.Source == notification.Source))
+            { 
+                return;
             }
 
-            if (user.Notifications.Any(n => n.Receiver.Id == user.Id && n.Source == notification.Source))
-                return;
-
-            user.Notifications.Add(notification);
-            await _userManager.UpdateAsync(user);
+            await _repository.AddAsync(notification);
         }
 
         public async Task DeleteNotificationAsync(User user, Notification notification)

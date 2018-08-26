@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using EWork.Data.Extensions;
@@ -14,28 +13,39 @@ namespace EWork.Data.Repositories
     {
         private readonly IFreelancingPlatiformDbContext _db;
 
-        public NotificationRepository(IFreelancingPlatiformDbContext db)
-        {
-            _db = db;
-        }
+        public NotificationRepository(IFreelancingPlatiformDbContext db) => _db = db;
 
         public async Task AddAsync(Notification notification)
         {
+            if (notification is null)
+                throw new ArgumentNullException(nameof(notification));
+
             try
             {
                 switch (notification.Receiver)
                 {
+                    case null:
+                        throw new ArgumentNullException(nameof(notification.Receiver));
                     case Employer employer:
                         _db.Employers.Attach(employer);
                         break;
                     case Freelancer freelancer:
                         _db.Freelancers.Attach(freelancer);
                         break;
+                    case Moderator moderator:
+                        _db.Moderators.Attach(moderator);
+                        break;
                 }
             }
             catch (InvalidOperationException e)
             {
-                Trace.WriteLine(e);
+                Console.WriteLine(e.Message);
+            }
+
+            if (await GetAll().AnyAsync(n => n.Receiver.Id == notification.Receiver.Id
+                                             && n.Source == notification.Source))
+            { 
+                return;
             }
 
             await _db.Notifications.AddAsync(notification);
