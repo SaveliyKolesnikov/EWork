@@ -13,6 +13,8 @@ namespace EWork.Services.Extensions
             service.AddFreelancingPlatformDbContext().AddRepositories().AddModelManagers()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
+        #region Managers
+
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
             service.AddJobManager().AddProposalManager().AddTagManager().AddNotificationManager();
 
@@ -28,6 +30,10 @@ namespace EWork.Services.Extensions
         private static IServiceCollection AddNotificationManager(this IServiceCollection service) =>
             service.AddScoped<INotificationManager, NotificationManager>();
 
+        #endregion
+
+        #region Repositories
+
         private static IServiceCollection AddRepositories(this IServiceCollection service) =>
             service.AddProposalRepository().AddNotificationRepository().AddJobRepository();
 
@@ -39,6 +45,8 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddJobRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Job>, JobRepository>();
+
+        #endregion
 
         private static IServiceCollection AddFreelancingPlatformDbContext(this IServiceCollection service) =>
             service.AddScoped<IFreelancingPlatiformDbContext, ApplicationDbContext>();
