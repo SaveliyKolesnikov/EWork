@@ -89,7 +89,7 @@ namespace EWork.Controllers
 
             ViewData["Title"] = "Proposals";
             ViewBag.Heading = "Jobs with Your Proposal";
-            return View("Job/JobBoard", jobs);
+            return View("~/Views/Job/JobBoard.cshtml", jobs);
         }
 
         [HttpPost]
