@@ -24,15 +24,18 @@ namespace EWork.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "employer, freelancer")]
+        [Authorize(Roles = "employer, freelancer, moderator")]
         public IActionResult JobBoard()
         {
             var jobs = _freelancingPlatform.JobManager.GetAll();
+            if (User.IsInRole("freelancer"))
+                jobs = jobs.Where(j => j.HiredFreelancer == null);
+
             return View(jobs);
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "employer, moderator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteJob(int jobId)
         {
@@ -76,7 +79,7 @@ namespace EWork.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "employer, freelancer")]
+        [Authorize(Roles = "employer, freelancer, moderator")]
         public async Task<IActionResult> JobInfo(int jobId)
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
