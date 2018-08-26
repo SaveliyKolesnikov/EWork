@@ -14,21 +14,20 @@ namespace EWork.Controllers
     {
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
+        private readonly IModeratorManager _moderatorManager;
 
-        public UsersInteractionsController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager)
+        public UsersInteractionsController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager, IModeratorManager moderatorManager)
         {
             _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
+            _moderatorManager = moderatorManager;
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "employer, moderator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveJob(int jobId)
         {
-            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
-
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job?.HiredFreelancer is null)
                 return BadRequest();
@@ -37,7 +36,7 @@ namespace EWork.Controllers
             await _freelancingPlatform.ProposalManager.DeleteRangeAsync(job.Proposals);
             await _freelancingPlatform.JobManager.DeleteAsync(job);
 
-            return Redirect("JobBoard");
+            return RedirectToAction("JobBoard", "Job");
         }
 
         [HttpPost]
@@ -51,9 +50,10 @@ namespace EWork.Controllers
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job?.HiredFreelancer is null)
                 return BadRequest();
-            // TODO: Send an accepting job denying notification to the hired freelancer.
+
             job.IsPaymentDenied = true;
             await _freelancingPlatform.JobManager.UpdateAsync(job);
+
             var notification = new Notification
             {
                 Receiver = job.HiredFreelancer,
@@ -63,7 +63,47 @@ namespace EWork.Controllers
             };
 
             await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification, job.HiredFreelancer);
-            return Redirect("JobBoard");
+            return RedirectToAction("JobBoard", "Job");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "freelancer, moderator")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AcceptDenying(int jobId)
+        {
+            var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
+            if (job is null)
+                return BadRequest();
+
+            // TODO: Transfer money from platform balance to employer balance
+
+            await _freelancingPlatform.ProposalManager.DeleteRangeAsync(job.Proposals);
+            await _freelancingPlatform.JobManager.DeleteAsync(job);
+            return RedirectToAction("JobBoard", "Job");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "freelancer")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RefuseDenying(int jobId)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
+                return BadRequest();
+
+            var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
+
+            job.IsPaymentDenied = true;
+            await _freelancingPlatform.JobManager.UpdateAsync(job);
+            var notification = new Notification
+            {
+                Receiver = await _moderatorManager.GetModeratorAsync(),
+                CreatedDate = DateTime.Now,
+                Source = Url.Action("JobInfo", "Job", new { jobId }),
+                Title = $"{currentUser.UserName} wants to deny a job. Please follow the link and choose an action."
+            };
+
+            await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification, job.HiredFreelancer);
+            return RedirectToAction("JobBoard", "Job");
         }
     }
 }
