@@ -15,7 +15,7 @@ namespace EWork.Data
             const string password = "asdzxc";
 
             await AddRoleAsync(roleManager, "moderator");
-            await AddRoleAsync(roleManager, "emoloyer");
+            await AddRoleAsync(roleManager, "employer");
             await AddRoleAsync(roleManager, "freelancer");
 
             if (await userManager.FindByNameAsync(username) is null)
