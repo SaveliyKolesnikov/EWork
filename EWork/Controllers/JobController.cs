@@ -24,15 +24,18 @@ namespace EWork.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "employer, freelancer")]
+        [Authorize(Roles = "employer, freelancer, moderator")]
         public IActionResult JobBoard()
         {
             var jobs = _freelancingPlatform.JobManager.GetAll();
+            if (User.IsInRole("freelancer"))
+                jobs = jobs.Where(j => j.HiredFreelancer == null);
+
             return View(jobs);
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "employer, moderator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteJob(int jobId)
         {
@@ -75,52 +78,8 @@ namespace EWork.Controllers
             return Redirect("JobBoard");
         }
 
-        [HttpPost]
-        [Authorize(Roles = "employer")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ApproveJob(int jobId)
-        {
-            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
-
-            var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
-            if (job?.HiredFreelancer is null)
-                return BadRequest();
-
-            // TODO: Transfer money from platform balance to freelancer balance
-            await _freelancingPlatform.ProposalManager.DeleteRangeAsync(job.Proposals);
-            await _freelancingPlatform.JobManager.DeleteAsync(job);
-
-            return Redirect("JobBoard");
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "employer")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DenyFreelancersWork(int jobId)
-        {
-            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
-
-            var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
-            if (job?.HiredFreelancer is null)
-                return BadRequest();
-
-            // TODO: Send an accepting job denying notification to the hired freelancer.
-            var notification = new Notification()
-            {
-                Receiver = job.HiredFreelancer,
-                CreatedDate = DateTime.Now,
-                Source = Url.Action("JobInfo", "Job", new {jobId}),
-                Title = $"{currentUser.UserName} wants to deny a job. Please follow the link and choose an action."
-            };
-
-            await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification, job.HiredFreelancer);
-            return Redirect("JobBoard");
-        }
-
         [HttpGet]
-        [Authorize(Roles = "employer, freelancer")]
+        [Authorize(Roles = "employer, freelancer, moderator")]
         public async Task<IActionResult> JobInfo(int jobId)
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
@@ -128,13 +87,14 @@ namespace EWork.Controllers
                 return BadRequest();
 
             Proposal proposal = null;
+            User currentUser = null;
             if (User.IsInRole("freelancer"))
             {
-                var currentUser = await _userManager.GetUserAsync(User);
+                currentUser = await _userManager.GetUserAsync(User);
                 proposal = job.Proposals.Find(p => p.Sender.Id == currentUser.Id);
             }
 
-            var jobInfoViewModel = new JobInfoViewModel(job, proposal);
+            var jobInfoViewModel = new JobInfoViewModel(currentUser, job, proposal);
             return View(jobInfoViewModel);
         }
 

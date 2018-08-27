@@ -53,6 +53,8 @@ namespace EWork.Services
                 user.Notifications.Remove(notification);
                 await _userManager.UpdateAsync(user);
             }
+
+            // TODO: Decrease counter
         }
 
         public Task AddAsync(Notification item) => _repository.AddAsync(item);
