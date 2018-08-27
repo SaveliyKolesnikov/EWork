@@ -98,7 +98,6 @@ namespace EWork.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 User user = null;
-                var role = string.Empty;
 
                 switch (Input.UserStatus)
                 {
