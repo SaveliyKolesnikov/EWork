@@ -42,6 +42,10 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateProposal(Proposal proposal, int jobId)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(); //TODO: Сделать возвращение JSON с сообщением об ошибке
+
+
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return BadRequest();
 
@@ -64,6 +68,9 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProposal(Proposal proposal, bool isDeleting)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(); //TODO: Сделать возвращение JSON с сообщением об ошибке
+
             if (isDeleting)
                 return await DeleteProposal(proposal.Id);
 

@@ -99,7 +99,7 @@ namespace EWork.Controllers
                 Receiver = await _moderatorManager.GetModeratorAsync(),
                 CreatedDate = DateTime.Now,
                 Source = Url.Action("JobInfo", "Job", new { jobId }),
-                Title = $"{currentUser.UserName} wants to deny a job. Please follow the link and choose an action."
+                Title = $"{job.Employer} wants to deny a job. Please follow the link and choose an action."
             };
 
             await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification, job.HiredFreelancer);

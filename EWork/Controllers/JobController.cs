@@ -58,6 +58,9 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateJob(Job job, string tags)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
 
