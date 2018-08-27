@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace EWork.Areas.Identity.Pages.Account
@@ -119,9 +123,27 @@ namespace EWork.Areas.Identity.Pages.Account
                 user.SingUpDate = DateTime.Now;
                 user.Notifications = new List<Notification>();
 
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                IdentityResult result = null;
+
+                try
+                {
+                    result = await _userManager.CreateAsync(user, Input.Password);
+                }
+                catch (DbUpdateException e)
+                {
+                    if (e.InnerException.Message.Contains("Email"))
+                    {
+                        Trace.WriteLine(e.Message);
+                        ModelState.AddModelError(string.Empty, "Email is already taken");
+                        return Page();
+                    }
+
+                    ExceptionDispatchInfo.Capture(e).Throw();
+                }
 
                 await _userManager.AddToRoleAsync(user, user.Role);
+                if (result is null)
+                    return Page();
 
                 if (result.Succeeded)
                 {
