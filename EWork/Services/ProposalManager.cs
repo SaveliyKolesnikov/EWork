@@ -17,7 +17,8 @@ namespace EWork.Services
         public Task AddAsync(Proposal item) => _repository.AddAsync(item);
 
         public Task DeleteAsync(Proposal item) => _repository.DeleteAsync(item);
-        public async Task DeleteRangeAsync(IEnumerable<Proposal> items) => await _repository.DeleteRangeAsync(items);
+
+        public Task DeleteRangeAsync(IEnumerable<Proposal> items) => _repository.DeleteRangeAsync(items);
 
         public Task<Proposal> FindAsync(Predicate<Proposal> predicate) => _repository.FindAsync(predicate);
 
