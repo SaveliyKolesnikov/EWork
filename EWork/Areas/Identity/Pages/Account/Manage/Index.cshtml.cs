@@ -50,6 +50,10 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [StringLength(4096, ErrorMessage = "{0} length must be less then 4096")]
+            [Display(Name = "Overview")]
+            public string Description { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -63,13 +67,15 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var email = await _userManager.GetEmailAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var description = user.Description;
 
             Username = userName;
 
             Input = new InputModel
             {
                 Email = email,
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Description =  description
             };
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
@@ -125,6 +131,17 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                 {
                     var userId = await _userManager.GetUserIdAsync(user);
                     throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
+                }
+            }
+
+            if (Input.Description != user.Description)
+            {
+                user.Description = Input.Description;
+                var setUserDescription = await _userManager.UpdateAsync(user);
+                if (!setUserDescription.Succeeded)
+                {
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    throw new InvalidOperationException($"Unexpected error occurred setting user description for user with ID '{userId}'.");
                 }
             }
 
