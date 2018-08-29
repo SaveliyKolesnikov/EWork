@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EWork.Config;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace EWork.Controllers
 {
@@ -17,11 +21,18 @@ namespace EWork.Controllers
     {
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
+        private readonly IHostingEnvironment _environment;
+        private readonly IOptions<PhotoConfig> _photoOptions;
 
-        public JobController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager)
+        public JobController(IFreelancingPlatform freelancingPlatform, 
+            UserManager<User> userManager,
+            IHostingEnvironment environment,
+            IOptions<PhotoConfig> photoOptions)
         {
             _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
+            _environment = environment;
+            _photoOptions = photoOptions;
         }
 
         [Authorize(Roles = "employer, freelancer, moderator")]
@@ -97,7 +108,8 @@ namespace EWork.Controllers
                 proposal = job.Proposals.Find(p => p.Sender.Id == currentUser.Id);
             }
 
-            var jobInfoViewModel = new JobInfoViewModel(currentUser, job, proposal);
+            var pathToProfilePhotos = Path.Combine(_environment.ContentRootPath, _photoOptions.Value.UsersPhotosPath);
+            var jobInfoViewModel = new JobInfoViewModel(currentUser, job, proposal, pathToProfilePhotos);
             return View(jobInfoViewModel);
         }
 

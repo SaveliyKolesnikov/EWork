@@ -10,7 +10,8 @@ namespace EWork.Services.Extensions
     public static class FreelancingPlatformExtension
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
-            service.AddFreelancingPlatformDbContext().AddRepositories().AddModelManagers()
+            service.AddFreelancingPlatformDbContext()
+                .AddRepositories().AddModelManagers()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
         #region Managers
@@ -51,6 +52,9 @@ namespace EWork.Services.Extensions
             service.AddScoped<IRepository<Job>, JobRepository>();
 
         #endregion
+
+        private static IServiceCollection AddRandomStringGenerator(this IServiceCollection service) =>
+            service.AddSingleton<IRandomStringGenerator, RandomStringGenerator>();
 
         private static IServiceCollection AddFreelancingPlatformDbContext(this IServiceCollection service) =>
             service.AddScoped<IFreelancingPlatiformDbContext, ApplicationDbContext>();

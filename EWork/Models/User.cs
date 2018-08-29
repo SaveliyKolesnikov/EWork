@@ -15,7 +15,13 @@ namespace EWork.Models
         [Required]
         [StringLength(24, MinimumLength = 2)]
         public string Surname { get; set; }
-        
+
+        [StringLength(4096, ErrorMessage = "{0} length must be less then 4096")]
+        [Display(Name = "Overview")]
+        public string Description { get; set; }
+
+        public string ProfilePhotoName { get; set; }
+
         public DateTime SingUpDate { get; set; }
         public Balance Balance { get; set; }
         public List<Reference> References { get; set; }
