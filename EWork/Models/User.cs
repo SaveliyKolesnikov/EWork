@@ -20,7 +20,7 @@ namespace EWork.Models
         [Display(Name = "Overview")]
         public string Description { get; set; }
 
-        public string ProfilePhotoUrl { get; set; } = "/images/unknownUser.jpeg";
+        public string ProfilePhotoName { get; set; }
 
         public DateTime SingUpDate { get; set; }
         public Balance Balance { get; set; }
