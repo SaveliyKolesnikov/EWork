@@ -10,7 +10,8 @@ namespace EWork.Services.Extensions
     public static class FreelancingPlatformExtension
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
-            service.AddFreelancingPlatformDbContext().AddRepositories().AddModelManagers()
+            service.AddFreelancingPlatformDbContext()
+                .AddRepositories().AddModelManagers()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
         #region Managers
