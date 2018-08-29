@@ -1,0 +1,12 @@
+﻿.profile-info {
+    background: white;
+    font-size: 1.2em;
+    font-family: Helvetica, Arial, sans-serif;
+    color: #545353;
+}
+
+.profile-photo {
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+}
