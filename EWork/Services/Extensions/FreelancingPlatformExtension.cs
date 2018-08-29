@@ -52,6 +52,9 @@ namespace EWork.Services.Extensions
 
         #endregion
 
+        private static IServiceCollection AddRandomStringGenerator(this IServiceCollection service) =>
+            service.AddSingleton<IRandomStringGenerator, RandomStringGenerator>();
+
         private static IServiceCollection AddFreelancingPlatformDbContext(this IServiceCollection service) =>
             service.AddScoped<IFreelancingPlatiformDbContext, ApplicationDbContext>();
     }
