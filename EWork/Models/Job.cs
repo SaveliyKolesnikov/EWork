@@ -8,7 +8,6 @@ namespace EWork.Models
     {
         public int Id { get; set; }
 
-        [Required]
         public Employer Employer { get; set; }
         public Freelancer HiredFreelancer { get; set; }
 
@@ -31,7 +30,6 @@ namespace EWork.Models
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime CreationDate { get; set; }
-        [Required]
         public List<Proposal> Proposals { get; set; }
         public List<JobTags> JobTags { get; set; }
     }
