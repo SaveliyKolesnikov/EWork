@@ -21,5 +21,8 @@ namespace EWork.Models
 
         [Required]
         public User Sender { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime SendDate { get; set; }
     }
 }
