@@ -29,6 +29,12 @@ namespace EWork.Data.Extensions
                     .ThenInclude(j => j.JobTags)
                         .ThenInclude(jt => jt.Tag);
         }
+        public static IQueryable<Review> ExtractAll(this DbSet<Review> dbSet)
+        {
+            return dbSet
+                .Include(p => p.Sender)
+                .ThenInclude(s => s.Reviews);
+        }
 
         public static IQueryable<Notification> ExtractAll(this DbSet<Notification> dbSet) =>
             dbSet.Include(n => n.Receiver);
