@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EWork.Models
 {
-    public class Reference
+    public class Review
     {
         public int Id { get; set; }
 
@@ -21,5 +21,8 @@ namespace EWork.Models
 
         [Required]
         public User Sender { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime SendDate { get; set; }
     }
 }

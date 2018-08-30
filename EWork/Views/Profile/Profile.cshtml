@@ -1,0 +1,136 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model EWork.ViewModels.ProfileViewModel
+@inject UserManager<User> _userManager
+@{
+    var currentUser = Model.CurrentUser;
+    ViewData["Title"] = "Profile";
+    ViewBag.Heading = $"{currentUser.UserName}'s Profile";
+}
+
+@section Styles
+    {
+    <link rel="stylesheet" href="/css/profile.css" />
+    <link rel="stylesheet" href="/css/profileInfo.css" />
+    <link rel="stylesheet" href="/css/space.min.css" />
+    <link rel="stylesheet" href="/css/button.css" />
+
+}
+
+<div class="container-fluid" id="profileInfoContainer">
+    <div class="row">
+        <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
+    </div>
+    <div class="space-30"></div>
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            <div class="row ">
+                <div class="col-xs-12 text-center">
+                    <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, currentUser.ProfilePhotoName)" alt="Profile photo" />
+                </div>
+                <div class="space-10"></div>
+                <div class="justify-content-container">
+                    @if (_userManager.GetUserName(User) != currentUser.UserName)
+                    {
+                        <button asp-controller="Chat" asp-action="" class="button blue" id="sendMessageBtn">Send Message</button>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage" class="justify-content-container" style="width: 100%; text-decoration: none;">
+                            <button class="button blue" id="sendMessageBtn">Edit Profile</button>
+                        </a>
+                    }
+                </div>
+                <h4 class="text-center">
+                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@currentUser.UserName">
+                        @@@currentUser.UserName
+                    </a>
+                </h4>
+                <h4 class="text-center">@currentUser.FullName</h4>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <div class="row">
+                <h2 class="user-fullname">@currentUser.FullName</h2>
+                <p class="user-role cyan-color text-capitalize">@currentUser.Role</p>
+                <h3 class="">Overview</h3>
+                <div class="user-description">
+                    @currentUser.Description
+                </div>
+                <div class="space-20"></div>
+                @{
+                    var userRating = 0d;
+                    try
+                    {
+                        //userRating = currentUser.Reviews.Average(r => r.Value);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                }
+                <div class="user-rating"><span class="text-capitalize">@currentUser.Role's </span>rating: <span class="rating-value">@userRating</span></div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="space-5"></div>
+    <div class="row">
+        <h1 class="col-xs-12 col-md-offset-2 col-md-8 page-subtitle">Reviews</h1>
+    </div>
+    <div id="refferences-container">
+        @{var isFirstReference = true;}
+        @foreach (var review in currentUser.Reviews)
+        {
+            if (!isFirstReference)
+            {
+                <hr />
+            }
+            else
+            {
+                isFirstReference = false;
+            }
+            <div class="reference">
+                <div class="row margin-bottom-25" style="">
+                    <div class="col-xs-12 col-md-4 profile-info padding-20">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, review.Sender.ProfilePhotoName)" alt="Profile photo" />
+                            </div>
+                        </div>
+                        <div class="space-10"></div>
+                        <h4 class="text-center">
+                            <a asp-controller="Profile" asp-action="Profile" asp-route-username="@review.Sender.UserName">
+                                @@@review.Sender.UserName
+                            </a>
+                        </h4>
+                        <h4 class="text-center">@review.Sender.FullName</h4>
+                    </div>
+                    <div class="col-xs-12 col-md-8">
+                        <div class="row">
+                            <h3 class="proposal-cover-letter">Feedback:</h3>
+                            <div class="user-rating">Rate: <span class="rating-value">@review.Value</span></div>
+                            <div class="space-20"></div>
+                            <div class="user-description">
+                                @review.Text
+                            </div>
+                            <div class="space-20"></div>
+                            <h5 class="posted-date">
+                                Posted <span>@review.SendDate</span>
+                            </h5>
+                            @{
+                                var freelancerRating = 0d;
+                                try
+                                {
+                                    //freelancerRating = review.Sender.Reviews.Average(r => r.Value);
+                                }
+                                catch (InvalidOperationException)
+                                {
+                                }
+                            }
+                            <div class="user-rating"><span class="text-capitalize">@review.Sender.Role's</span> rating: <span class="rating-value">@freelancerRating</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

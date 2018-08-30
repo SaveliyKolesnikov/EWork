@@ -10,12 +10,12 @@ namespace EWork.Data.Extensions
         {
             return dbSet
                 .Include(j => j.Employer)
-                    .ThenInclude(e => e.References)
+                    .ThenInclude(e => e.Reviews)
                 .Include(j => j.JobTags)
                     .ThenInclude(jt => jt.Tag)
                 .Include(j => j.Proposals)
                     .ThenInclude(p => p.Sender)
-                        .ThenInclude(f => f.References)
+                        .ThenInclude(f => f.Reviews)
                 .Include(j => j.HiredFreelancer);
         }
 
@@ -23,11 +23,17 @@ namespace EWork.Data.Extensions
         {
             return dbSet
                 .Include(p => p.Sender)
-                    .ThenInclude(f => f.References)
+                    .ThenInclude(f => f.Reviews)
                         .ThenInclude(r => r.Sender)
                 .Include(p => p.Job)
                     .ThenInclude(j => j.JobTags)
                         .ThenInclude(jt => jt.Tag);
+        }
+        public static IQueryable<Review> ExtractAll(this DbSet<Review> dbSet)
+        {
+            return dbSet
+                .Include(p => p.Sender)
+                .ThenInclude(s => s.Reviews);
         }
 
         public static IQueryable<Notification> ExtractAll(this DbSet<Notification> dbSet) =>

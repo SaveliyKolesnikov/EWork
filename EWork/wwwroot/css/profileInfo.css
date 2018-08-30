@@ -1,0 +1,31 @@
+﻿.user-fullname {
+    font-size: 2em;
+    margin: 0;
+    color: #3D505F;
+}
+
+
+#profileInfoContainer {
+    background: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em;
+}
+
+.user-description {
+    color: #333;
+    font-size: 1em;
+    line-height: 1.42857;
+}
+
+.justify-content-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#sendMessageBtn {
+    width: 53%;
+    height: 35px;
+    font-size: 1.1em;
+    font-weight: normal;
+}

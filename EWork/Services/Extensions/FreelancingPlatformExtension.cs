@@ -18,10 +18,13 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
             service.AddJobManager().AddProposalManager().AddModeratorManager()
-                .AddTagManager().AddNotificationManager();
+                .AddTagManager().AddNotificationManager().AddReviewManager();
 
         private static IServiceCollection AddJobManager(this IServiceCollection service) =>
             service.AddScoped<IJobManager, JobManager>();
+
+        private static IServiceCollection AddReviewManager(this IServiceCollection service) =>
+            service.AddScoped<IReviewManager, ReviewManager>();
 
         private static IServiceCollection AddTagManager(this IServiceCollection service) =>
             service.AddScoped<ITagManager, TagManager>();

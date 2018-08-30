@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using EWork.Config;
 
 namespace EWork.Areas.Identity.Pages.Account
 {
@@ -25,6 +27,7 @@ namespace EWork.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _emailSender;
+        private readonly IOptions<PhotoConfig> _photoOptions;
 
         public enum UserStatus
         {
@@ -37,13 +40,15 @@ namespace EWork.Areas.Identity.Pages.Account
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
             RoleManager<IdentityRole> roleManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IOptions<PhotoConfig> photoOptions)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _roleManager = roleManager;
             _emailSender = emailSender;
+            _photoOptions = photoOptions;
         }
 
         [BindProperty]
@@ -116,11 +121,13 @@ namespace EWork.Areas.Identity.Pages.Account
                 user.Surname = Input.Surname;
                 user.UserName = Input.Username;
                 user.Email = Input.Email;
+                user.ProfilePhotoName = _photoOptions.Value.DefaultPhoto;
                 user.Balance = new Balance();
                 user.Jobs = new List<Job>();
-                user.References = new List<Reference>();
+                user.Reviews = new List<Review>();
                 user.SingUpDate = DateTime.Now;
                 user.Notifications = new List<Notification>();
+                
 
                 IdentityResult result = null;
 

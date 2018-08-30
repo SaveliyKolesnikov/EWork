@@ -4,14 +4,16 @@ using EWork.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EWork.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180830090107_AddSendDatePropertyToReference")]
+    partial class AddSendDatePropertyToReference
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,7 +140,7 @@ namespace EWork.Migrations
                     b.ToTable("Proposals");
                 });
 
-            modelBuilder.Entity("EWork.Models.Review", b =>
+            modelBuilder.Entity("EWork.Models.Reference", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -159,7 +161,7 @@ namespace EWork.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reference");
                 });
 
             modelBuilder.Entity("EWork.Models.Tag", b =>
@@ -451,10 +453,10 @@ namespace EWork.Migrations
                         .HasForeignKey("SenderId");
                 });
 
-            modelBuilder.Entity("EWork.Models.Review", b =>
+            modelBuilder.Entity("EWork.Models.Reference", b =>
                 {
                     b.HasOne("EWork.Models.User", "Sender")
-                        .WithMany("Reviews")
+                        .WithMany("References")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
