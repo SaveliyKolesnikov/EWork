@@ -5,6 +5,5 @@ namespace EWork.Services.Interfaces
 {
     public interface IProposalManager : IRepository<Proposal>
     {
-        
     }
 }
