@@ -31,7 +31,7 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var profileViewModel = new ProfileViewModel(user, _photoOptions.Value.UsersPhotosPath);
-            return View(user);
+            return View(profileViewModel);
         }
     }
 }
