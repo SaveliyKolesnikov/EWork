@@ -124,7 +124,7 @@ namespace EWork.Areas.Identity.Pages.Account
                 user.ProfilePhotoName = _photoOptions.Value.DefaultPhoto;
                 user.Balance = new Balance();
                 user.Jobs = new List<Job>();
-                user.References = new List<Reference>();
+                user.Reviews = new List<Review>();
                 user.SingUpDate = DateTime.Now;
                 user.Notifications = new List<Notification>();
                 

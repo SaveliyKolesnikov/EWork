@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EWork.Models
 {
-    public class Reference
+    public class Review
     {
         public int Id { get; set; }
 
