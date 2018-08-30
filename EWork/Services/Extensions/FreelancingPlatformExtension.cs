@@ -43,7 +43,8 @@ namespace EWork.Services.Extensions
         #region Repositories
 
         private static IServiceCollection AddRepositories(this IServiceCollection service) =>
-            service.AddProposalRepository().AddNotificationRepository().AddJobRepository();
+            service.AddProposalRepository().AddNotificationRepository()
+                .AddJobRepository().AddReviewRepository();
 
         private static IServiceCollection AddProposalRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Proposal>, ProposalRepository>();
@@ -54,6 +55,8 @@ namespace EWork.Services.Extensions
         private static IServiceCollection AddJobRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Job>, JobRepository>();
 
+        private static IServiceCollection AddReviewRepository(this IServiceCollection service) =>
+            service.AddScoped<IRepository<Review>, ReviewRepository>();
         #endregion
 
         private static IServiceCollection AddRandomStringGenerator(this IServiceCollection service) =>
