@@ -59,13 +59,13 @@
                     var employerRating = 0d;
                     try
                     {
-                        employerRating = job.Employer.References.Average(r => r.Value);
+                        employerRating = job.Employer.Reviews.Average(r => r.Value);
                     }
                     catch (InvalidOperationException)
                     {
                     }
                 }
-                <div class="user-rating">Employer rating: <span>@employerRating</span></div>
+                <div class="user-rating">Employer's rating: <span class="rating-value">@employerRating</span></div>
             </div>
         </div>
         <div class="col-xs-12 col-md-4 profile-info padding-20">
@@ -76,7 +76,7 @@
             </div>
             <div class="space-10"></div>
             <h4 class="text-center">
-                <a asp-controller="Profile" asp-action="ProfileInfo" asp-route-id="@job.Employer.Id">
+                <a asp-controller="Profile" asp-action="Profile" asp-route-username="@job.Employer.UserName">
                     @@@job.Employer.UserName
                 </a>
             </h4>
@@ -224,13 +224,13 @@
                                     var freelancerRating = 0d;
                                     try
                                     {
-                                        freelancerRating = proposal.Sender.References.Average(r => r.Value);
+                                        freelancerRating = proposal.Sender.Reviews.Average(r => r.Value);
                                     }
                                     catch (InvalidOperationException)
                                     {
                                     }
                                 }
-                                <div class="user-rating">Freelancer rating: <span>@freelancerRating</span></div>
+                                <div class="user-rating">Freelancer's rating: <span class="rating-value">@freelancerRating</span></div>
                             </div>
                             <div class="row" style="margin-top: 50px;">
                                 @if (!isFreelancerHired)
@@ -297,7 +297,7 @@
                             </div>
                             <div class="space-10"></div>
                             <h4 class="text-center">
-                                <a asp-controller="Profile" asp-action="ProfileInfo" asp-route-id="@proposal.Sender.Id">
+                                <a asp-controller="Profile" asp-action="Profile" asp-route-username="@proposal.Sender.UserName">
                                     @@@proposal.Sender.UserName
                                 </a>
                             </h4>
@@ -316,13 +316,13 @@
                                     var freelancerRating = 0d;
                                     try
                                     {
-                                        freelancerRating = proposal.Sender.References.Average(r => r.Value);
+                                        freelancerRating = proposal.Sender.Reviews.Average(r => r.Value);
                                     }
                                     catch (InvalidOperationException)
                                     {
                                     }
                                 }
-                                <div class="user-rating">Freelancer rating: <span>@freelancerRating</span></div>
+                                <div class="user-rating">Freelancer's rating: <span class="rating-value">@freelancerRating</span></div>
                             </div>
                             <div class="row" style="margin-top: 50px;">
                                 @if (job.IsPaymentDenied)
