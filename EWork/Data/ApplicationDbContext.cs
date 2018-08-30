@@ -35,6 +35,8 @@ namespace EWork.Data
                 userBuilder.HasOne(u => u.Balance)
                     .WithOne(b => b.User)
                     .OnDelete(DeleteBehavior.Cascade);
+                userBuilder.HasMany(u => u.Reviews)
+                    .WithOne(r => r.User);
             });
 
             base.OnModelCreating(modelBuilder);
