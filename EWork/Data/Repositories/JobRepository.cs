@@ -68,7 +68,7 @@ namespace EWork.Data.Repositories
         }
 
         public async Task<Job> FindAsync(Predicate<Job> predicate) =>
-            await _db.Jobs.ExtractAll().FirstOrDefaultAsync(job => predicate(job));
+            await GetAll().FirstOrDefaultAsync(job => predicate(job));
 
         public IQueryable<Job> GetAll() => _db.Jobs.ExtractAll();
     }
