@@ -10,10 +10,11 @@ namespace EWork.Data
     {
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         public DbSet<Proposal> Proposals { get; set; }
         public DbSet<Employer> Employers { get; set; }
-        public DbSet<Freelancer> Freelancers { get; set; }
         public DbSet<Moderator> Moderators { get; set; }
+        public DbSet<Freelancer> Freelancers { get; set; }
         public DbSet<Notification> Notifications { get; set; }
 
         async Task IFreelancingPlatiformDbContext.SaveChangesAsync() => await SaveChangesAsync();
