@@ -19,7 +19,8 @@ namespace EWork.Models
         [Display(Name = "Tag text")]
         public string Text { get; set; }
 
-        [Required]
+        public User User { get; set; }
+
         public User Sender { get; set; }
 
         [DataType(DataType.DateTime)]
