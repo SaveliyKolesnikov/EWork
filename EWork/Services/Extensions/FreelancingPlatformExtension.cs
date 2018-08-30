@@ -18,10 +18,13 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
             service.AddJobManager().AddProposalManager().AddModeratorManager()
-                .AddTagManager().AddNotificationManager();
+                .AddTagManager().AddNotificationManager().AddReviewManager();
 
         private static IServiceCollection AddJobManager(this IServiceCollection service) =>
             service.AddScoped<IJobManager, JobManager>();
+
+        private static IServiceCollection AddReviewManager(this IServiceCollection service) =>
+            service.AddScoped<IReviewManager, ReviewManager>();
 
         private static IServiceCollection AddTagManager(this IServiceCollection service) =>
             service.AddScoped<ITagManager, TagManager>();
@@ -40,7 +43,8 @@ namespace EWork.Services.Extensions
         #region Repositories
 
         private static IServiceCollection AddRepositories(this IServiceCollection service) =>
-            service.AddProposalRepository().AddNotificationRepository().AddJobRepository();
+            service.AddProposalRepository().AddNotificationRepository()
+                .AddJobRepository().AddReviewRepository();
 
         private static IServiceCollection AddProposalRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Proposal>, ProposalRepository>();
@@ -51,6 +55,8 @@ namespace EWork.Services.Extensions
         private static IServiceCollection AddJobRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Job>, JobRepository>();
 
+        private static IServiceCollection AddReviewRepository(this IServiceCollection service) =>
+            service.AddScoped<IRepository<Review>, ReviewRepository>();
         #endregion
 
         private static IServiceCollection AddRandomStringGenerator(this IServiceCollection service) =>

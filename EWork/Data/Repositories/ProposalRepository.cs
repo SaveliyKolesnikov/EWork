@@ -66,7 +66,7 @@ namespace EWork.Data.Repositories
         }
 
         public async Task<Proposal> FindAsync(Predicate<Proposal> predicate) =>
-            await _db.Proposals.FirstOrDefaultAsync(proposal => predicate(proposal));
+            await GetAll().FirstOrDefaultAsync(proposal => predicate(proposal));
 
 
         public IQueryable<Proposal> GetAll() => _db.Proposals.ExtractAll();

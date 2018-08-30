@@ -77,7 +77,7 @@ namespace EWork.Data.Repositories
         }
 
         public async Task<Notification> FindAsync(Predicate<Notification> predicate) =>
-            await _db.Notifications.ExtractAll().FirstOrDefaultAsync(notification => predicate(notification));
+            await GetAll().FirstOrDefaultAsync(notification => predicate(notification));
 
         public IQueryable<Notification> GetAll() => _db.Notifications.ExtractAll();
     }

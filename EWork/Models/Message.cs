@@ -10,10 +10,8 @@ namespace EWork.Models
         [StringLength(4096, MinimumLength = 1, ErrorMessage = "{0} length must be less then 4096")]
         public string Text { get; set; }
 
-        [Required]
         public User Sender { get; set; }
 
-        [Required]
         public User Receiver { get; set; }
 
     }

@@ -50,7 +50,7 @@
                         var employerRating = 0d;
                         try
                         {
-                            employerRating = job.Employer.References.Average(r => r.Value);
+                            employerRating = job.Employer.Reviews.Average(r => r.Value);
                         }
                         catch (InvalidOperationException)
                         {

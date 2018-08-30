@@ -4,14 +4,16 @@ using EWork.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EWork.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180830094228_AddReviewsDbSet")]
+    partial class AddReviewsDbSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,21 +148,18 @@ namespace EWork.Migrations
 
                     b.Property<DateTime>("SendDate");
 
-                    b.Property<string>("SenderId");
+                    b.Property<string>("SenderId")
+                        .IsRequired();
 
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasMaxLength(20);
-
-                    b.Property<string>("UserId");
 
                     b.Property<double>("Value");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SenderId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
                 });
@@ -457,12 +456,9 @@ namespace EWork.Migrations
             modelBuilder.Entity("EWork.Models.Review", b =>
                 {
                     b.HasOne("EWork.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId");
-
-                    b.HasOne("EWork.Models.User", "User")
                         .WithMany("Reviews")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
