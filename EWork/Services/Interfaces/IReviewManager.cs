@@ -7,7 +7,7 @@ using EWork.Models;
 
 namespace EWork.Services.Interfaces
 {
-    interface IReviewManager : IRepository<Review>
+    public interface IReviewManager : IRepository<Review>
     {
     }
 }

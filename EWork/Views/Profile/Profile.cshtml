@@ -61,7 +61,7 @@
                     var userRating = 0d;
                     try
                     {
-                        //userRating = currentUser.Reviews.Average(r => r.Value);
+                        userRating = currentUser.Reviews.Average(r => r.Value);
                     }
                     catch (InvalidOperationException)
                     {
@@ -120,7 +120,7 @@
                                 var freelancerRating = 0d;
                                 try
                                 {
-                                    //freelancerRating = review.Sender.Reviews.Average(r => r.Value);
+                                    freelancerRating = review.Sender.Reviews.Average(r => r.Value);
                                 }
                                 catch (InvalidOperationException)
                                 {
