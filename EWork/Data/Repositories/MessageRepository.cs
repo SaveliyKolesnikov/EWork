@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Data.Repositories
 {
-    public class MessagesRepository : IRepository<Message>
+    public class MessageRepository : IRepository<Message>
     {
         private readonly IFreelancingPlatiformDbContext _db;
 
-        public MessagesRepository(IFreelancingPlatiformDbContext db) => _db = db;
+        public MessageRepository(IFreelancingPlatiformDbContext db) => _db = db;
 
         public async Task AddAsync(Message message)
         {
