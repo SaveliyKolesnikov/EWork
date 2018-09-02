@@ -1,0 +1,42 @@
+﻿@using EWork.ViewModels
+@using Microsoft.EntityFrameworkCore
+@model EWork.ViewModels.ChatViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section Styles
+    {
+    <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/chat.css" rel="stylesheet" type="text/css" />
+    <link href="/css/profile.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="space-30"></div>
+<div class="container-fluid">
+    <div class="row row-eq-height">
+        <div class="col-xs-2 col-md-offset-1 col-md-3" style="background: aqua; ">
+            @if (!(Model.Receiver is null))
+            {
+                <div class="message-bar-elem row" data-recieverusername="@Model.Receiver.UserName">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4 text-center">
+                            <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
+                        </div>
+                        <div class="col-md-8 visible-md visible-lg visible-sm">
+                            <div class="receiver-name">@Model.Receiver.FullName</div>
+                            @{
+                                var messagePreview =
+                                    (await Model.Messages.FirstOrDefaultAsync(m => m.Sender.Id == Model.Receiver.Id || m.Receiver.Id == Model.Receiver.Id))?
+                                        .Text ?? "";
+                            }
+                            <div class="message-preview">@messagePreview</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-xs-10 col-md-7" style="background: aquamarine;" id="chat"></div>
+    </div>
+</div>
