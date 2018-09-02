@@ -8,13 +8,15 @@ namespace EWork.ViewModels
 {
     public class ChatViewModel
     {
-        public ChatViewModel(Message message, User reciever = null)
+        public ChatViewModel(IQueryable<Message> messages, string pathToProfilePhotos, User receiver = null)
         {
-            Message = message;
-            Reciever = reciever;
+            PathToProfilePhotos = pathToProfilePhotos;
+            Messages = messages;
+            Receiver = receiver;
         }
 
-        public Message Message { get; }
-        public User Reciever { get; }
+        public IQueryable<Message> Messages { get; }
+        public User Receiver { get; }
+        public string PathToProfilePhotos { get; }
     }
 }
