@@ -1,10 +1,4 @@
-﻿.row-eq-height {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    flex-wrap: wrap;
-}
+﻿
 
 #jobs-container {
     background: white;
