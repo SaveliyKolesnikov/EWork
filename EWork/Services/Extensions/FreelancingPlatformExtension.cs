@@ -17,8 +17,14 @@ namespace EWork.Services.Extensions
         #region Managers
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
-            service.AddJobManager().AddProposalManager().AddModeratorManager()
-                .AddTagManager().AddNotificationManager().AddReviewManager();
+            service
+                .AddJobManager().AddProposalManager()
+                .AddModeratorManager().AddTagManager()
+                .AddNotificationManager().AddReviewManager()
+                .AddMessageManager();
+
+        private static IServiceCollection AddMessageManager(this IServiceCollection service) =>
+            service.AddScoped<IMessageManager, MessageManager>();
 
         private static IServiceCollection AddJobManager(this IServiceCollection service) =>
             service.AddScoped<IJobManager, JobManager>();
@@ -44,10 +50,13 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddRepositories(this IServiceCollection service) =>
             service.AddProposalRepository().AddNotificationRepository()
-                .AddJobRepository().AddReviewRepository();
+                .AddJobRepository().AddReviewRepository().AddMessageRepository();
 
         private static IServiceCollection AddProposalRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Proposal>, ProposalRepository>();
+
+        private static IServiceCollection AddMessageRepository(this IServiceCollection service) =>
+            service.AddScoped<IRepository<Message>, MessageRepository>();
 
         private static IServiceCollection AddNotificationRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Notification>, NotificationRepository>();

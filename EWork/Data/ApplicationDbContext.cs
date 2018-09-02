@@ -11,6 +11,7 @@ namespace EWork.Data
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Proposal> Proposals { get; set; }
         public DbSet<Employer> Employers { get; set; }
         public DbSet<Moderator> Moderators { get; set; }
