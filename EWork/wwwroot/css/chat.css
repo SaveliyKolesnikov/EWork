@@ -6,3 +6,63 @@
     padding: 0;
     margin: 0;
 }
+
+#chat {
+    display: flex;
+    flex-direction: column;
+}
+
+    #chat > #chat-history {
+        flex-grow: 5;
+        /*background: blue;*/
+        height: 500px;
+        overflow-y: auto;
+    }
+
+    #chat > #send-message-form {
+        /*background: red;*/
+        flex-grow: 1;
+    }
+
+/* ---------------- */
+/* Chat containers */
+#chat .container {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+    font-family: "Open Sans", serif;
+}
+
+#chat .sender {
+    font-size: 1.1em;
+    font-weight: bold;
+    font-family: "Open Sans", serif;
+}
+
+/* Darker chat container */
+#chat .darker {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+/* Clear floats */
+#chat .container::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Style time text */
+#chat .time-right {
+    float: right;
+    color: #aaa;
+}
+
+/* Style time text */
+#chat .time-left {
+    float: left;
+    color: #999;
+}
