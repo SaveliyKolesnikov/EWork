@@ -12,14 +12,19 @@
     <link href="/css/chat.css" rel="stylesheet" type="text/css" />
     <link href="/css/profile.css" rel="stylesheet" type="text/css" />
 }
+<script>
+    let currentUserName = '@Model.CurrentUser.UserName';
+    let currentReceiver = '';
+</script>
 
 <div class="space-30"></div>
 <div class="container-fluid">
-    <div class="row row-eq-height">
-        <div class="col-xs-2 col-md-offset-1 col-md-3" style="background: aqua; ">
+    <div class="row">
+        <div class="col-xs-2 col-md-offset-1 col-md-3 message-bars-container">
             @if (!(Model.Receiver is null))
             {
-                <div class="message-bar-elem row" data-recieverusername="@Model.Receiver.UserName">
+                <script>currentReceiver = '@Model.Receiver.UserName'</script>
+                <div class="message-bar-elem row" data-recieverusername="@Model.Receiver.UserName" style="order: 0;">
                     <div class="row">
                         <div class="col-xs-12 col-md-4 text-center">
                             <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
@@ -36,7 +41,99 @@
                     </div>
                 </div>
             }
+            @foreach (var chat in Model.Messages.GroupBy(m => new { m.Sender, m.Receiver }))
+            {
+                var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
+                    chat.Key.Sender : chat.Key.Receiver;
+                <div class="message-bar-elem row" data-recieverusername="@receiver.UserName" style="order: 1;">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4 text-center">
+                            <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
+                        </div>
+                        <div class="col-md-8 visible-md visible-lg visible-sm">
+                            <div class="receiver-name">@receiver.FullName</div>
+                            @{
+                                var messagePreview = chat.LastOrDefault()?.Text ?? "";
+                            }
+                            <div class="message-preview">@messagePreview</div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
-        <div class="col-xs-10 col-md-7" style="background: aquamarine;" id="chat"></div>
+        <div class="col-xs-10 col-md-7" style="background: aquamarine;" id="chat">
+            <div id="chat-history">
+                @*@{ var messages = new List<Message>
+                       {
+                           new Message
+                           {
+                               Receiver = Model.CurrentUser,
+                               Text = "sadasdasdasdasdasdasdasd",
+                               Sender = Model.Receiver,
+                               SendDate = DateTime.Now
+                           },
+                           new Message
+                           {
+                               Receiver = Model.CurrentUser,
+                               Text = "sadasdasdasdasdasdasdasd",
+                               Sender = Model.Receiver,
+                               SendDate = DateTime.Now
+                           },
+
+                           new Message
+                           {
+                               Receiver = Model.Receiver,
+                               Text = "sad12312123asdasdasdasdasdasdasd",
+                               Sender = Model.CurrentUser,
+                               SendDate = DateTime.Now
+                           },
+                       };}
+                    @foreach (var message in messages)
+                    {
+                        string containerClass, timePosition;
+                        if (Model.CurrentUser.Id == message.Sender.Id)
+                        {
+                            containerClass = "container darker";
+                            timePosition = "time-left";
+                        }
+                        else
+                        {
+                            containerClass = "container";
+                            timePosition = "time-right";
+                        }
+
+                        <div class="@containerClass">
+                            <p>@message.Text</p>
+                            <span class="@timePosition">@message.SendDate.ToString("M/dd/yyyy hh:MM tt")</span>
+                        </div>
+                    }*@
+            </div>
+            <div id="send-message-form">
+                <form>
+                    <div class="row">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-10 form-group">
+                            <input name="Text" class="form-control" id="messageText" required="required" />
+                        </div>
+                        <div class="col-xs-2 form-group">
+                            <input type="submit" value="Send" id="submitMessageButton" class="btn btn-default" />
+                        </div>
+                    </div>
+                    <input type="hidden" value="@Model.CurrentUser.UserName" name="senderUserName" id="senderUserName" />
+                    <input type="hidden" value="@(Model.Receiver?.UserName ?? "")" name="receiverUserName" id="receiverUserName" />
+                    <input type="hidden" value="" name="sendDate" id="sendDate" />
+                </form>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts{
+    <script src="/lib/signalr/signalr.min.js"></script>
+    <script src="/lib/dateFormatter.min.js"></script>
+    <script src="/js/chat/message.js"></script>
+    <script src="/js/chat/chat.js"></script>
+    <script src="/js/chat/signalrReqHandler.js"></script>
+}
