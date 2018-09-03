@@ -10,7 +10,7 @@
         background: rgba(0, 255, 255, 0.3);
     }
 
-    .message-bar-elem.no-messages {
+    .message-bar-elem.no-new-messages {
         background: #dedede;
     }
 
