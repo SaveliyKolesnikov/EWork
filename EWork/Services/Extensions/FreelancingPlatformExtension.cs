@@ -11,7 +11,7 @@ namespace EWork.Services.Extensions
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
             service.AddFreelancingPlatformDbContext()
-                .AddRepositories().AddModelManagers()
+                .AddRepositories().AddModelManagers().AddMessageMapper()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
         #region Managers
@@ -67,6 +67,9 @@ namespace EWork.Services.Extensions
         private static IServiceCollection AddReviewRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Review>, ReviewRepository>();
         #endregion
+
+        private static IServiceCollection AddMessageMapper(this IServiceCollection service) =>
+            service.AddSingleton<IMessageMapper, MessageMapper>();
 
         private static IServiceCollection AddRandomStringGenerator(this IServiceCollection service) =>
             service.AddSingleton<IRandomStringGenerator, RandomStringGenerator>();
