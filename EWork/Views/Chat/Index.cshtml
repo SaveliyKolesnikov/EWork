@@ -1,11 +1,9 @@
 ﻿@using EWork.ViewModels
 @using Microsoft.EntityFrameworkCore
 @model EWork.ViewModels.ChatViewModel
-
 @{
     ViewData["Title"] = "Index";
 }
-
 @section Styles
     {
     <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
@@ -16,102 +14,60 @@
     let currentUserName = '@Model.CurrentUser.UserName';
     let currentReceiver = '';
 </script>
-
 <div class="space-30"></div>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-xs-2 col-md-offset-1 col-md-3 message-bars-container">
-            @if (!(Model.Receiver is null))
-            {
-            <script>currentReceiver = '@Model.Receiver.UserName'</script>
-            <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: 0;">
-                <div class="row">
-                    <div class="col-xs-12 col-md-4 text-center">
-                        <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
-                    </div>
-                    <div class="col-md-8 visible-md visible-lg visible-sm">
-                        <div class="receiver-name">@Model.Receiver.FullName</div>
-                        @{
-                                var messagePreview =
-                                    (await Model.Messages.FirstOrDefaultAsync(m => m.Sender.Id == Model.Receiver.Id || m.Receiver.Id == Model.Receiver.Id))?
-                                        .Text ?? "";
-                        }
-                        <div class="message-preview">@messagePreview</div>
-                    </div>
-                </div>
-            </div>
-            }
-            @{var order = 0;}
-            @foreach (var chat in Model.Messages.GroupBy(m => new { m.Sender, m.Receiver }))
-            {
-                var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
-                    chat.Key.Sender : chat.Key.Receiver;
+        <div class="col-xs-2 col-md-offset-1 col-md-3" id="message-bars-container">
+            @{
+                var dialogs = await Model.Messages.GroupBy(m => new { m.Sender, m.Receiver }).ToArrayAsync();
 
-            <div class="message-bar-elem row" data-receiverusername="@receiver.UserName" style="order: @order;">
-                <div class="row">
-                    <div class="col-xs-12 col-md-4 text-center">
-                        <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
-                    </div>
-                    <div class="col-md-8 visible-md visible-lg visible-sm">
-                        <div class="receiver-name">@receiver.FullName</div>
-                        @{
-                                var messagePreview = chat.LastOrDefault()?.Text ?? "";
-                        }
-                        <div class="message-preview">@messagePreview</div>
-                    </div>
-                </div>
-            </div>
+                var order = 0;
+                foreach (var chat in dialogs)
+                {
+                    var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
+                        chat.Key.Sender : chat.Key.Receiver;
 
-                order++;
-            }
-            <script>let maxOrder = @order;</script>
-        </div>
-        <div class="col-xs-10 col-md-7" style="background: aquamarine;" id="chat">
-            <div id="chat-history">
-                @*@{ var messages = new List<Message>
-                       {
-                           new Message
-                           {
-                               Receiver = Model.CurrentUser,
-                               Text = "sadasdasdasdasdasdasdasd",
-                               Sender = Model.Receiver,
-                               SendDate = DateTime.Now
-                           },
-                           new Message
-                           {
-                               Receiver = Model.CurrentUser,
-                               Text = "sadasdasdasdasdasdasdasd",
-                               Sender = Model.Receiver,
-                               SendDate = DateTime.Now
-                           },
-
-                           new Message
-                           {
-                               Receiver = Model.Receiver,
-                               Text = "sad12312123asdasdasdasdasdasdasd",
-                               Sender = Model.CurrentUser,
-                               SendDate = DateTime.Now
-                           },
-                       };}
-                    @foreach (var message in messages)
-                    {
-                        string containerClass, timePosition;
-                        if (Model.CurrentUser.Id == message.Sender.Id)
-                        {
-                            containerClass = "container darker";
-                            timePosition = "time-left";
-                        }
-                        else
-                        {
-                            containerClass = "container";
-                            timePosition = "time-right";
-                        }
-
-                        <div class="@containerClass">
-                            <p>@message.Text</p>
-                            <span class="@timePosition">@message.SendDate.ToString("M/dd/yyyy hh:MM tt")</span>
+                    <div class="message-bar-elem row" data-receiverusername="@receiver.UserName" style="order: @order;">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-4 text-center">
+                                <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
+                            </div>
+                            <div class="col-md-8 visible-md visible-lg visible-sm">
+                                <div class="receiver-name">@receiver.UserName</div>
+                                @{
+                                    var messagePreview = chat.LastOrDefault()?.Text ?? "";
+                                }
+                                <div class="message-preview">@messagePreview</div>
+                            </div>
                         </div>
-                    }*@
+                    </div>
+
+                    order++;
+                }
+                if (!(Model.Receiver is null))
+                {
+                    if (dialogs.All(d => d.Key.Receiver.Id != Model.Receiver.Id && d.Key.Sender.Id != Model.Receiver.Id))
+                    {
+                        <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: @(order++);">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-4 text-center">
+                                    <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
+                                </div>
+                                <div class="col-md-8 visible-md visible-lg visible-sm">
+                                    <div class="receiver-name">@Model.Receiver.UserName</div>
+                                    <div class="message-preview"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <script>let makeDialogActiveQuery = `.message-bar-elem[data-receiverusername="@Model.Receiver.UserName"]`;</script>
+                }
+
+                <script>let maxOrder = @order</script>
+            }
+        </div>
+        <div class="col-xs-10 col-md-7" id="chat">
+            <div id="chat-history">
             </div>
             <div id="send-message-form">
                 <form>
@@ -134,10 +90,13 @@
         </div>
     </div>
 </div>
-
+<div id="AntiForgeryToken">
+    @Html.AntiForgeryToken()
+</div>
 @section Scripts{
     <script src="/lib/signalr/signalr.min.js"></script>
     <script src="/lib/dateFormatter.min.js"></script>
+    <script src="/js/chat/user.js"></script>
     <script src="/js/chat/message.js"></script>
     <script src="/js/chat/chat.js"></script>
     <script src="/js/chat/signalrReqHandler.js"></script>
