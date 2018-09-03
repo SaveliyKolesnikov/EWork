@@ -1,7 +1,7 @@
 ﻿class Message {
-    constructor(senderUserName, receiverUserName, text, sendDate) {
-        this.senderUserName = senderUserName;
-        this.receiverUserName = receiverUserName;
+    constructor(sender, receiver, text, sendDate) {
+        this.sender = sender;
+        this.receiver = receiver;
         this.text = text;
         this.sendDate = sendDate;
     }
