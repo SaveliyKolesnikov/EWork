@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using EWork.Models;
+using EWork.Models.Json;
 using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EWork.Hubs
@@ -42,47 +44,34 @@ namespace EWork.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendMessage(string senderUserName, string receiverUserName, string text)
+        public async Task SendMessage(JsonMessage message)
         {
 
             var sender = await _userManager.GetUserAsync(Context.User);
-            if (senderUserName != sender.UserName)
+            if (message.Sender.UserName != sender.UserName)
                 throw new AuthenticationException();
-            var receiver = await _userManager.FindByNameAsync(receiverUserName) ??
-                           throw new ArgumentException($"User with user name {receiverUserName} doesn't exist");
-
-            var message = new Message
-            {
-                SendDate = DateTime.UtcNow,
-                Sender = sender,
-                Receiver = receiver,
-                Text = text
-            };
+            var receiver = await _userManager.FindByNameAsync(message.Receiver.UserName) ??
+                           throw new ArgumentException($"User with user name {message.Receiver.UserName} doesn't exist");
 
             if (string.IsNullOrWhiteSpace(message.Text))
                 throw new ArgumentNullException(nameof(message.Text));
+
             if (message.Text.Length > 4096)
                 throw new ArgumentException("Message text length must be less then 4096");
 
-            await _messageManager.AddAsync(message);
-
-
-            var messageForUsers = new
+            await _messageManager.AddAsync(new Message
             {
-                senderUserName,
-                receiverUserName,
-                text = message.Text,
-                sendDate = message.SendDate
-            };
+                Receiver = receiver, Sender = sender, SendDate = message.SendDate, Text = message.Text
+            });
 
-            var receiverId = Connections.GetValueOrDefault(receiverUserName);
-            if (!(receiverId is null)) 
-                await Clients.Client(receiverId).SendAsync("receiveMessage", messageForUsers);
+            var receiverId = Connections.GetValueOrDefault(message.Receiver.UserName);
+            if (!(receiverId is null))
+                await Clients.Client(receiverId).SendAsync("receiveMessage", message);
             else
             {
                 // TODO: Notification
             }
-            await Clients.Caller.SendAsync("receiveMessage", messageForUsers);
+            await Clients.Caller.SendAsync("receiveMessage", message);
         }
     }
 }
