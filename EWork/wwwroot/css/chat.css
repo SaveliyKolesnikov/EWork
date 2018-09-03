@@ -6,6 +6,13 @@
     padding: 0;
     margin: 0;
 }
+    .message-bar-elem.new-message {
+        background: rgba(0, 255, 255, 0.3);
+    }
+
+    .message-bar-elem.no-messages {
+        background: #dedede;
+    }
 
 #chat {
     display: flex;
@@ -24,51 +31,51 @@
         flex-grow: 1;
     }
 
-/* ---------------- */
-/* Chat containers */
-#chat .container {
-    border: 2px solid #dedede;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px 0;
-    width: 100%;
-    font-family: "Open Sans", serif;
-}
+    /* ---------------- */
+    /* Chat containers */
+    #chat .container {
+        border: 2px solid #dedede;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+        width: 100%;
+        font-family: "Open Sans", serif;
+    }
 
-#chat .sender {
-    font-size: 1.1em;
-    font-weight: bold;
-    font-family: "Open Sans", serif;
-}
+    #chat .sender {
+        font-size: 1.1em;
+        font-weight: bold;
+        font-family: "Open Sans", serif;
+    }
 
-/* Darker chat container */
-#chat .darker {
-    border-color: #ccc;
-    background-color: #ddd;
-}
+    /* Darker chat container */
+    #chat .darker {
+        border-color: #ccc;
+        background-color: #ddd;
+    }
 
-/* Clear floats */
-#chat .container::after {
-    content: "";
-    clear: both;
-    display: table;
-}
+    /* Clear floats */
+    #chat .container::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
 
-/* Style time text */
-#chat .time-right {
-    float: right;
-    color: #aaa;
-}
+    /* Style time text */
+    #chat .time-right {
+        float: right;
+        color: #aaa;
+    }
 
-/* Style time text */
-#chat .time-left {
-    float: left;
-    color: #999;
-}
+    /* Style time text */
+    #chat .time-left {
+        float: left;
+        color: #999;
+    }
 
 .message-bars-container {
-    background: aqua;
     display: flex;
     flex-direction: column-reverse;
 }
+
