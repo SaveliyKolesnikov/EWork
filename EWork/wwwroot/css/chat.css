@@ -6,12 +6,17 @@
     padding: 0;
     margin: 0;
 }
+
     .message-bar-elem.new-message {
         background: rgba(0, 255, 255, 0.3);
     }
 
     .message-bar-elem.no-new-messages {
         background: #dedede;
+    }
+
+    .message-bar-elem.active {
+        background: cornflowerblue;
     }
 
 #chat {
@@ -74,8 +79,7 @@
         color: #999;
     }
 
-.message-bars-container {
+#message-bars-container {
     display: flex;
     flex-direction: column-reverse;
 }
-
