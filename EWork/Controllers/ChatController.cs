@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace EWork.Controllers
 {
@@ -22,16 +24,19 @@ namespace EWork.Controllers
         private readonly IMessageManager _messageManager;
         private readonly IHostingEnvironment _environment;
         private readonly IOptions<PhotoConfig> _photoOptions;
+        private readonly IMessageMapper _messageMapper;
 
         public ChatController(UserManager<User> userManager,
             IMessageManager messageManager,
             IHostingEnvironment environment,
-            IOptions<PhotoConfig> photoOptions)
+            IOptions<PhotoConfig> photoOptions,
+            IMessageMapper messageMapper)
         {
             _userManager = userManager;
             _messageManager = messageManager;
             _environment = environment;
             _photoOptions = photoOptions;
+            _messageMapper = messageMapper;
         }
 
         public async Task<IActionResult> Index(string recieverUsername)
@@ -47,6 +52,15 @@ namespace EWork.Controllers
 
             var chatViewModel = new ChatViewModel(currentUser, messages, pathToProfilePhotos, reciever);
             return View(chatViewModel);
+        }
+
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> GetMessages(string username1, string username2)
+        {
+            var chat = await _messageManager.GetChatHistory(username1, username2).ToArrayAsync();
+            var jsonChat = _messageMapper.MapRange(chat);
+
+            return Json(jsonChat);
         }
     }
 }
