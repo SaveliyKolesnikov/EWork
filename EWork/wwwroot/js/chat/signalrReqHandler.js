@@ -10,5 +10,5 @@ connection.start()
     });
 
 function sendMessageToHub(message) {
-    connection.invoke('sendMessage', message.senderUserName, message.receiverUserName, message.text);
+    connection.invoke('sendMessage', message);
 }
