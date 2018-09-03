@@ -66,3 +66,9 @@
     float: left;
     color: #999;
 }
+
+.message-bars-container {
+    background: aqua;
+    display: flex;
+    flex-direction: column-reverse;
+}
