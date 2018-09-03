@@ -24,7 +24,7 @@
             @if (!(Model.Receiver is null))
             {
             <script>currentReceiver = '@Model.Receiver.UserName'</script>
-            <div class="message-bar-elem row" data-recieverusername="@Model.Receiver.UserName" style="order: 0;">
+            <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: 0;">
                 <div class="row">
                     <div class="col-xs-12 col-md-4 text-center">
                         <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
@@ -47,7 +47,7 @@
                 var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
                     chat.Key.Sender : chat.Key.Receiver;
 
-            <div class="message-bar-elem row" data-recieverusername="@receiver.UserName" style="order: @order;">
+            <div class="message-bar-elem row" data-receiverusername="@receiver.UserName" style="order: @order;">
                 <div class="row">
                     <div class="col-xs-12 col-md-4 text-center">
                         <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />

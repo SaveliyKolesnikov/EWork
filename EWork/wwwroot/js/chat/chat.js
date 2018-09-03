@@ -27,12 +27,17 @@ function sendMessage() {
 }
 
 function addMessageToChat(message) {
-    if (currentReceiver !== message.receiverUserName && currentReceiver !== message.senderUserName) 
-        return;
+    //    if (currentReceiver !== message.receiverUserName && currentReceiver !== message.senderUserName) 
+    //      return;
 
-    let senderName = message.receiverUserName === currentReceiver ? message.senderUserName : message.receiverUserName;
+    let senderName = message.receiverUserName === currentUserName ? message.senderUserName : message.receiverUserName;
     if (receiverInput.value !== senderName) {
-        $(".message-bar-elem").find(`[data-receiverusername='${senderName}']`)
+        let recMesBar = $(`.message-bar-elem[data-receiverusername='${senderName}']`);
+        $(recMesBar)
+            .css('order', `${maxOrder++}`)
+            .addClass('new-message');
+        $(".message-preview", recMesBar).html(message.text);
+        return;
     }
 
     let isCurrentUserMessage = message.senderUserName === currentUserName;
