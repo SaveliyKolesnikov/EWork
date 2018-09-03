@@ -23,6 +23,11 @@ namespace EWork.Services
         public Task<Message> FindAsync(Predicate<Message> predicate) => _repository.FindAsync(predicate);
 
         public IQueryable<Message> GetAll() => _repository.GetAll();
+        public IQueryable<Message> GetChatHistory(string username1, string username2) =>
+            GetAll().Where(m =>
+                m.Sender.UserName == username1 && m.Receiver.UserName == username2 ||
+                m.Sender.UserName == username2 && m.Receiver.UserName == username1);
+
 
         public Task UpdateAsync(Message item) => _repository.UpdateAsync(item);
     }
