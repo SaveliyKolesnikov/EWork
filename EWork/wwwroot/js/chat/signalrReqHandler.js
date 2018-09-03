@@ -1,5 +1,5 @@
 ﻿var connection = new signalR.HubConnectionBuilder()
-    .withUrl('/Home/Index')
+    .withUrl('/EWorkChat')
     .build();
 
 connection.on('receiveMessage', addMessageToChat);
@@ -10,5 +10,5 @@ connection.start()
     });
 
 function sendMessageToHub(message) {
-    connection.invoke('sendMessage', message);
+    connection.invoke('sendMessage', message.senderUserName, message.receiverUserName, message.text);
 }
