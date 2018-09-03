@@ -23,43 +23,48 @@
         <div class="col-xs-2 col-md-offset-1 col-md-3 message-bars-container">
             @if (!(Model.Receiver is null))
             {
-                <script>currentReceiver = '@Model.Receiver.UserName'</script>
-                <div class="message-bar-elem row" data-recieverusername="@Model.Receiver.UserName" style="order: 0;">
-                    <div class="row">
-                        <div class="col-xs-12 col-md-4 text-center">
-                            <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
-                        </div>
-                        <div class="col-md-8 visible-md visible-lg visible-sm">
-                            <div class="receiver-name">@Model.Receiver.FullName</div>
-                            @{
+            <script>currentReceiver = '@Model.Receiver.UserName'</script>
+            <div class="message-bar-elem row" data-recieverusername="@Model.Receiver.UserName" style="order: 0;">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 text-center">
+                        <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
+                    </div>
+                    <div class="col-md-8 visible-md visible-lg visible-sm">
+                        <div class="receiver-name">@Model.Receiver.FullName</div>
+                        @{
                                 var messagePreview =
                                     (await Model.Messages.FirstOrDefaultAsync(m => m.Sender.Id == Model.Receiver.Id || m.Receiver.Id == Model.Receiver.Id))?
                                         .Text ?? "";
-                            }
-                            <div class="message-preview">@messagePreview</div>
-                        </div>
+                        }
+                        <div class="message-preview">@messagePreview</div>
                     </div>
                 </div>
+            </div>
             }
+            @{var order = 0;}
             @foreach (var chat in Model.Messages.GroupBy(m => new { m.Sender, m.Receiver }))
             {
                 var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
                     chat.Key.Sender : chat.Key.Receiver;
-                <div class="message-bar-elem row" data-recieverusername="@receiver.UserName" style="order: 1;">
-                    <div class="row">
-                        <div class="col-xs-12 col-md-4 text-center">
-                            <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
-                        </div>
-                        <div class="col-md-8 visible-md visible-lg visible-sm">
-                            <div class="receiver-name">@receiver.FullName</div>
-                            @{
+
+            <div class="message-bar-elem row" data-recieverusername="@receiver.UserName" style="order: @order;">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 text-center">
+                        <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
+                    </div>
+                    <div class="col-md-8 visible-md visible-lg visible-sm">
+                        <div class="receiver-name">@receiver.FullName</div>
+                        @{
                                 var messagePreview = chat.LastOrDefault()?.Text ?? "";
-                            }
-                            <div class="message-preview">@messagePreview</div>
-                        </div>
+                        }
+                        <div class="message-preview">@messagePreview</div>
                     </div>
                 </div>
+            </div>
+
+                order++;
             }
+            <script>let maxOrder = @order;</script>
         </div>
         <div class="col-xs-10 col-md-7" style="background: aquamarine;" id="chat">
             <div id="chat-history">
