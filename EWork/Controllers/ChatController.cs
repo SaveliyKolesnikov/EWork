@@ -36,6 +36,7 @@ namespace EWork.Controllers
 
         public async Task<IActionResult> Index(string recieverUsername)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
             var reciever = string.IsNullOrWhiteSpace(recieverUsername) ?
                 null : await _userManager.FindByNameAsync(recieverUsername);
             var currentUserId = _userManager.GetUserId(User);
@@ -44,7 +45,7 @@ namespace EWork.Controllers
                 .OrderBy(m => m.SendDate);
             var pathToProfilePhotos = Path.Combine(_environment.ContentRootPath, _photoOptions.Value.UsersPhotosPath);
 
-            var chatViewModel = new ChatViewModel(messages, pathToProfilePhotos, reciever);
+            var chatViewModel = new ChatViewModel(currentUser, messages, pathToProfilePhotos, reciever);
             return View(chatViewModel);
         }
     }
