@@ -54,6 +54,7 @@ function addMessageToChat(message) {
             document.getElementById('message-bars-container').appendChild(newMessageBarElem);
 
             recMesBar = $(`.message-bar-elem[data-receiverusername='${senderName}']`);
+            $(recMesBar).click(getMessages);
         }
         $(recMesBar)
             .css('order', `${maxOrder++}`)
@@ -80,10 +81,12 @@ function addMessageToChat(message) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-$('.message-bar-elem').click(function () {
-    chat.innerHTML = '<div class="text-center">Downloading messages</div>';
+$('.message-bar-elem').click(getMessages);
+
+function getMessages() {
     if (!makeDialogActive(this))
         return;
+    chat.innerHTML = '<div class="text-center">Downloading messages</div>';
 
     let newReceiverUsername = receiverInput.value;
     let form = new FormData();
@@ -93,10 +96,10 @@ $('.message-bar-elem').click(function () {
     form.append('username2', currentUserName);
 
     fetch('/Chat/GetMessages', {
-        method: "POST",
-        credentials: 'include',
-        body: form
-    })
+            method: "POST",
+            credentials: 'include',
+            body: form
+        })
         .then(res => {
             res.json().then(messages => {
                 $(chat).empty();
@@ -105,13 +108,13 @@ $('.message-bar-elem').click(function () {
                 }
             });
         });
-});
+}
 
 function makeDialogActive(dialogElem) {
     if ($(dialogElem).hasClass('active'))
         return false;
 
-    $('.message-bar-elem.active').removeClass('active');
+    $('.message-bar-elem.active').removeClass('active').removeClass('new-message');
     $(dialogElem).addClass('active');
 
     receiverInput.value = $(dialogElem).data('receiverusername');
