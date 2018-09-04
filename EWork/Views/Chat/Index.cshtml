@@ -33,29 +33,35 @@
                         continue;
                     }
                     receiversIdsSet.Add(receiver.Id);
-                    
+
                     <div class="message-bar-elem row" data-receiverusername="@receiver.UserName" style="order: @order;">
                         <div class="row">
                             <div class="col-xs-12 col-md-4 text-center">
                                 <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
+                                <p class="visible-xs-inline-block visible-sm-inline-block text-center">@receiver.UserName</p>
                             </div>
-                            <div class="col-md-8 visible-md visible-lg visible-sm">
-                                <div class="receiver-name">@receiver.UserName</div>
+                            <div class="col-md-8 visible-md visible-lg">
+                                <div class="receiver-name margin-bottom-15">@receiver.UserName</div>
                                 @{
                                     var messagePreview = chat.LastOrDefault()?.Text ?? "";
+                                    const int maxMessageLength = 18;
+                                    if (messagePreview.Length > maxMessageLength)
+                                    {
+                                        messagePreview = messagePreview.Substring(0, maxMessageLength) + "...";
+                                    }
                                 }
                                 <div class="message-preview">@messagePreview</div>
                             </div>
                         </div>
                     </div>
 
-                    order++;
+                    order--;
                 }
                 if (!(Model.Receiver is null))
                 {
                     if (await dialogs.AllAsync(d => d.Key.Receiver.Id != Model.Receiver.Id && d.Key.Sender.Id != Model.Receiver.Id))
                     {
-                        <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: @(order++);">
+                        <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: @(order--);">
                             <div class="row">
                                 <div class="col-xs-12 col-md-4 text-center">
                                     <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />

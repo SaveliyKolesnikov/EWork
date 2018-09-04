@@ -1,10 +1,18 @@
-﻿.message-bar-elem:hover {
-    background: rgba(0, 0, 0, 0.3);
+﻿#message-bars-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 500px;
+}
+
+.message-bar-elem:hover {
+    background: rgba(0, 0, 0, 0.3) !important;
 }
 
 .message-bar-elem {
     padding: 0;
-    margin: 0;
+    margin: 5px 0;
 }
 
     .message-bar-elem.new-message {
@@ -26,13 +34,11 @@
 
     #chat > #chat-history {
         flex-grow: 5;
-        /*background: blue;*/
         height: 500px;
         overflow-y: auto;
     }
 
     #chat > #send-message-form {
-        /*background: red;*/
         flex-grow: 1;
     }
 
@@ -78,8 +84,3 @@
         float: left;
         color: #999;
     }
-
-#message-bars-container {
-    display: flex;
-    flex-direction: column-reverse;
-}
