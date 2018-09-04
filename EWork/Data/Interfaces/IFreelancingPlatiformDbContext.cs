@@ -11,6 +11,7 @@ namespace EWork.Data.Interfaces
         DbSet<Job> Jobs { get; set; }
         DbSet<Tag> Tags { get; set; }
         DbSet<Review> Reviews { get; set; }
+        DbSet<Message> Messages { get; set; }
         DbSet<Proposal> Proposals { get; set; }
         DbSet<Employer> Employers { get; set; }
         DbSet<Moderator> Moderators { get; set; }

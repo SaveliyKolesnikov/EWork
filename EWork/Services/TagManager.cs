@@ -34,7 +34,7 @@ namespace EWork.Services
             return commonTags.Union(newTagsFromBd);
         }
 
-        public async Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<Tag> inputTags) =>
-            await AddTagsRangeAsync(inputTags.Select(tag => tag.Text));
+        public Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<Tag> inputTags) =>
+            AddTagsRangeAsync(inputTags.Select(tag => tag.Text));
     }
 }

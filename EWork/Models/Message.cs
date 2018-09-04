@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EWork.Models
 {
@@ -7,12 +8,13 @@ namespace EWork.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(4096, MinimumLength = 1, ErrorMessage = "{0} length must be less then 4096")]
+        [StringLength(4096, MinimumLength = 1, ErrorMessage = "{0} length must be not empty and less then 4096")]
         public string Text { get; set; }
 
         public User Sender { get; set; }
 
         public User Receiver { get; set; }
 
+        public DateTime SendDate { get; set; }
     }
 }

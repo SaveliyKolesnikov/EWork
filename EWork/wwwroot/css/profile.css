@@ -11,6 +11,10 @@
     max-width: 200px;
 }
 
+.profile-photo-rounded {
+    border-radius: 50%;
+}
+
 .page-title,
 .page-subtitle {
     font-family: 'Poppins', sans-serif;

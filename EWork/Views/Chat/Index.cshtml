@@ -1,0 +1,116 @@
+﻿@using EWork.ViewModels
+@using Microsoft.EntityFrameworkCore
+@model EWork.ViewModels.ChatViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+@section Styles
+    {
+    <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/chat.css" rel="stylesheet" type="text/css" />
+    <link href="/css/profile.css" rel="stylesheet" type="text/css" />
+}
+<script>
+    let currentUserName = '@Model.CurrentUser.UserName';
+    let currentReceiver = '';
+</script>
+<div class="space-30"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-2 col-md-offset-1 col-md-3" id="message-bars-container">
+            @{
+                var dialogs = await Model.Messages.GroupBy(m => new { m.Sender, m.Receiver }).ToArrayAsync();
+
+                var order = 0;
+                var receiversIdsSet = new HashSet<string>();
+                foreach (var chat in dialogs.OrderBy(chat => chat.LastOrDefault()?.SendDate ?? DateTime.MinValue))
+                {
+                    var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
+                        chat.Key.Sender : chat.Key.Receiver;
+
+                    if (receiversIdsSet.Contains(receiver.Id))
+                    {
+                        continue;
+                    }
+                    receiversIdsSet.Add(receiver.Id);
+
+                    <div class="message-bar-elem row" data-receiverusername="@receiver.UserName" style="order: @order;">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-4 text-center">
+                                <img class="profile-photo profile-photo-rounded" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
+                                <p class="visible-xs-inline-block visible-sm-inline-block text-center">@receiver.UserName</p>
+                            </div>
+                            <div class="col-md-8 visible-md visible-lg dialog-info">
+                                <div class="receiver-name margin-bottom-5">@receiver.UserName</div>
+                                @{
+                                    var messagePreview = chat.LastOrDefault()?.Text ?? "";
+                                    const int maxMessageLength = 18;
+                                    if (messagePreview.Length > maxMessageLength)
+                                    {
+                                        messagePreview = messagePreview.Substring(0, maxMessageLength) + "...";
+                                    }
+                                }
+                                <div class="message-preview">@messagePreview</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    order--;
+                }
+                if (!(Model.Receiver is null))
+                {
+                    if (dialogs.All(d => d.Key.Receiver.Id != Model.Receiver.Id && d.Key.Sender.Id != Model.Receiver.Id))
+                    {
+                        <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: @(order--);">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-4 text-center">
+                                    <img class="profile-photo profile-photo-rounded" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
+                                </div>
+                                <div class="col-md-8 visible-md visible-lg visible-sm">
+                                    <div class="receiver-name">@Model.Receiver.UserName</div>
+                                    <div class="message-preview"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <script>let makeDialogActiveQuery = `.message-bar-elem[data-receiverusername="@Model.Receiver.UserName"]`;</script>
+                }
+
+                <script>let maxOrder = @order</script>
+            }
+        </div>
+        <div class="col-xs-10 col-md-7" id="chat">
+            <div id="chat-history">
+            </div>
+            <div id="send-message-form">
+                <form>
+                    <div class="row">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-10 form-group">
+                            <input name="Text" class="form-control" id="messageText" required="required" />
+                        </div>
+                        <div class="col-xs-2 form-group">
+                            <input type="submit" value="Send" id="submitMessageButton" class="btn btn-default" />
+                        </div>
+                    </div>
+                    <input type="hidden" value="@Model.CurrentUser.UserName" name="senderUserName" id="senderUserName" />
+                    <input type="hidden" value="@(Model.Receiver?.UserName ?? "")" name="receiverUserName" id="receiverUserName" />
+                    <input type="hidden" value="" name="sendDate" id="sendDate" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="AntiForgeryToken">
+    @Html.AntiForgeryToken()
+</div>
+@section Scripts{
+    <script src="/lib/signalr/signalr.min.js"></script>
+    <script src="/lib/dateFormatter.min.js"></script>
+    <script src="/js/chat/user.js"></script>
+    <script src="/js/chat/message.js"></script>
+    <script src="/js/chat/chat.js"></script>
+    <script src="/js/chat/signalrReqHandler.js"></script>
+}

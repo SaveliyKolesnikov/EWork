@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text.Encodings.Web;
@@ -33,7 +35,7 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
         private readonly IEmailSender _emailSender;
         private readonly IOptions<PhotoConfig> _photoConfig;
 
-        private string UsersPhotosPath => 
+        private string UsersPhotosPath =>
             Path.Combine(_env.ContentRootPath, _photoConfig.Value.UsersPhotosPath);
 
 
@@ -54,6 +56,9 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
         public string Username { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
+
+
+        public IEnumerable<string> AllowedExtensions => _photoConfig.Value.AllowedExtensions;
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -190,7 +195,7 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                     return await OnGetAsync();
                 }
 
-                var usersPhotosPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", 
+                var usersPhotosPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
                     "images", "UsersPhotos");
 
                 if (Directory.Exists(usersPhotosPath))
@@ -214,9 +219,51 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                     var newImageName = user.UserName + "_" + "profile_photo" + fileExtension;
                     var pathToNewImage = Path.Combine(usersPhotosPath, newImageName);
 
-                    using (var stream = System.IO.File.Create(pathToNewImage))
+
+
+                    using (var inputStream = new MemoryStream())
                     {
-                        await Input.UploadedImage.CopyToAsync(stream);
+                        await Input.UploadedImage.CopyToAsync(inputStream);
+                        using (var temp = new Bitmap(inputStream))
+                        {
+                            Image image = new Bitmap(temp);
+
+                            if (image.Width > image.Height)
+                            {
+                                var startX = (image.Width - image.Height) / 2;
+                                const int startY = 0;
+                                var sourceSize = image.Height;
+                                var res = CropImage(image, startX, startY, sourceSize, sourceSize, sourceSize, sourceSize);
+                                res.Save(pathToNewImage);
+                            }
+                            else if (image.Width < image.Height)
+                            {
+                                const int startX = 0;
+                                var startY = (image.Height - image.Width) / 2; 
+                                var sourceSize = image.Width;
+                                var res = CropImage(image, startX, startY, sourceSize, sourceSize, sourceSize, sourceSize);
+                                res.Save(pathToNewImage);
+                            }
+                            else
+                            {
+                                image.Save(pathToNewImage);
+                            }
+
+                            Image CropImage(Image sourceImage, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destinationWidth, int destinationHeight)
+                            {
+                                Image destinationImage = new Bitmap(destinationWidth, destinationHeight);
+                                var g = Graphics.FromImage(destinationImage);
+
+                                g.DrawImage(
+                                    sourceImage,
+                                    new Rectangle(0, 0, destinationWidth, destinationHeight),
+                                    new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
+                                    GraphicsUnit.Pixel
+                                );
+
+                                return destinationImage;
+                            }
+                        }
                     }
 
                     user.ProfilePhotoName = newImageName;
@@ -229,7 +276,7 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
             return RedirectToPage();
 
             double BytesToMegabytes(long bytes) =>
-                (double) bytes / 1_000_000;
+                (double)bytes / 1_000_000;
         }
 
         public async Task<IActionResult> OnPostSendVerificationEmailAsync()

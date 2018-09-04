@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using EWork.Data;
+using EWork.Hubs;
 using EWork.Models;
 using EWork.Services.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -47,6 +48,7 @@ namespace EWork
                 .AddDefaultUI();
 
             services.AddEWork();
+            services.AddSignalR(options => options.EnableDetailedErrors = true);
             services.AddMvc();
         }
 
@@ -68,6 +70,11 @@ namespace EWork
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+
+            app.UseSignalR(route =>
+            {
+                route.MapHub<ChatHub>("/EWorkChat");
+            });
 
             app.UseMvc(routes =>
             {
