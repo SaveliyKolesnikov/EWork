@@ -25,6 +25,7 @@ namespace EWork.Models
         [DataType(DataType.Currency)]
         public decimal Budget { get; set; }
 
+        public bool IsClosed { get; set; } = false;
         public bool IsPaymentDenied { get; set; } = false;
 
         [Required]
