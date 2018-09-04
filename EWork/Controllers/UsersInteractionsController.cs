@@ -33,8 +33,8 @@ namespace EWork.Controllers
                 return BadRequest();
 
             // TODO: Transfer money from platform balance to freelancer balance
-            await _freelancingPlatform.ProposalManager.DeleteRangeAsync(job.Proposals);
-            await _freelancingPlatform.JobManager.DeleteAsync(job);
+            job.IsClosed = true;
+            await _freelancingPlatform.JobManager.UpdateAsync(job);
 
             return RedirectToAction("JobBoard", "Job");
         }
@@ -76,9 +76,8 @@ namespace EWork.Controllers
                 return BadRequest();
 
             // TODO: Transfer money from platform balance to employer balance
-
-            await _freelancingPlatform.ProposalManager.DeleteRangeAsync(job.Proposals);
-            await _freelancingPlatform.JobManager.DeleteAsync(job);
+            job.IsClosed = true;
+            await _freelancingPlatform.JobManager.UpdateAsync(job);
             return RedirectToAction("JobBoard", "Job");
         }
 
