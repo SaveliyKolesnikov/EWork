@@ -26,7 +26,8 @@ namespace EWork.Services
         public IQueryable<Message> GetChatHistory(string username1, string username2) =>
             GetAll().Where(m =>
                 m.Sender.UserName == username1 && m.Receiver.UserName == username2 ||
-                m.Sender.UserName == username2 && m.Receiver.UserName == username1);
+                m.Sender.UserName == username2 && m.Receiver.UserName == username1)
+                .OrderBy(m => m.SendDate);
 
 
         public Task UpdateAsync(Message item) => _repository.UpdateAsync(item);
