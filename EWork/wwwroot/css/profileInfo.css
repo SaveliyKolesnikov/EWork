@@ -23,6 +23,8 @@
     width: 100%;
 }
 
+#addReviewButton,
+#editProfileButton,
 #sendMessageBtn {
     width: 53%;
     height: 35px;
