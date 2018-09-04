@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using EWork.Config;
 using EWork.Models;
 using EWork.Models.Json;
 using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 
 namespace EWork.Hubs
 {
@@ -18,12 +22,16 @@ namespace EWork.Hubs
     {
         private readonly UserManager<User> _userManager;
         private readonly IMessageManager _messageManager;
+        private readonly IHostingEnvironment _environment;
+        private readonly IOptions<PhotoConfig> _photoOptions;
         private static readonly ConcurrentDictionary<string, string> Connections = new ConcurrentDictionary<string, string>();
 
-        public ChatHub(UserManager<User> userManager, IMessageManager messageManager)
+        public ChatHub(UserManager<User> userManager, IMessageManager messageManager, IHostingEnvironment environment, IOptions<PhotoConfig> photoOptions)
         {
             _userManager = userManager;
             _messageManager = messageManager;
+            _environment = environment;
+            _photoOptions = photoOptions;
         }
 
         public override Task OnConnectedAsync()
@@ -61,12 +69,21 @@ namespace EWork.Hubs
 
             await _messageManager.AddAsync(new Message
             {
-                Receiver = receiver, Sender = sender, SendDate = message.SendDate, Text = message.Text
+                Receiver = receiver,
+                Sender = sender,
+                SendDate = message.SendDate,
+                Text = message.Text
             });
+
+            var pathToProfilePhotos = Path.Combine(_environment.ContentRootPath, _photoOptions.Value.UsersPhotosPath);
+            message.Sender.PhotoUrl = Path.Combine(pathToProfilePhotos, sender.ProfilePhotoName);
+            message.Receiver.PhotoUrl = Path.Combine(pathToProfilePhotos, receiver.ProfilePhotoName);
 
             var receiverId = Connections.GetValueOrDefault(message.Receiver.UserName);
             if (!(receiverId is null))
+            {
                 await Clients.Client(receiverId).SendAsync("receiveMessage", message);
+            }
             else
             {
                 // TODO: Notification
