@@ -5,7 +5,7 @@ const receiverInput = document.getElementById('receiverUserName');
 const chat = document.getElementById('chat-history');
 const messagesQueue = [];
 
-if (makeDialogActiveQuery !== undefined) {
+if (typeof makeDialogActiveQuery !== 'undefined') {
     makeDialogActive($(makeDialogActiveQuery));
 }
 
@@ -82,7 +82,9 @@ function addMessageToChat(message) {
 
 $('.message-bar-elem').click(function () {
     chat.innerHTML = '<div class="text-center">Downloading messages</div>';
-    makeDialogActive(this);
+    if (!makeDialogActive(this))
+        return;
+
     let newReceiverUsername = receiverInput.value;
     let form = new FormData();
     let token = $('input[name="__RequestVerificationToken"]', $('#AntiForgeryToken')).val();
@@ -96,7 +98,7 @@ $('.message-bar-elem').click(function () {
         body: form
     })
         .then(res => {
-            var messages = res.json().then(messages => {
+            res.json().then(messages => {
                 $(chat).empty();
                 for (let mes of messages) {
                     addMessageToChat(mes);
@@ -107,10 +109,12 @@ $('.message-bar-elem').click(function () {
 
 function makeDialogActive(dialogElem) {
     if ($(dialogElem).hasClass('active'))
-        return;
+        return false;
 
     $('.message-bar-elem.active').removeClass('active');
     $(dialogElem).addClass('active');
 
     receiverInput.value = $(dialogElem).data('receiverusername');
+
+    return true;
 }
