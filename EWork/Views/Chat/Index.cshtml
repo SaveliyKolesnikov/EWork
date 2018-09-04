@@ -41,7 +41,7 @@
                                 <p class="visible-xs-inline-block visible-sm-inline-block text-center">@receiver.UserName</p>
                             </div>
                             <div class="col-md-8 visible-md visible-lg dialog-info">
-                                <div class="receiver-name margin-bottom-5">@receiver.UserName</div>
+                                <div class="receiver-name">@receiver.UserName</div>
                                 @{
                                     var messagePreview = chat.LastOrDefault()?.Text ?? "";
                                     const int maxMessageLength = 18;
