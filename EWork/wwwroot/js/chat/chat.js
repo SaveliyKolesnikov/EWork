@@ -29,6 +29,9 @@ function sendMessage() {
         return;
 
     sendMessageToHub(message);
+    let senderName = message.receiver.userName === currentUserName ? message.sender.userName : message.receiver.userName;
+    let recMesBar = $(`.message-bar-elem[data-receiverusername='${senderName}']`);
+    $(recMesBar).css('order', `${maxOrder--}`);
 }
 
 function addMessageToChat(message) {
@@ -63,7 +66,7 @@ function addMessageToChat(message) {
             .css('order', `${maxOrder--}`)
             .addClass('new-message');
         return;
-    }
+    };
 
     let isCurrentUserMessage = message.sender.userName === currentUserName;
 
