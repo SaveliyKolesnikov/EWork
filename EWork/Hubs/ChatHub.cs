@@ -3,7 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using EWork.Config;
 using EWork.Models;
 using EWork.Models.Json;
@@ -61,6 +63,8 @@ namespace EWork.Hubs
             var receiver = await _userManager.FindByNameAsync(message.Receiver.UserName) ??
                            throw new ArgumentException($"User with user name {message.Receiver.UserName} doesn't exist");
 
+            message.Text = new Regex(@"&nbsp;?").Replace(message.Text, " ");
+            message.Text = HttpUtility.HtmlDecode(message.Text);
             if (string.IsNullOrWhiteSpace(message.Text))
                 throw new ArgumentNullException(nameof(message.Text));
 

@@ -5,8 +5,9 @@ const receiverInput = document.getElementById('receiverUserName');
 const chat = document.getElementById('chat-history');
 const messagesQueue = [];
 
+$('.message-bar-elem').click(getMessages);
 if (typeof makeDialogActiveQuery !== 'undefined') {
-    makeDialogActive($(makeDialogActiveQuery));
+    $(makeDialogActiveQuery).click();
 }
 
 document.getElementById('submitMessageButton').addEventListener('click', function (e) {
@@ -24,7 +25,7 @@ function clearInputField() {
 
 function sendMessage() {
     let message = messagesQueue.shift() || "";
-    if (message === "" || message.text.trim() === "")
+    if (message === "" || message.text.replace(/&nbsp;?/, "").trim() === "")
         return;
 
     sendMessageToHub(message);
@@ -35,21 +36,23 @@ function addMessageToChat(message) {
     //      return;
 
     let senderName = message.receiver.userName === currentUserName ? message.sender.userName : message.receiver.userName;
+    let recMesBar = $(`.message-bar-elem[data-receiverusername='${senderName}']`);
+    $(".message-preview", recMesBar).html(message.text);
     if (receiverInput.value !== senderName) {
-        let recMesBar = $(`.message-bar-elem[data-receiverusername='${senderName}']`);
         if (recMesBar.length === 0) {
             let newMessageBarElem = document.createElement('div');
-            newMessageBarElem.innerHTML = `<div class="message-bar-elem row" data-receiverusername="${senderName}">
-                                               <div class="row">
-                                                   <div class="col-xs-12 col-md-4 text-center">
-                                                       <img class="profile-photo" src="${message.sender.photoUrl}" alt="Profile photo" />
-                                                   </div>
-                                                   <div class="col-md-8 visible-md visible-lg visible-sm">
-                                                       <div class="receiver-name">${message.sender.userName}</div>
-                                                       <div class="message-preview">${message.text}</div>
-                                                   </div>
-                                               </div>
-                                           </div>`;
+            newMessageBarElem.className = "message-bar-elem row";
+            newMessageBarElem.dataset.receiverusername = senderName;
+            newMessageBarElem.innerHTML =
+                `<div class="row">` +
+                    `<div class="col-xs-12 col-md-4 text-center">` +
+                        `<img class="profile-photo" src="${message.sender.photoUrl}" alt="Profile photo" />` +
+                    `</div>` +
+                    `<div class="col-md-8 visible-md visible-lg visible-sm">` +
+                        `<div class="receiver-name">${message.sender.userName}</div>` +
+                        `<div class="message-preview">${message.text}</div>` +
+                    `</div>` +
+                `</div>`;
 
             document.getElementById('message-bars-container').appendChild(newMessageBarElem);
 
@@ -57,9 +60,8 @@ function addMessageToChat(message) {
             $(recMesBar).click(getMessages);
         }
         $(recMesBar)
-            .css('order', `${maxOrder++}`)
+            .css('order', `${maxOrder--}`)
             .addClass('new-message');
-        $(".message-preview", recMesBar).html(message.text);
         return;
     }
 
@@ -81,7 +83,6 @@ function addMessageToChat(message) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-$('.message-bar-elem').click(getMessages);
 
 function getMessages() {
     if (!makeDialogActive(this))
@@ -96,10 +97,10 @@ function getMessages() {
     form.append('username2', currentUserName);
 
     fetch('/Chat/GetMessages', {
-            method: "POST",
-            credentials: 'include',
-            body: form
-        })
+        method: "POST",
+        credentials: 'include',
+        body: form
+    })
         .then(res => {
             res.json().then(messages => {
                 $(chat).empty();
