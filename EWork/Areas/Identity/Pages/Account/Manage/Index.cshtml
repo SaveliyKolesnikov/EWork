@@ -49,7 +49,7 @@
         <div class="col-md-6">
             <div class="form-group text-center">
                 <img class="profile-photo" src="@Model.Input.ProfilePhotoName" alt="Profile photo" asp-append-version="true" />
-                <input type="file" asp-for="Input.UploadedImage"  style="margin: auto; margin-top: 20px;"/>
+                <input type="file" asp-for="Input.UploadedImage"  style="margin: auto; margin-top: 20px;" accept="@string.Join(",", Model.AllowedExtensions.Select(ext => $"image/{ext.Replace(".","")}"))"/>
             </div>
         </div>
     </form>
