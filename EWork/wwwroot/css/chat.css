@@ -3,8 +3,12 @@
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    height: 500px;
+    height: 534px;
     font-family: Helvetica, Arial, sans-serif;
+}
+
+.dialog-info {
+    margin-left: -10px;
 }
 
 .message-bar-elem:hover {
@@ -13,7 +17,7 @@
 }
 
 .message-bar-elem {
-    padding: 0;
+    padding: 10px;
     margin: 5px 0;
 }
 
