@@ -99,6 +99,10 @@ function getMessages() {
     form.append('username1', newReceiverUsername);
     form.append('username2', currentUserName);
 
+    let activeChat = $('.message-bar-elem.active');
+    if (typeof activeChat[0] !== 'undefined')
+        activeChat = activeChat[0];
+
     fetch('/Chat/GetMessages', {
         method: "POST",
         credentials: 'include',
@@ -106,9 +110,14 @@ function getMessages() {
     })
         .then(res => {
             res.json().then(messages => {
-                $(chat).empty();
-                for (let mes of messages) {
-                    addMessageToChat(mes);
+                let currentActiveChat = $('.message-bar-elem.active');
+                if (typeof currentActiveChat[0] !== 'undefined')
+                    currentActiveChat = currentActiveChat[0];
+                if (currentActiveChat === activeChat) {
+                    $(chat).empty();
+                    for (let mes of messages) {
+                        addMessageToChat(mes);
+                    }
                 }
             });
         });
