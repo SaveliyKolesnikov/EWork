@@ -14,6 +14,6 @@ namespace EWork.Models.Json
         }
 
         public string UserName { get; }
-        public string PhotoUrl { get; }
+        public string PhotoUrl { get; set; }
     }
 }
