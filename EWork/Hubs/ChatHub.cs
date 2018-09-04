@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Authentication;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -26,14 +27,20 @@ namespace EWork.Hubs
         private readonly IMessageManager _messageManager;
         private readonly IHostingEnvironment _environment;
         private readonly IOptions<PhotoConfig> _photoOptions;
+        private readonly INotificationManager _notificationManager;
         private static readonly ConcurrentDictionary<string, string> Connections = new ConcurrentDictionary<string, string>();
 
-        public ChatHub(UserManager<User> userManager, IMessageManager messageManager, IHostingEnvironment environment, IOptions<PhotoConfig> photoOptions)
+        public ChatHub(UserManager<User> userManager,
+            IMessageManager messageManager, 
+            IHostingEnvironment environment, 
+            IOptions<PhotoConfig> photoOptions,
+            INotificationManager notificationManager)
         {
             _userManager = userManager;
             _messageManager = messageManager;
             _environment = environment;
             _photoOptions = photoOptions;
+            _notificationManager = notificationManager;
         }
 
         public override Task OnConnectedAsync()
@@ -75,7 +82,7 @@ namespace EWork.Hubs
             {
                 Receiver = receiver,
                 Sender = sender,
-                SendDate = message.SendDate,
+                SendDate = DateTime.UtcNow,
                 Text = message.Text
             });
 
@@ -90,7 +97,15 @@ namespace EWork.Hubs
             }
             else
             {
-                // TODO: Notification
+                var notification = new Notification
+                {
+                    Receiver = receiver,
+                    Title = $"New message from {sender.FullName}({sender.UserName}).",
+                    Source = $"/Chat/Index?recieverUsername={sender.UserName}",
+                    CreatedDate = DateTime.UtcNow
+                };
+
+                await _notificationManager.AddNotificationAsync(notification, receiver);
             }
             await Clients.Caller.SendAsync("receiveMessage", message);
         }

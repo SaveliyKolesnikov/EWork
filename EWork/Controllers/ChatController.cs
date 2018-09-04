@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace EWork.Controllers
 {
@@ -60,7 +61,11 @@ namespace EWork.Controllers
             var chat = await _messageManager.GetChatHistory(username1, username2).ToArrayAsync();
             var jsonChat = _messageMapper.MapRange(chat);
 
-            return Json(jsonChat);
+            return Json(jsonChat, new JsonSerializerSettings
+            {
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            });
         }
     }
 }
