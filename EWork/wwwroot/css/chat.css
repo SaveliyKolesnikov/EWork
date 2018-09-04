@@ -34,9 +34,7 @@
         color: white;
     }
 
-.profile-photo {
-    border-radius: 50%;
-}
+
 
 #chat {
     display: flex;

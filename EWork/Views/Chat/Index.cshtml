@@ -37,7 +37,7 @@
                     <div class="message-bar-elem row" data-receiverusername="@receiver.UserName" style="order: @order;">
                         <div class="row">
                             <div class="col-xs-12 col-md-4 text-center">
-                                <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
+                                <img class="profile-photo profile-photo-rounded" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, receiver.ProfilePhotoName)" alt="Profile photo" />
                                 <p class="visible-xs-inline-block visible-sm-inline-block text-center">@receiver.UserName</p>
                             </div>
                             <div class="col-md-8 visible-md visible-lg dialog-info">
@@ -64,7 +64,7 @@
                         <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: @(order--);">
                             <div class="row">
                                 <div class="col-xs-12 col-md-4 text-center">
-                                    <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
+                                    <img class="profile-photo profile-photo-rounded" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, Model.Receiver.ProfilePhotoName)" alt="Profile photo" />
                                 </div>
                                 <div class="col-md-8 visible-md visible-lg visible-sm">
                                     <div class="receiver-name">@Model.Receiver.UserName</div>

@@ -49,7 +49,7 @@ function addMessageToChat(message) {
             newMessageBarElem.innerHTML =
                 `<div class="row">` +
                     `<div class="col-xs-12 col-md-4 text-center">` +
-                        `<img class="profile-photo" src="${message.sender.photoUrl}" alt="Profile photo" />` +
+                        `<img class="profile-photo profile-photo-rounded" src="${message.sender.photoUrl}" alt="Profile photo" />` +
                     `</div>` +
                     `<div class="col-md-8 visible-md visible-lg visible-sm">` +
                         `<div class="receiver-name">${message.sender.userName}</div>` +
