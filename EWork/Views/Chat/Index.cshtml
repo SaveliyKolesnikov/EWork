@@ -19,14 +19,21 @@
     <div class="row">
         <div class="col-xs-2 col-md-offset-1 col-md-3" id="message-bars-container">
             @{
-                var dialogs = await Model.Messages.GroupBy(m => new { m.Sender, m.Receiver }).ToArrayAsync();
+                var dialogs = Model.Messages.GroupBy(m => new { m.Sender, m.Receiver });
 
                 var order = 0;
+                var receiversIdsSet = new HashSet<string>();
                 foreach (var chat in dialogs)
                 {
                     var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
                         chat.Key.Sender : chat.Key.Receiver;
 
+                    if (receiversIdsSet.Contains(receiver.Id))
+                    {
+                        continue;
+                    }
+                    receiversIdsSet.Add(receiver.Id);
+                    
                     <div class="message-bar-elem row" data-receiverusername="@receiver.UserName" style="order: @order;">
                         <div class="row">
                             <div class="col-xs-12 col-md-4 text-center">
@@ -46,7 +53,7 @@
                 }
                 if (!(Model.Receiver is null))
                 {
-                    if (dialogs.All(d => d.Key.Receiver.Id != Model.Receiver.Id && d.Key.Sender.Id != Model.Receiver.Id))
+                    if (await dialogs.AllAsync(d => d.Key.Receiver.Id != Model.Receiver.Id && d.Key.Sender.Id != Model.Receiver.Id))
                     {
                         <div class="message-bar-elem row" data-receiverusername="@Model.Receiver.UserName" style="order: @(order++);">
                             <div class="row">
