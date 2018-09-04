@@ -17,7 +17,7 @@ namespace EWork.Models.Json
 
         public JsonUser Sender { get; }
         public JsonUser Receiver{ get; }
-        public string Text { get; }
+        public string Text { get; set; }
         public DateTime SendDate { get; }
     }
 }
