@@ -4,10 +4,12 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 500px;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 .message-bar-elem:hover {
     background: rgba(0, 0, 0, 0.3) !important;
+    color: black !important;
 }
 
 .message-bar-elem {
@@ -25,7 +27,12 @@
 
     .message-bar-elem.active {
         background: cornflowerblue;
+        color: white;
     }
+
+.profile-photo {
+    border-radius: 50%;
+}
 
 #chat {
     display: flex;
