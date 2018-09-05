@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Models;
@@ -19,15 +21,13 @@ namespace EWork.Controllers
     public class ProfileController : Controller
     {
         private readonly UserManager<User> _userManager;
-        private readonly IReviewManager _reviewManager;
-        private readonly IJobManager _jobManager;
+        private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly IOptions<PhotoConfig> _photoOptions;
 
-        public ProfileController(UserManager<User> userManager, IReviewManager reviewManager,IJobManager jobManager, IOptions<PhotoConfig> photoOptions)
+        public ProfileController(UserManager<User> userManager, IFreelancingPlatform freelancingPlatform, IOptions<PhotoConfig> photoOptions)
         {
             _userManager = userManager;
-            _reviewManager = reviewManager;
-            _jobManager = jobManager;
+            _freelancingPlatform = freelancingPlatform;
             _photoOptions = photoOptions;
         }
 
@@ -39,10 +39,64 @@ namespace EWork.Controllers
 
             var currentUser = await _userManager.GetUserAsync(User);
             var isCurrentUserCanAddReview =
-                await _jobManager.GetAll().AnyAsync(j => j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
-            user.Reviews = await _reviewManager.GetAll().Where(r => r.User.Id == user.Id).ToListAsync();
+                await IsUserCanAddReviewAsync(reviewedUser: user, senderOfReview: currentUser);
+                
+            user.Reviews = await _freelancingPlatform.ReviewManager.GetAll().Where(r => r.User.Id == user.Id).ToListAsync();
             var profileViewModel = new ProfileViewModel(user, currentUser, _photoOptions.Value.UsersPhotosPath, isCurrentUserCanAddReview);
             return View(profileViewModel);
         }
+
+        public async Task<IActionResult> AddReview(string nameOfReviewedUser, Review review)
+        {
+            if (nameOfReviewedUser is null)
+                throw new ArgumentNullException(nameof(nameOfReviewedUser));
+
+            if (review is null)
+                throw new ArgumentNullException(nameof(review));
+
+            var reviewedUser = await _userManager.FindByNameAsync(nameOfReviewedUser) ?? 
+                               throw new ArgumentException($"User with user name {nameOfReviewedUser} doesn't exist.");
+
+            var currentUser = await _userManager.GetUserAsync(User) ?? throw new AuthenticationException();
+            if (!await IsUserCanAddReviewAsync(reviewedUser: reviewedUser, senderOfReview: currentUser))
+                return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                review.SendDate = DateTime.Now;
+                review.User = reviewedUser;
+                review.Sender = currentUser;
+                await _freelancingPlatform.ReviewManager.AddAsync(review);
+
+                return RedirectToAction("Profile", new {username = nameOfReviewedUser});
+            }
+
+            var errors = new StringBuilder();
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    errors.AppendLine(error.ErrorMessage);
+                }
+            }
+            return Content(errors.ToString());
+        }
+
+        private async Task<bool> IsUserCanAddReviewAsync(User reviewedUser, User senderOfReview)
+        {
+            switch (reviewedUser)
+            {
+                case Employer _ when senderOfReview is Freelancer:
+                    return await _freelancingPlatform.JobManager.GetAll().AnyAsync(j =>
+                        j.IsClosed && j.Employer.Id == reviewedUser.Id && j.HiredFreelancer.Id == senderOfReview.Id);
+                case Freelancer _ when senderOfReview is Employer:
+                    return await _freelancingPlatform.JobManager.GetAll().AnyAsync(j =>
+                        j.IsClosed && j.Employer.Id == senderOfReview.Id && j.HiredFreelancer.Id == reviewedUser.Id);
+                default:
+                    return false;
+            }
+        }
+            
+
     }
 }
