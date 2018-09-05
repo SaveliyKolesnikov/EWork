@@ -25,10 +25,23 @@ namespace EWork.Data.Repositories
 
             try
             {
-                switch (review.Sender)
+                AttachUserToDbContext(review.User);
+                AttachUserToDbContext(review.Sender);
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            await _db.Reviews.AddAsync(review);
+            await _db.SaveChangesAsync();
+
+            void AttachUserToDbContext(User user)
+            {
+                switch (user)
                 {
                     case null:
-                        throw new ArgumentNullException(nameof(review.Sender));
+                        throw new ArgumentNullException(nameof(user));
                     case Employer employer:
                         _db.Employers.Attach(employer);
                         break;
@@ -40,13 +53,6 @@ namespace EWork.Data.Repositories
                         break;
                 }
             }
-            catch (InvalidOperationException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            await _db.Reviews.AddAsync(review);
-            await _db.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Review review)
