@@ -78,7 +78,16 @@ namespace EWork.Data.Repositories
             if (review is null)
                 throw new ArgumentNullException(nameof(review));
 
-            _db.Entry(review).State = EntityState.Modified;
+            try
+            {
+                _db.Entry(review).State = EntityState.Modified;
+            }
+            catch (InvalidOperationException e)
+            {
+                if (!e.Message.Contains("'Review' cannot be tracked"))
+                    throw;
+            }
+
             await _db.SaveChangesAsync();
         }
 
