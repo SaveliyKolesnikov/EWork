@@ -23,6 +23,7 @@ namespace EWork.ViewModels
         public User CurrentUser { get; }
         public string PathToProfilePhotos { get; }
         public bool IsCanAddReview { get; }
+        public Review Review { get; set; }
     }
 }
 

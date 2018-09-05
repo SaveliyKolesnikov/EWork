@@ -14,6 +14,7 @@
         hasReviewBeenSent = !(sendedReview is null);
         reviewMessage = (hasReviewBeenSent ? "Update" : "Send") + " Review";
     }
+    Model.Review = sendedReview;
 }
 
 @section Styles
@@ -67,30 +68,36 @@
                                     @if (hasReviewBeenSent)
                                     {
                                         <form asp-controller="Profile" asp-action="UpdateReview">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
                                             <div class="form-group">
-                                                <label for="message-text" class="col-form-label">Review:</label>
-                                                <textarea name="review.text" class="form-control" id="message-text" style="resize: none;">@(sendedReview?.Text ?? "")</textarea>
-                                                <div class="space-10"></div>
-                                                <label for="review-rate" class="col-form-label">Rate:</label>
-                                                <input id="review-rate" type="number" name="review.value" value="@(sendedReview?.Value ?? 0.1)" required="required" step="0.1" min="0.1" max="10" />
-                                                <input type="hidden" name="review.id" value="@sendedReview.Id" />
-                                                <input type="hidden" name="nameOfReviewedUser" value="@Model.ProfileOwner.UserName" />
-                                                <input id="submitReview" type="submit" style="display: none;" />
+                                                <label asp-for="Review.Text"></label>
+                                                <textarea asp-for="Review.Text" name="review.text" class="form-control" style="resize: none;"></textarea>
                                             </div>
+                                            <div class="space-10"></div>
+                                            <div class="form-group">
+                                                <label asp-for="Review.Value"></label>
+                                                <input asp-for="Review.Value" id="review-rate" type="number" name="review.value" required="required" step="0.1" min="0.1" max="10" />
+                                            </div>
+                                            <input type="hidden" name="review.id" value="@sendedReview.Id" />
+                                            <input type="hidden" name="nameOfReviewedUser" value="@Model.ProfileOwner.UserName" />
+                                            <input id="submitReview" type="submit" style="display: none;" />
                                         </form>
                                     }
                                     else
                                     {
                                         <form asp-controller="Profile" asp-action="AddReview">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
                                             <div class="form-group">
-                                                <label for="message-text" class="col-form-label">Review:</label>
-                                                <textarea name="review.text" class="form-control" id="message-text" style="resize: none;" required="required"></textarea>
-                                                <div class="space-10"></div>
-                                                <label for="review-rate" class="col-form-label">Rate:</label>
-                                                <input id="review-rate" type="number" name="review.value" value="" required="required" step="0.1" min="0.1" max="10" />
-                                                <input type="hidden" name="nameOfReviewedUser" value="@Model.ProfileOwner.UserName" />
-                                                <input id="submitReview" type="submit" style="display: none;" />
+                                                <label asp-for="Review.Text"></label>
+                                                <textarea asp-for="Review.Text" name="review.text" class="form-control" style="resize: none;"></textarea>
                                             </div>
+                                            <div class="space-10"></div>
+                                            <div class="form-group">
+                                                <label asp-for="Review.Value"></label>
+                                                <input asp-for="Review.Value" id="review-rate" type="number" name="review.value" required="required" step="0.1" min="0.1" max="10" />
+                                            </div>
+                                            <input type="hidden" name="nameOfReviewedUser" value="@Model.ProfileOwner.UserName" />
+                                            <input id="submitReview" type="submit" style="display: none;" />
                                         </form>
                                     }
                                 </div>
@@ -203,3 +210,7 @@
     </div>
 </div>
 
+@section Scripts
+    {
+    <partial name="_ValidationScriptsPartial" />
+}
