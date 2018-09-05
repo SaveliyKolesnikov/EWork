@@ -40,7 +40,7 @@ namespace EWork.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             var isCurrentUserCanAddReview =
                 await IsUserCanAddReviewAsync(reviewedUser: user, senderOfReview: currentUser);
-                
+
             user.Reviews = await _freelancingPlatform.ReviewManager.GetAll().Where(r => r.User.Id == user.Id).ToListAsync();
             var profileViewModel = new ProfileViewModel(user, currentUser, _photoOptions.Value.UsersPhotosPath, isCurrentUserCanAddReview);
             return View(profileViewModel);
@@ -54,7 +54,7 @@ namespace EWork.Controllers
             if (review is null)
                 throw new ArgumentNullException(nameof(review));
 
-            var reviewedUser = await _userManager.FindByNameAsync(nameOfReviewedUser) ?? 
+            var reviewedUser = await _userManager.FindByNameAsync(nameOfReviewedUser) ??
                                throw new ArgumentException($"User with user name {nameOfReviewedUser} doesn't exist.");
 
             var currentUser = await _userManager.GetUserAsync(User) ?? throw new AuthenticationException();
@@ -66,9 +66,52 @@ namespace EWork.Controllers
                 review.SendDate = DateTime.Now;
                 review.User = reviewedUser;
                 review.Sender = currentUser;
+
                 await _freelancingPlatform.ReviewManager.AddAsync(review);
 
-                return RedirectToAction("Profile", new {username = nameOfReviewedUser});
+                return RedirectToAction("Profile", new { username = nameOfReviewedUser });
+            }
+
+            var errors = new StringBuilder();
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    errors.AppendLine(error.ErrorMessage);
+                }
+            }
+            return Content(errors.ToString());
+        }
+
+        public async Task<IActionResult> UpdateReview(string nameOfReviewedUser, Review review)
+        {
+            if (nameOfReviewedUser is null)
+                throw new ArgumentNullException(nameof(nameOfReviewedUser));
+
+            if (review is null)
+                throw new ArgumentNullException(nameof(review));
+
+            if (ModelState.IsValid)
+            {
+                var reviewFromDb = await _freelancingPlatform.ReviewManager
+                .FindAsync(r => r.Id == review.Id) ??
+                      throw new ArgumentException($"User hasn't sent a review");
+
+                reviewFromDb.Text = review.Text;
+                reviewFromDb.Value = reviewFromDb.Value;
+
+                var reviewedUser = await _userManager.FindByNameAsync(nameOfReviewedUser) ??
+                                   throw new ArgumentException($"User with user name {nameOfReviewedUser} doesn't exist.");
+
+                var currentUser = await _userManager.GetUserAsync(User) ?? throw new AuthenticationException();
+                if (!await IsUserCanAddReviewAsync(reviewedUser: reviewedUser, senderOfReview: currentUser))
+                    return BadRequest();
+
+
+                review.SendDate = DateTime.Now;
+                await _freelancingPlatform.ReviewManager.UpdateAsync(review);
+
+                return RedirectToAction("Profile", new { username = nameOfReviewedUser });
             }
 
             var errors = new StringBuilder();
@@ -96,7 +139,7 @@ namespace EWork.Controllers
                     return false;
             }
         }
-            
+
 
     }
 }
