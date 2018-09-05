@@ -40,7 +40,7 @@ namespace EWork.Controllers
         {
             var jobs = _freelancingPlatform.JobManager.GetAll();
             if (User.IsInRole("freelancer"))
-                jobs = jobs.Where(j => j.HiredFreelancer == null);
+                jobs = jobs.Where(j => !j.IsClosed && j.HiredFreelancer == null);
 
             return View(jobs);
         }
@@ -75,7 +75,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
 
-            // TODO: Transfer money from employer balance to platform balance
+            // TODO: Transfer money from an employer balance to the platform balance
             job.Employer = currentUser;
             job.Proposals = new List<Proposal>();
             job.JobTags = new List<JobTags>();
@@ -122,7 +122,7 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => j.HiredFreelancer.Id == currentUser.Id);
+                .Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
 
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
@@ -136,7 +136,7 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => j.Employer.Id == currentUser.Id);
+                .Where(j => !j.IsClosed && j.Employer.Id == currentUser.Id);
 
             ViewData["Title"] = "Jobs";
             ViewBag.Heading = "Opened Jobs";
@@ -150,7 +150,7 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
+                .Where(j => !j.IsClosed && j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
 
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
@@ -158,9 +158,7 @@ namespace EWork.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        public IActionResult Error() => 
+            View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

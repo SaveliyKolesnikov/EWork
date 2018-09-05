@@ -2,9 +2,19 @@
 @model EWork.ViewModels.ProfileViewModel
 @inject UserManager<User> _userManager
 @{
-    var currentUser = Model.CurrentUser;
+    var profileOwner = Model.ProfileOwner;
     ViewData["Title"] = "Profile";
-    ViewBag.Heading = $"{currentUser.UserName}'s Profile";
+    ViewBag.Heading = $"{profileOwner.UserName}'s Profile";
+    var reviewMessage = string.Empty;
+    var hasReviewBeenSent = false;
+    Review sendedReview = null;
+    if (Model.IsCanAddReview)
+    {
+        sendedReview = Model.ProfileOwner.Reviews.FirstOrDefault(r => r.Sender.Id == Model.CurrentUser.Id);
+        hasReviewBeenSent = !(sendedReview is null);
+        reviewMessage = (hasReviewBeenSent ? "Update" : "Send") + " Review";
+    }
+    Model.Review = sendedReview;
 }
 
 @section Styles
@@ -17,6 +27,7 @@
 }
 
 <div class="container-fluid" id="profileInfoContainer">
+
     <div class="row">
         <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
     </div>
@@ -25,51 +36,113 @@
         <div class="col-xs-12 col-md-4">
             <div class="row ">
                 <div class="col-xs-12 text-center">
-                    <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, currentUser.ProfilePhotoName)" alt="Profile photo" />
+                    <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, profileOwner.ProfilePhotoName)" alt="Profile photo" />
                 </div>
                 <div class="space-10"></div>
                 <div class="justify-content-container">
-                    @if (_userManager.GetUserName(User) != currentUser.UserName)
+                    @if (_userManager.GetUserName(User) != profileOwner.UserName)
                     {
-                        <a asp-controller="Chat" asp-action="Index" asp-route-recieverUsername="@currentUser.UserName" title="Send Message" class="justify-content-container" style="width: 100%; text-decoration: none;">
-                            <button  class="button blue" id="sendMessageBtn">Send Message</button>
+                        <a asp-controller="Chat" asp-action="Index" asp-route-recieverUsername="@profileOwner.UserName" title="Send Message" class="justify-content-container" style="width: 100%; text-decoration: none;">
+                            <button class="button blue" id="sendMessageBtn">Send Message</button>
                         </a>
                     }
                     else
                     {
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage" class="justify-content-container" style="width: 100%; text-decoration: none;">
-                            <button class="button blue" id="sendMessageBtn">Edit Profile</button>
+                            <button class="button blue" id="editProfileButton">Edit Profile</button>
                         </a>
                     }
                 </div>
+                @if (Model.IsCanAddReview)
+                {
+                    <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reviewLabel">@reviewMessage</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    @if (hasReviewBeenSent)
+                                    {
+                                        <form asp-controller="Profile" asp-action="UpdateReview">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                            <div class="form-group">
+                                                <label asp-for="Review.Text"></label>
+                                                <textarea asp-for="Review.Text" name="review.text" class="form-control" style="resize: none;"></textarea>
+                                            </div>
+                                            <div class="space-10"></div>
+                                            <div class="form-group">
+                                                <label asp-for="Review.Value"></label>
+                                                <input asp-for="Review.Value" id="review-rate" type="number" name="review.value" required="required" step="0.1" min="0.1" max="10" />
+                                            </div>
+                                            <input type="hidden" name="review.id" value="@sendedReview.Id" />
+                                            <input type="hidden" name="nameOfReviewedUser" value="@Model.ProfileOwner.UserName" />
+                                            <input id="submitReview" type="submit" style="display: none;" />
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-controller="Profile" asp-action="AddReview">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                            <div class="form-group">
+                                                <label asp-for="Review.Text"></label>
+                                                <textarea asp-for="Review.Text" name="review.text" class="form-control" style="resize: none;"></textarea>
+                                            </div>
+                                            <div class="space-10"></div>
+                                            <div class="form-group">
+                                                <label asp-for="Review.Value"></label>
+                                                <input asp-for="Review.Value" id="review-rate" type="number" name="review.value" required="required" step="0.1" min="0.1" max="10" />
+                                            </div>
+                                            <input type="hidden" name="nameOfReviewedUser" value="@Model.ProfileOwner.UserName" />
+                                            <input id="submitReview" type="submit" style="display: none;" />
+                                        </form>
+                                    }
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onclick="document.getElementById('submitReview').click()">@reviewMessage</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-10"></div>
+
+                    <div class="justify-content-container">
+                        <button class="button blue" id="addReviewButton" data-toggle="modal" data-target="#reviewModal">@reviewMessage</button>
+                    </div>
+                }
                 <h4 class="text-center">
-                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@currentUser.UserName">
-                        @@@currentUser.UserName
+                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@profileOwner.UserName">
+                        @@@profileOwner.UserName
                     </a>
                 </h4>
-                <h4 class="text-center">@currentUser.FullName</h4>
+                <h4 class="text-center">@profileOwner.FullName</h4>
             </div>
         </div>
         <div class="col-xs-12 col-md-8">
             <div class="row">
-                <h2 class="user-fullname">@currentUser.FullName</h2>
-                <p class="user-role cyan-color text-capitalize">@currentUser.Role</p>
+                <h2 class="user-fullname">@profileOwner.FullName</h2>
+                <p class="user-role cyan-color text-capitalize">@profileOwner.Role</p>
                 <h3 class="">Overview</h3>
                 <div class="user-description">
-                    @currentUser.Description
+                    @profileOwner.Description
                 </div>
                 <div class="space-20"></div>
                 @{
                     var userRating = 0d;
                     try
                     {
-                        userRating = currentUser.Reviews.Average(r => r.Value);
+                        userRating = profileOwner.Reviews.Average(r => r.Value);
                     }
                     catch (InvalidOperationException)
                     {
                     }
                 }
-                <div class="user-rating"><span class="text-capitalize">@currentUser.Role's </span>rating: <span class="rating-value">@userRating</span></div>
+                <div class="user-rating"><span class="text-capitalize">@profileOwner.Role's </span>rating: <span class="rating-value">@userRating</span></div>
             </div>
         </div>
     </div>
@@ -80,7 +153,7 @@
     </div>
     <div id="refferences-container">
         @{var isFirstReference = true;}
-        @foreach (var review in currentUser.Reviews)
+        @foreach (var review in profileOwner.Reviews)
         {
             if (!isFirstReference)
             {
@@ -95,7 +168,7 @@
                     <div class="col-xs-12 col-md-4 profile-info padding-20">
                         <div class="row">
                             <div class="col-xs-12 text-center">
-                                <img class="profile-photo" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, review.Sender.ProfilePhotoName)" alt="Profile photo" />
+                                <img class="profile-photo profile-photo-rounded" src="@System.IO.Path.Combine(Model.PathToProfilePhotos, review.Sender.ProfilePhotoName)" alt="Profile photo" />
                             </div>
                         </div>
                         <div class="space-10"></div>
@@ -136,3 +209,8 @@
         }
     </div>
 </div>
+
+@section Scripts
+    {
+    <partial name="_ValidationScriptsPartial" />
+}

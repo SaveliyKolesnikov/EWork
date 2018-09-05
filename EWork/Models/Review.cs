@@ -10,13 +10,13 @@ namespace EWork.Models
     {
         public int Id { get; set; }
 
-        [Range(0d, 10d, ErrorMessage = "{0} must be in the range 0..10")]
+        [Range(0.1d, 10d, ErrorMessage = "{0} must be in the range 0,1..10")]
         [Display(Name = "Rating")]
         public double Value { get; set; }
 
         [Required]
-        [StringLength(20, MinimumLength = 1, ErrorMessage = "{0} length must be in the range 1..20")]
-        [Display(Name = "Tag text")]
+        [StringLength(4096, MinimumLength = 1, ErrorMessage = "{0} length must be in the range 1..4096")]
+        [Display(Name = "Review message")]
         public string Text { get; set; }
 
         public User User { get; set; }
