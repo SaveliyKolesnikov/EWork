@@ -98,7 +98,7 @@ namespace EWork.Controllers
                       throw new ArgumentException($"User hasn't sent a review");
 
                 reviewFromDb.Text = review.Text;
-                reviewFromDb.Value = reviewFromDb.Value;
+                reviewFromDb.Value = review.Value;
 
                 var reviewedUser = await _userManager.FindByNameAsync(nameOfReviewedUser) ??
                                    throw new ArgumentException($"User with user name {nameOfReviewedUser} doesn't exist.");
