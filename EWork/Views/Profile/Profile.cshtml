@@ -5,6 +5,15 @@
     var profileOwner = Model.ProfileOwner;
     ViewData["Title"] = "Profile";
     ViewBag.Heading = $"{profileOwner.UserName}'s Profile";
+    var reviewMessage = string.Empty;
+    var hasReviewBeenSent = false;
+    Review sendedReview = null;
+    if (Model.IsCanAddReview)
+    {
+        sendedReview = Model.ProfileOwner.Reviews.FirstOrDefault(r => r.Sender.Id == Model.CurrentUser.Id);
+        hasReviewBeenSent = !(sendedReview is null);
+        reviewMessage = (hasReviewBeenSent ? "Update" : "Send") + " Review";
+    }
 }
 
 @section Styles
@@ -17,6 +26,7 @@
 }
 
 <div class="container-fluid" id="profileInfoContainer">
+
     <div class="row">
         <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
     </div>
@@ -41,17 +51,56 @@
                             <button class="button blue" id="editProfileButton">Edit Profile</button>
                         </a>
                     }
-                    @if (Model.IsCanAddReview)
-                    {
-                        var buttonText = (Model.ProfileOwner.Reviews.Any(r => r.Sender.Id == Model.CurrentUser.Id) ?
-                            "Update" : "Add") + "a review";
-
-                        <a asp-controller="Profile" asp-action="SendReview" asp-route-profileUserName="@profileOwner.UserName" title="@buttonText" class="justify-content-container" style="width: 100%; text-decoration: none;">
-                            <button class="button blue" id="addReviewButton">@buttonText</button>
-                        </a>
-
-                    }
                 </div>
+                @if (Model.IsCanAddReview)
+                {
+                    <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reviewLabel">@reviewMessage</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    @if (hasReviewBeenSent)
+                                    {
+                                        <form asp-controller="Profile" asp-action="">
+                                            <div class="form-group">
+                                                <label for="message-text" class="col-form-label">Review:</label>
+                                                <textarea class="form-control" id="message-text" style="resize: none;">
+                                                    @(sendedReview?.Text ?? "")
+                                                </textarea>
+                                                <input id="submitReview" type="submit" style="display: none;" />
+                                            </div>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-controller="Profile" asp-action="">
+                                            <div class="form-group">
+                                                <label for="message-text" class="col-form-label">Review:</label>
+                                                <textarea class="form-control" id="message-text" style="resize: none;"></textarea>
+                                                <input id="submitReview" type="submit" style="display: none;" />
+                                            </div>
+                                        </form>
+                                    }
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onclick="document.getElementById('submitReview').click()">@reviewMessage</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-10"></div>
+
+                    <div class="justify-content-container">
+                        <button class="button blue" id="addReviewButton" data-toggle="modal" data-target="#reviewModal">@reviewMessage</button>
+                    </div>
+                }
                 <h4 class="text-center">
                     <a asp-controller="Profile" asp-action="Profile" asp-route-username="@profileOwner.UserName">
                         @@@profileOwner.UserName
@@ -146,3 +195,4 @@
         }
     </div>
 </div>
+
