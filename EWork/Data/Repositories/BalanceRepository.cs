@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Data.Repositories
 {
-    public class BalanceRepository : IRepository<Balance>
+    public class BalanceRepository : IBalanceRepository
     {
         private readonly IFreelancingPlatiformDbContext _db;
         private readonly UserManager<User> _userManager;
@@ -53,6 +53,16 @@ namespace EWork.Data.Repositories
         public async Task UpdateAsync(Balance balance)
         {
             _db.Entry(balance).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task UpdateRangeAsync(IEnumerable<Balance> items)
+        {
+            foreach (var balance in items)
+            {
+                _db.Entry(balance).State = EntityState.Modified;
+            }
+
             await _db.SaveChangesAsync();
         }
 
