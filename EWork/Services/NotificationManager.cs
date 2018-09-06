@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EWork.Data.Interfaces;
+using EWork.Hubs;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Services
@@ -14,23 +16,20 @@ namespace EWork.Services
     {
         private readonly IRepository<Notification> _repository;
         private readonly UserManager<User> _userManager;
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
 
-        public NotificationManager(IRepository<Notification> repository, UserManager<User> userManager)
+        public NotificationManager(IRepository<Notification> repository, UserManager<User> userManager, IHubContext<NotificationHub> notificationHubContext)
         {
             _repository = repository;
             _userManager = userManager;
+            _notificationHubContext = notificationHubContext;
         }
 
-        public async Task AddNotificationAsync(Notification notification, User user = null)
+        public async Task AddNotificationAsync(Notification notification)
         {
-            if (!(user?.Notifications is null) &&
-                user.Notifications.Any(n => n.Receiver.Id == notification.Receiver.Id &&
-                                            n.Source == notification.Source))
-            { 
-                return;
-            }
-
             await _repository.AddAsync(notification);
+            if (NotificationHub.UsersConnections.TryGetValue(notification.Receiver.UserName, out var id))
+                await _notificationHubContext.Clients.Client(id).SendAsync("NewNotification");
         }
 
         public async Task DeleteNotificationAsync(User user, Notification notification)
