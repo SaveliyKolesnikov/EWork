@@ -13,7 +13,6 @@
 
     var job = Model.Job;
     var modelProposal = Model.Proposal;
-    var isUserModer = User.IsInRole("moderator");
 }
 
 @section Styles
@@ -88,7 +87,6 @@
     {
         var hasProposalBeenSent = !(modelProposal is null);
 
-
         <div class="row">
             <div class="col-xs-12 col-md-offset-1 col-md-10">
                 <h2 class="additional-details">Additional details</h2>
@@ -104,38 +102,41 @@
                         <div class="space-10"></div>
                         <div class="row">
                             <div class="col-xs-12 col-md-offset-3 col-md-6">
-                                @if (job.IsPaymentDenied)
+                                @if (!job.IsClosed)
                                 {
-                                    <h3 class="text-center alert-danger">
-                                        @job.Employer.UserName wants to deny a job.
-                                    </h3>
+                                    if (job.IsPaymentDenied)
+                                    {
+                                        <h3 class="text-center alert-danger">
+                                            @job.Employer.UserName wants to deny a job.
+                                        </h3>
 
-                                    <div class="space-10"></div>
-                                    <div class="row">
-                                        <div class="col-xs-12 col-md-offset-1 col-md-5">
-                                            <form class="form-group" asp-controller="UsersInteractions" asp-action="AcceptDenying">
-                                                <input type="hidden" value="@job.Id" name="jobId" />
-                                                <input type="submit" class="button blue submit-input" value="Accept" />
-                                            </form>
+                                        <div class="space-10"></div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-offset-1 col-md-5">
+                                                <form class="form-group" asp-controller="UsersInteractions" asp-action="AcceptDenying">
+                                                    <input type="hidden" value="@job.Id" name="jobId" />
+                                                    <input type="submit" class="button blue submit-input" value="Accept" />
+                                                </form>
+                                            </div>
+                                            <div class="col-xs-12 col-md-5">
+                                                <form class="form-group" asp-controller="UsersInteractions" asp-action="RefuseDenying">
+                                                    <input type="hidden" value="@job.Id" name="jobId" />
+                                                    <input type="submit" class="button red submit-input" value="Refuse" />
+                                                </form>
+                                            </div>
                                         </div>
-                                        <div class="col-xs-12 col-md-5">
-                                            <form class="form-group" asp-controller="UsersInteractions" asp-action="RefuseDenying">
-                                                <input type="hidden" value="@job.Id" name="jobId" />
-                                                <input type="submit" class="button red submit-input" value="Refuse" />
-                                            </form>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <h3 class="text-center cyan-color">
-                                        You are hired on this job.
-                                    </h3>
+                                    }
+                                    else
+                                    {
+                                        <h3 class="text-center cyan-color">
+                                            You are hired on this job.
+                                        </h3>
+                                    }
                                 }
                             </div>
                         </div>
                     }
-                    else
+                    else if (!job.IsClosed)
                     {
                         <form class="form-group" asp-controller="Proposal" asp-action="UpdateProposal">
                             <input type="hidden" value="@modelProposal.Id" name="Proposal.Id" />
@@ -156,7 +157,7 @@
                     }
 
                 }
-                else
+                else if (!job.IsClosed)
                 {
                     <form class="form-group" asp-controller="Proposal" asp-action="CreateProposal">
                         <input type="hidden" value="@job.Id" name="JobId" />
@@ -181,7 +182,7 @@
     {
         var isFirstProposal = true;
         var isFreelancerHired = !(job.HiredFreelancer is null);
-        <div class="row">
+        <div class="row margin-bottom-20">
             <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@(isFreelancerHired ? "Accepted proposal" : "Proposals")</h2>
         </div>
         <div id="proposals-container">
@@ -205,7 +206,7 @@
                             </div>
                             <div class="space-10"></div>
                             <h4 class="text-center">
-                                <a asp-controller="Profile" asp-action="ProfileInfo" asp-route-id="@proposal.Sender.Id">
+                                <a asp-controller="Profile" asp-action="Profile" asp-route-id="@proposal.Sender.Id">
                                     @@@proposal.Sender.UserName
                                 </a>
                             </h4>
@@ -232,37 +233,49 @@
                                 }
                                 <div class="user-rating">Freelancer's rating: <span class="rating-value">@freelancerRating</span></div>
                             </div>
-                            <div class="row" style="margin-top: 50px;">
-                                @if (!isFreelancerHired)
-                                {
-                                    <div class="col-xs-12 col-md-offset-4 col-md-4">
-                                        <form asp-controller="Proposal" asp-action="AcceptProposal">
-                                            <input type="hidden" value="@job.Id" name="JobId" />
-                                            <input type="hidden" value="@proposal.Id" name="ProposalId" />
-                                            <input type="submit" class="button blue submit-input" value="Hire Now" />
-                                        </form>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-xs-12 col-md-offset-1 col-md-8">
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <form asp-controller="UsersInteractions" asp-action="ApproveJob">
-                                                    <input type="hidden" value="@job.Id" name="JobId" />
-                                                    <input type="submit" class="button blue submit-input" value="Approve" />
-                                                </form>
-                                            </div>
-                                            <div class="col-xs-6">
-                                                <form asp-controller="UsersInteractions" asp-action="DenyFreelancersWork">
-                                                    <input type="hidden" value="@job.Id" name="JobId" />
-                                                    <input type="submit" class="button red submit-input" value="Deny" />
-                                                </form>
-                                            </div>
+                            @if (!job.IsClosed)
+                            {
+                                <div class="row" style="margin-top: 50px;">
+                                    @if (!isFreelancerHired)
+                                    {
+                                        <div class="col-xs-12 col-md-offset-4 col-md-4">
+                                            <form asp-controller="Proposal" asp-action="AcceptProposal">
+                                                <input type="hidden" value="@job.Id" name="JobId" />
+                                                <input type="hidden" value="@proposal.Id" name="ProposalId" />
+                                                <input type="submit" class="button blue submit-input" value="Hire Now" />
+                                            </form>
                                         </div>
-                                    </div>
-                                }
-                            </div>
+                                    }
+                                    else
+                                    {
+                                        if (job.IsPaymentDenied)
+                                        {
+                                            <h2 class="text-center text-danger" style="margin-top: -50px;">
+                                                Cancel requested.
+                                            </h2>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-xs-12 col-md-offset-1 col-md-8">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <form asp-controller="UsersInteractions" asp-action="ApproveJob">
+                                                            <input type="hidden" value="@job.Id" name="JobId" />
+                                                            <input type="submit" class="button blue submit-input" value="Approve" />
+                                                        </form>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <form asp-controller="UsersInteractions" asp-action="DenyFreelancersWork">
+                                                            <input type="hidden" value="@job.Id" name="JobId" />
+                                                            <input type="submit" class="button red submit-input" value="Deny" />
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -325,10 +338,10 @@
                                 <div class="user-rating">Freelancer's rating: <span class="rating-value">@freelancerRating</span></div>
                             </div>
                             <div class="row" style="margin-top: 50px;">
-                                @if (job.IsPaymentDenied)
-                                {
-                                    <div class="col-xs-12 col-md-offset-1 col-md-8">
-                                        <div class="row">
+                                <div class="col-xs-12 col-md-offset-1 col-md-8">
+                                    <div class="row">
+                                        @if (!job.IsClosed && job.IsPaymentDenied)
+                                        {
                                             <div class="col-xs-6">
                                                 <form asp-controller="UsersInteractions" asp-action="ApproveJob">
                                                     <input type="hidden" value="@job.Id" name="JobId" />
@@ -341,14 +354,14 @@
                                                     <input type="submit" class="button blue submit-input" value="Do not pay" />
                                                 </form>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <h3 class="cyan-color">
-                                                <a>Chat history</a>
-                                            </h3>
-                                        </div>
+                                        }
                                     </div>
-                                }
+                                    <div class="row">
+                                        <h3 class="cyan-color text-center">
+                                            <a>Chat history</a>
+                                        </h3>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
