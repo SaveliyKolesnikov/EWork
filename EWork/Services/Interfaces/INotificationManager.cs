@@ -6,7 +6,7 @@ namespace EWork.Services.Interfaces
 {
     public interface INotificationManager : IRepository<Notification>
     {
-        Task AddNotificationAsync(Notification notification, User user = null);
+        Task AddNotificationAsync(Notification notification);
         Task DeleteNotificationAsync(User user, Notification notification);
     }
 }

@@ -105,7 +105,7 @@ namespace EWork.Hubs
                     CreatedDate = DateTime.UtcNow
                 };
 
-                await _notificationManager.AddNotificationAsync(notification, receiver);
+                await _notificationManager.AddNotificationAsync(notification);
             }
             await Clients.Caller.SendAsync("receiveMessage", message);
         }

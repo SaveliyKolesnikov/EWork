@@ -77,7 +77,7 @@ namespace EWork.Controllers
                 Title = $"{currentUser.UserName} wants to deny a job. Please follow the link and choose an action."
             };
 
-            await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification, job.HiredFreelancer);
+            await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification);
             return RedirectToAction("JobBoard", "Job");
         }
 
@@ -122,7 +122,7 @@ namespace EWork.Controllers
                 Title = $"{job.Employer} wants to deny a job. Please follow the link and choose an action."
             };
 
-            await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification, job.HiredFreelancer);
+            await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification);
             return RedirectToAction("JobBoard", "Job");
         }
     }
