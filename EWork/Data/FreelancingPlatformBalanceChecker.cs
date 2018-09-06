@@ -1,9 +1,7 @@
-﻿using System.Data.Common;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Data.Interfaces;
 using EWork.Exceptions;
-using EWork.Models;
 using Microsoft.Extensions.Options;
 
 namespace EWork.Data

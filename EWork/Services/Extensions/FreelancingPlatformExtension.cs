@@ -3,7 +3,6 @@ using EWork.Data.Interfaces;
 using EWork.Data.Repositories;
 using EWork.Models;
 using EWork.Services.Interfaces;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EWork.Services.Extensions

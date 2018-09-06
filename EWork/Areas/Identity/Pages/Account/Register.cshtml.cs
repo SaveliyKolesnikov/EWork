@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Text.Encodings.Web;

@@ -8,7 +8,6 @@ using EWork.Models;
 using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Services
 {
