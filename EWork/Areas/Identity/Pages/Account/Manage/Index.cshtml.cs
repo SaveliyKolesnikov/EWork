@@ -33,6 +33,7 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly IBalanceManager _balanceManager;
         private readonly IOptions<PhotoConfig> _photoConfig;
 
         private string UsersPhotosPath =>
@@ -44,12 +45,14 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailSender emailSender,
+            IBalanceManager balanceManager,
             IOptions<PhotoConfig> photoConfig)
         {
             _env = env;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _balanceManager = balanceManager;
             _photoConfig = photoConfig;
         }
 
@@ -82,6 +85,11 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
 
             public IFormFile UploadedImage { get; set; }
             public string ProfilePhotoName { get; set; }
+
+            [DataType(DataType.Currency)]
+            [Range(0, double.MaxValue)]
+            [Display(Name = "Amount of replenishment")]
+            public decimal AmountOfReplenishment { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -97,7 +105,6 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var description = user.Description;
-
             var profilePhotoName = user.ProfilePhotoName ?? _photoConfig.Value.DefaultPhoto;
             var profilePhotoUrl = Path.Combine(usersPhotosPath, profilePhotoName);
 
@@ -108,7 +115,8 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                 Email = email,
                 PhoneNumber = phoneNumber,
                 Description = description,
-                ProfilePhotoName = profilePhotoUrl
+                ProfilePhotoName = profilePhotoUrl,
+                AmountOfReplenishment = 0
             };
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
@@ -176,6 +184,12 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                     var userId = await _userManager.GetUserIdAsync(user);
                     throw new InvalidOperationException($"Unexpected error occurred setting user description for user with ID '{userId}'.");
                 }
+            }
+
+            var curUserBalance = await _balanceManager.FindAsync(b => b.UserId == user.Id);
+            if (Input.AmountOfReplenishment > 0)
+            {
+                await _balanceManager.ReplenishBalanceAsync(curUserBalance, Input.AmountOfReplenishment);
             }
 
             if (!(Input.UploadedImage is null || Input.UploadedImage.Length == 0))
@@ -310,3 +324,4 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
         }
     }
 }
+
