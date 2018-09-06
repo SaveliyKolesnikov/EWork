@@ -45,12 +45,11 @@ namespace EWork.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(); //TODO: Сделать возвращение JSON с сообщением об ошибке
 
-
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return BadRequest();
 
             var wantedJob = await _freelancingPlatform.JobManager.FindAsync(job => job.Id == jobId);
-            if (wantedJob is null ||
+            if (wantedJob is null || wantedJob.IsClosed ||
                 !(wantedJob.HiredFreelancer is null) ||
                 wantedJob.Proposals.Any(p => p.Sender.Id == currentUser.Id))
                 return BadRequest();
@@ -75,7 +74,7 @@ namespace EWork.Controllers
                 return await DeleteProposal(proposal.Id);
 
             var oldProposal = await _freelancingPlatform.ProposalManager.FindAsync(p => p.Id == proposal.Id);
-            if (oldProposal is null)
+            if (oldProposal is null || oldProposal.Job.IsClosed || oldProposal.Job.IsPaymentDenied)
                 return BadRequest();
 
             oldProposal.SendDate = DateTime.Now;
@@ -92,7 +91,7 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id));
+                .Where(j => j.Proposals.Any(p => !p.Job.IsClosed && p.Sender.Id == currentUser.Id));
 
             ViewData["Title"] = "Proposals";
             ViewBag.Heading = "Jobs with Your Proposal";
@@ -108,7 +107,8 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
-            if (job is null || !(job.HiredFreelancer is null) || job.Employer.Id != currentUser.Id)
+            if (job is null || !(job.HiredFreelancer is null) || job.Employer.Id != currentUser.Id ||
+                job.IsClosed || job.IsPaymentDenied)
                 return BadRequest();
 
             var proposal = job.Proposals.FirstOrDefault(p => p.Id == proposalId);

@@ -38,9 +38,9 @@ namespace EWork.Controllers
         [Authorize(Roles = "employer, freelancer, moderator")]
         public IActionResult JobBoard()
         {
-            var jobs = _freelancingPlatform.JobManager.GetAll();
+            var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
             if (User.IsInRole("freelancer"))
-                jobs = jobs.Where(j => !j.IsClosed && j.HiredFreelancer == null);
+                jobs = jobs.Where(j => j.HiredFreelancer == null);
 
             return View(jobs);
         }
@@ -50,7 +50,7 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteJob(int jobId)
         {
-            var deletedJob = await _freelancingPlatform.JobManager.FindAsync(job => job.Id == jobId);
+            var deletedJob = await _freelancingPlatform.JobManager.FindAsync(job => !job.IsClosed && job.Id == jobId);
             if (deletedJob is null)
                 return BadRequest();
 
@@ -83,7 +83,7 @@ namespace EWork.Controllers
 
             if (!(tags is null))
             {
-                var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(tags.Trim().Split(' '));
+                var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(tags.Trim().Split(' ').Where(tag => tag.Length <= 20));
                 foreach (var tag in newTags)
                     job.JobTags.Add(new JobTags { Tag = tag });
             }
@@ -100,10 +100,16 @@ namespace EWork.Controllers
             if (job is null)
                 return BadRequest();
 
+            if (job.IsClosed)
+                ViewBag.Heading = "Closed Job";
+
             Proposal proposal = null;
             User currentUser = null;
             if (User.IsInRole("freelancer"))
             {
+                if (!(job.HiredFreelancer is null) && job.HiredFreelancer.Id != _userManager.GetUserId(User))
+                    return BadRequest();
+
                 currentUser = await _userManager.GetUserAsync(User);
                 proposal = job.Proposals.Find(p => p.Sender.Id == currentUser.Id);
             }

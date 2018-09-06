@@ -29,13 +29,23 @@ namespace EWork.Controllers
         public async Task<IActionResult> ApproveJob(int jobId)
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
-            if (job?.HiredFreelancer is null)
+            if (job?.HiredFreelancer is null || job.IsClosed)
                 return BadRequest();
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            switch (currentUser)
+            {
+                case Moderator _ when !job.IsPaymentDenied:
+                    return BadRequest();
+                case Employer employer:
+                    if (employer.Id != job.Employer.Id)
+                        return BadRequest();
+                    break;
+            }
 
             // TODO: Transfer money from platform balance to freelancer balance
             job.IsClosed = true;
             await _freelancingPlatform.JobManager.UpdateAsync(job);
-
             return RedirectToAction("JobBoard", "Job");
         }
 
@@ -48,7 +58,7 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
-            if (job?.HiredFreelancer is null)
+            if (job?.HiredFreelancer is null || job.IsClosed)
                 return BadRequest();
 
             job.IsPaymentDenied = true;
@@ -72,7 +82,7 @@ namespace EWork.Controllers
         public async Task<IActionResult> AcceptDenying(int jobId)
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
-            if (job is null)
+            if (job is null || job.IsClosed || !job.IsPaymentDenied)
                 return BadRequest();
 
             // TODO: Transfer money from platform balance to employer balance
@@ -90,8 +100,9 @@ namespace EWork.Controllers
                 return BadRequest();
 
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
+            if (job is null || job.IsClosed || !job.IsPaymentDenied)
+                return BadRequest();
 
-            job.IsPaymentDenied = true;
             await _freelancingPlatform.JobManager.UpdateAsync(job);
             var notification = new Notification
             {
