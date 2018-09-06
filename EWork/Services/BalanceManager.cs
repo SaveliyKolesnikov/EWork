@@ -22,6 +22,8 @@ namespace EWork.Services
             _freelancingPlatformOptions = freelancingPlatformOptions;
         }
 
+        public Task<Balance> FindAsync(Predicate<Balance> predicate) => _repository.FindAsync(predicate);
+
         public Task<Balance> GetFreelancingPlatformBalanceAsync() =>
             _repository.FindAsync(b => b.Id == _freelancingPlatformOptions.Value.BalanceId);
 
