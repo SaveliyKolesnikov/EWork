@@ -12,6 +12,8 @@ namespace EWork.Services.Interfaces
 
         Task<Balance> GetFreelancingPlatformBalanceAsync();
 
+        Task<bool> ReplenishBalanceAsync(Balance balance, decimal amount);
+
         Task<bool> TransferMoneyAsync(Balance senderBalance, Balance recipientBalance, decimal amount);
     }
 }

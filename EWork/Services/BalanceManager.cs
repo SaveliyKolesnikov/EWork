@@ -27,6 +27,19 @@ namespace EWork.Services
         public Task<Balance> GetFreelancingPlatformBalanceAsync() =>
             _repository.FindAsync(b => b.Id == _freelancingPlatformOptions.Value.BalanceId);
 
+        public async Task<bool> ReplenishBalanceAsync(Balance balance, decimal amount)
+        {
+            if (amount < 0)
+                throw new ArgumentException("The amount of replenishment must be greater than 0", nameof(amount));
+
+            if (balance is null)
+                throw new ArgumentNullException(nameof(balance));
+
+            balance.Money += amount;
+            await _repository.UpdateAsync(balance);
+            return true;
+        }
+
         public async Task<bool> TransferMoneyAsync(Balance senderBalance, Balance recipientBalance, decimal amount)
         {
             if (senderBalance is null)
@@ -36,9 +49,9 @@ namespace EWork.Services
                 throw new ArgumentNullException(nameof(recipientBalance));
 
             if (amount <= 0)
-                throw new ArgumentException("Amount must be more than 0", nameof(amount));
+                throw new ArgumentException("The amount must be greater than 0", nameof(amount));
             if (senderBalance.Money < amount)
-                throw new NotEnoughMoneyException($"User {senderBalance.User.Name} hasn't got enough money for this operation");
+                throw new NotEnoughMoneyException($"The user {senderBalance.User.Name} hasn't got enough money for this operation");
 
             senderBalance.Money -= amount;
             recipientBalance.Money += amount;
