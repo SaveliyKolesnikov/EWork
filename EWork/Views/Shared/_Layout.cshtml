@@ -59,14 +59,9 @@
                         <li>
                             <a asp-area="" asp-controller="Notification" asp-action="UserNotificationsPage">
                                 Notifications:
-                                @if (numOfNotifications != 0)
-                                {
-                                    <span style="color: red;">@numOfNotifications</span>
-                                }
-                                else
-                                {
+                                <span id="numOfNotifications" style="color: @(numOfNotifications != 0 ? "red" : "inherit");">
                                     @numOfNotifications
-                                }
+                                </span>
                             </a>
                         </li>
                         <li><a>Balance: @((await FreelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id)).Money)$</a></li>
@@ -108,6 +103,9 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
+    <script src="/lib/signalr/signalr.min.js"></script>
+    <script src="/js/notification/notification.js"></script>
+    <script src="/js/notification/signalrReqHandler.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
