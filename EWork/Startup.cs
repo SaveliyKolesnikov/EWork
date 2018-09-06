@@ -31,6 +31,7 @@ namespace EWork
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.Configure<PhotoConfig>(Configuration.GetSection("Profile").GetSection("Photo"));
+            services.Configure<FreelancingPlatformConfig>(Configuration.GetSection("FreelancingPlatform"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(

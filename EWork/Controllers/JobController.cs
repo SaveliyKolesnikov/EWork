@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EWork.Config;
+using EWork.Exceptions;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using EWork.ViewModels;
@@ -75,7 +76,18 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
 
-            // TODO: Transfer money from an employer balance to the platform balance
+            var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
+            var curUserBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id);
+            try
+            {
+                await _freelancingPlatform.BalanceManager.TransferMoneyAsync(curUserBalance, platformBalance,
+                    job.Budget);
+            }
+            catch (NotEnoughMoneyException e)
+            {
+                return Content("Error!" + Environment.NewLine + e.Message);
+            }
+
             job.Employer = currentUser;
             job.Proposals = new List<Proposal>();
             job.JobTags = new List<JobTags>();
@@ -83,7 +95,8 @@ namespace EWork.Controllers
 
             if (!(tags is null))
             {
-                var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(tags.Trim().Split(' ').Where(tag => tag.Length <= 20));
+                var splittedTags = tags.Trim().Split(' ').Where(tag => tag.Length <= 20);
+                var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(splittedTags);
                 foreach (var tag in newTags)
                     job.JobTags.Add(new JobTags { Tag = tag });
             }

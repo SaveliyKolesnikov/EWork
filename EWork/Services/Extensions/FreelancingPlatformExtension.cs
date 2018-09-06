@@ -3,6 +3,7 @@ using EWork.Data.Interfaces;
 using EWork.Data.Repositories;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EWork.Services.Extensions
@@ -21,7 +22,10 @@ namespace EWork.Services.Extensions
                 .AddJobManager().AddProposalManager()
                 .AddModeratorManager().AddTagManager()
                 .AddNotificationManager().AddReviewManager()
-                .AddMessageManager();
+                .AddMessageManager().AddBalanceManager();
+
+        private static IServiceCollection AddBalanceManager(this IServiceCollection service) =>
+            service.AddScoped<IBalanceManager, BalanceManager>();
 
         private static IServiceCollection AddMessageManager(this IServiceCollection service) =>
             service.AddScoped<IMessageManager, MessageManager>();
@@ -49,8 +53,11 @@ namespace EWork.Services.Extensions
         #region Repositories
 
         private static IServiceCollection AddRepositories(this IServiceCollection service) =>
-            service.AddProposalRepository().AddNotificationRepository()
+            service.AddProposalRepository().AddNotificationRepository().AddBalanceRepository()
                 .AddJobRepository().AddReviewRepository().AddMessageRepository();
+
+        private static IServiceCollection AddBalanceRepository(this IServiceCollection service) =>
+            service.AddScoped<IBalanceRepository, BalanceRepository>();
 
         private static IServiceCollection AddProposalRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Proposal>, ProposalRepository>();

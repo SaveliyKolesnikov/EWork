@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+using EWork.Config;
 using EWork.Data;
+using EWork.Data.Interfaces;
+using EWork.Exceptions;
 using EWork.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace EWork
 {
@@ -29,6 +34,21 @@ namespace EWork
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred while seeding the database.");
+                }
+
+                try
+                {
+                    var repository = services.GetRequiredService<IBalanceRepository>();
+                    var freelancingPlatformOptions = services.GetRequiredService<IOptions<FreelancingPlatformConfig>>();
+                    var balanceChecker = new FreelancingPlatformBalanceChecker(repository, freelancingPlatformOptions);
+                    await balanceChecker.CheckAsync();
+                }
+                catch (DbNotInitializedBalanceException e)
+                {
+                    Console.WriteLine(e);
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(e, e.Message);
+                    ExceptionDispatchInfo.Capture(e).Throw();
                 }
             }
 

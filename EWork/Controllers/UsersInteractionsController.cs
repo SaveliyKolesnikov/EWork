@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EWork.Exceptions;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -43,7 +44,11 @@ namespace EWork.Controllers
                     break;
             }
 
-            // TODO: Transfer money from platform balance to freelancer balance
+            var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
+            var freelancerBalance =
+                await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == job.HiredFreelancer.Id);
+            await _freelancingPlatform.BalanceManager.TransferMoneyAsync(senderBalance: platformBalance,
+                recipientBalance: freelancerBalance, amount: job.Budget);
             job.IsClosed = true;
             await _freelancingPlatform.JobManager.UpdateAsync(job);
             return RedirectToAction("JobBoard", "Job");
@@ -85,7 +90,12 @@ namespace EWork.Controllers
             if (job is null || job.IsClosed || !job.IsPaymentDenied)
                 return BadRequest();
 
-            // TODO: Transfer money from platform balance to employer balance
+
+            var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
+            var employerBalance =
+                await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == job.Employer.Id);
+            await _freelancingPlatform.BalanceManager.TransferMoneyAsync(senderBalance: platformBalance,
+                recipientBalance: employerBalance, amount: job.Budget);
             job.IsClosed = true;
             await _freelancingPlatform.JobManager.UpdateAsync(job);
             return RedirectToAction("JobBoard", "Job");

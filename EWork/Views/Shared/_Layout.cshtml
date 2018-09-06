@@ -51,6 +51,7 @@
                             <li><a asp-area="" asp-controller="Proposal" asp-action="AllFreelancerProposals">My Proposals</a></li>
                         }
 
+
                         var currentUser = await UserManager.GetUserAsync(User);
                         var numOfNotifications =
                             await FreelancingPlatform.NotificationManager.GetAll().CountAsync(n => n.Receiver.Id == currentUser.Id);
@@ -68,6 +69,7 @@
                                 }
                             </a>
                         </li>
+                        <li><a>Balance: @((await FreelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id)).Money)$</a></li>
                     }
                 </ul>
                 <partial name="_LoginPartial" />
