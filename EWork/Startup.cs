@@ -74,7 +74,8 @@ namespace EWork
 
             app.UseSignalR(route =>
             {
-                route.MapHub<ChatHub>("/EWorkChat");
+                route.MapHub<ChatHub>("/Hubs/EWorkChat");
+                route.MapHub<NotificationHub>("/Hubs/Notification");
             });
 
             app.UseMvc(routes =>

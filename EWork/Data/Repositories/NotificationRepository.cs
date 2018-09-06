@@ -42,11 +42,14 @@ namespace EWork.Data.Repositories
                 Console.WriteLine(e.Message);
             }
 
-            if (await GetAll().AnyAsync(n => n.Receiver.Id == notification.Receiver.Id
-                                             && n.Source == notification.Source))
-            { 
-                return;
-            }
+            //var similarNotification = await _db.Notifications.Include(n => n.Receiver)
+            //    .FirstOrDefaultAsync(n => n.Receiver.Id == notification.Receiver.Id && n.Source == notification.Source);
+            //if (!(similarNotification is null))
+            //{ 
+            //    similarNotification.CreatedDate = DateTime.UtcNow;
+            //    await UpdateAsync(similarNotification);
+            //    return;
+            //}
 
             await _db.Notifications.AddAsync(notification);
             await _db.SaveChangesAsync();
@@ -76,8 +79,8 @@ namespace EWork.Data.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task<Notification> FindAsync(Predicate<Notification> predicate) =>
-            await GetAll().FirstOrDefaultAsync(notification => predicate(notification));
+        public Task<Notification> FindAsync(Predicate<Notification> predicate) =>
+            GetAll().FirstOrDefaultAsync(notification => predicate(notification));
 
         public IQueryable<Notification> GetAll() => _db.Notifications.ExtractAll();
     }
