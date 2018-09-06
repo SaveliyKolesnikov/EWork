@@ -15,6 +15,7 @@ namespace EWork.Hubs
     {
         private readonly UserManager<User> _userManager;
         private static readonly ConcurrentDictionary<string, string> Connections = new ConcurrentDictionary<string, string>();
+        public static IReadOnlyDictionary<string, string> UsersConnections => Connections;
 
         public NotificationHub(UserManager<User> userManager)
         {
