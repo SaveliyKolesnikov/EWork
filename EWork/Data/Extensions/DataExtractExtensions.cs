@@ -41,5 +41,8 @@ namespace EWork.Data.Extensions
 
         public static IQueryable<Message> ExtractAll(this DbSet<Message> dbSet) =>
             dbSet.Include(m => m.Receiver).Include(m => m.Sender);
+
+        public static IQueryable<Balance> ExtractAll(this DbSet<Balance> dbSet) =>
+            dbSet.Include(b => b.User).ThenInclude(u => u.Jobs);
     }
 }
