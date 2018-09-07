@@ -1,5 +1,5 @@
 ﻿var connection = new signalR.HubConnectionBuilder()
-    .withUrl('/EWorkChat')
+    .withUrl('/Hubs/EWorkChat')
     .build();
 
 connection.on('receiveMessage', addMessageToChat);

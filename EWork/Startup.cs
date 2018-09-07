@@ -10,7 +10,6 @@ using EWork.Models;
 using EWork.Services.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace EWork
 {
@@ -74,7 +73,8 @@ namespace EWork
 
             app.UseSignalR(route =>
             {
-                route.MapHub<ChatHub>("/EWorkChat");
+                route.MapHub<ChatHub>("/Hubs/EWorkChat");
+                route.MapHub<NotificationHub>("/Hubs/Notification");
             });
 
             app.UseMvc(routes =>
