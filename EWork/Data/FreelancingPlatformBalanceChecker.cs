@@ -2,16 +2,17 @@
 using EWork.Config;
 using EWork.Data.Interfaces;
 using EWork.Exceptions;
+using EWork.Services.Interfaces;
 using Microsoft.Extensions.Options;
 
 namespace EWork.Data
 {
     public class FreelancingPlatformBalanceChecker
     {
-        private readonly IBalanceRepository _repository;
+        private readonly IBalanceManager _repository;
         private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformOptions;
 
-        public FreelancingPlatformBalanceChecker(IBalanceRepository repository,
+        public FreelancingPlatformBalanceChecker(IBalanceManager repository,
             IOptions<FreelancingPlatformConfig> freelancingPlatformOptions)
         {
             _repository = repository;

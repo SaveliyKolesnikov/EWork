@@ -3,9 +3,9 @@ using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Data;
-using EWork.Data.Interfaces;
 using EWork.Exceptions;
 using EWork.Models;
+using EWork.Services.Interfaces;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -38,7 +38,7 @@ namespace EWork
 
                 try
                 {
-                    var repository = services.GetRequiredService<IBalanceRepository>();
+                    var repository = services.GetRequiredService<IBalanceManager>();
                     var freelancingPlatformOptions = services.GetRequiredService<IOptions<FreelancingPlatformConfig>>();
                     var balanceChecker = new FreelancingPlatformBalanceChecker(repository, freelancingPlatformOptions);
                     await balanceChecker.CheckAsync();
