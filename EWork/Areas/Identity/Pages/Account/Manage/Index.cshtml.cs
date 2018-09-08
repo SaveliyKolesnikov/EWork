@@ -33,10 +33,6 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
         private readonly IBalanceManager _balanceManager;
         private readonly IOptions<PhotoConfig> _photoConfig;
 
-        private string UsersPhotosPath =>
-            Path.Combine(_env.ContentRootPath, _photoConfig.Value.UsersPhotosPath);
-
-
         public IndexModel(
             IHostingEnvironment env,
             UserManager<User> userManager,
@@ -56,7 +52,6 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
         public string Username { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
-
 
         public IEnumerable<string> AllowedExtensions => _photoConfig.Value.AllowedExtensions;
 
@@ -211,26 +206,8 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
 
                 if (Directory.Exists(usersPhotosPath))
                 {
-                    var previousPhoto = user.ProfilePhotoName;
-                    if (!(previousPhoto is null) && previousPhoto != _photoConfig.Value.DefaultPhoto)
-                    {
-                        var previousPhotoPath = Path.Combine(usersPhotosPath, previousPhoto);
-
-                        try
-                        {
-                            System.IO.File.Delete(previousPhotoPath);
-                        }
-                        catch (IOException e)
-                        {
-                            Console.WriteLine(e.Message);
-                            ExceptionDispatchInfo.Capture(e).Throw();
-                        }
-                    }
-
                     var newImageName = user.UserName + "_" + "profile_photo" + fileExtension;
                     var pathToNewImage = Path.Combine(usersPhotosPath, newImageName);
-
-
 
                     using (var inputStream = new MemoryStream())
                     {
@@ -244,10 +221,29 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                             }
                             catch (ArgumentException)
                             {
-                                ModelState.AddModelError(string.Empty, $"The profile picture must be an image.");
+                                ModelState.AddModelError(string.Empty, "The profile picture must be an image.");
                                 return await OnGetAsync();
                             }
-                            
+
+                            #region DeleteOldProfilePhoto
+
+                            var previousPhoto = user.ProfilePhotoName;
+                            if (!(previousPhoto is null) && previousPhoto != _photoConfig.Value.DefaultPhoto)
+                            {
+                                var previousPhotoPath = Path.Combine(usersPhotosPath, previousPhoto);
+
+                                try
+                                {
+                                    System.IO.File.Delete(previousPhotoPath);
+                                }
+                                catch (IOException e)
+                                {
+                                    Console.WriteLine(e.Message);
+                                    ExceptionDispatchInfo.Capture(e).Throw();
+                                }
+                            }
+
+                            #endregion
 
                             if (image.Width > image.Height)
                             {
