@@ -2,9 +2,10 @@
 
 function newNotification() {
     let currentNum = parseInt(numOfNotifications.innerHTML);
-
-    if (currentNum === 0)
-        numOfNotifications.color = "red";
-
     numOfNotifications.innerHTML = ++currentNum;
+
+    const animationDuration = 250;
+    $(numOfNotifications).animate({
+        color: "white"
+    }, animationDuration, function () { $(this).animate({ color: "red" }, animationDuration); });
 }
