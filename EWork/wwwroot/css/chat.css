@@ -11,6 +11,10 @@
     margin-left: -10px;
 }
 
+.display-none {
+    display: none;
+}
+
 .message-bar-elem:hover {
     background: rgba(0, 0, 0, 0.3) !important;
     color: black !important;

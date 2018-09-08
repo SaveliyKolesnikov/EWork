@@ -129,7 +129,7 @@ function makeDialogActive(dialogElem) {
 
     $('.message-bar-elem.active').removeClass('active').removeClass('new-message');
     $(dialogElem).addClass('active');
-
+    $('#chatSendMessageForm').removeClass('display-none');
     receiverInput.value = $(dialogElem).data('receiverusername');
 
     return true;
