@@ -23,7 +23,7 @@
                 Send date
             </th>
             <th>
-                <a id="delete-all-notifications">Delete all</a>
+                <a id="delete-all-notifications" style="cursor: pointer;">Delete all</a>
             </th>
         </tr>
     </thead>
@@ -41,7 +41,7 @@
                     @Html.DisplayFor(modelItem => item.CreatedDate)
                 </td>
                 <td>
-                    <a class="delete-notification" data-notificationid="@item.Id">Delete</a>
+                    <a class="delete-notification" data-notificationid="@item.Id" style="cursor: pointer;">Delete</a>
                 </td>
             </tr>
         }
