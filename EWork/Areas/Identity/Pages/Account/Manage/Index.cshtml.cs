@@ -237,7 +237,17 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                         await Input.UploadedImage.CopyToAsync(inputStream);
                         using (var temp = new Bitmap(inputStream))
                         {
-                            Image image = new Bitmap(temp);
+                            Image image;
+                            try
+                            {
+                                image = new Bitmap(temp);
+                            }
+                            catch (ArgumentException)
+                            {
+                                ModelState.AddModelError(string.Empty, $"The profile picture must be an image.");
+                                return await OnGetAsync();
+                            }
+                            
 
                             if (image.Width > image.Height)
                             {
