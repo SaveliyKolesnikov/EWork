@@ -1,4 +1,4 @@
-﻿let token = $('input[name="__RequestVerificationToken"]', $('#antiForegeryToken')).val();
+﻿let token = $('input[name="__RequestVerificationToken"]', $('#antiForgeryToken')).val();
 function deleteNotificationPost() {
     let data = {
         'notificationId': $(this).data('notificationid'),
