@@ -28,7 +28,8 @@ namespace EWork
                 {
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    await RoleInitializer.InitializeAsync(userManager, rolesManager);
+                    var photoOptions = services.GetRequiredService<IOptions<PhotoConfig>>();
+                    await RoleInitializer.InitializeAsync(userManager, rolesManager, photoOptions);
                 }
                 catch (Exception ex)
                 {
