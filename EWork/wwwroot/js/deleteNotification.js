@@ -6,13 +6,15 @@ function deleteNotificationPost() {
     };
     let elem = this;
     $.post("/Notification/DeleteNotification",
-            data,
-            function () {
-                $(elem).parent().parent().fadeOut();
-            })
+        data,
+        function () {
+            $(elem).parent().parent().fadeOut();
+        })
         .fail(function () {
             alert("Can't delete a notification. Server error.");
         });
 }
 
 $(".delete-notification").click(deleteNotificationPost);
+$('#delete-all-notifications').click(() => $('.delete-notification')
+    .filter(() => $(this).parent().parent().css('display') !== 'none').click());
