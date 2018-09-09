@@ -37,13 +37,23 @@ namespace EWork.Controllers
         }
 
         [Authorize(Roles = "employer, freelancer, moderator")]
-        public IActionResult JobBoard()
+        public IActionResult JobBoard(string requiredTags)
         {
             var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
+            var usedTags = Enumerable.Empty<string>();
+            if (!(requiredTags is null))
+            {
+                // Tag length cannot be greater than 20.
+                var tags = usedTags = requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+                jobs = jobs.Where(j => j.JobTags.Any(jt =>
+                    tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
+            }
+
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
 
-            return View(jobs);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags);
+            return View(jobBoardViewModel);
         }
 
         [HttpPost]
