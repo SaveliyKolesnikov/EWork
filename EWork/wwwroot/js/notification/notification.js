@@ -1,6 +1,5 @@
-﻿const numOfNotifications = document.getElementById('numOfNotifications');
-
-function newNotification() {
+﻿function newNotification() {
+    let numOfNotifications = document.getElementById('numOfNotifications');
     let currentNum = parseInt(numOfNotifications.innerHTML);
     numOfNotifications.innerHTML = ++currentNum;
 

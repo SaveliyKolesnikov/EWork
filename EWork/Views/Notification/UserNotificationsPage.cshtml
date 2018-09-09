@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EWork.Models.Notification>
+﻿@model EWork.ViewModels.NotificationViewModel
 
 @{
     ViewData["Title"] = "Notifications";
@@ -7,6 +7,7 @@
 @section Styles {
     <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
     <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/button.css" rel="stylesheet" type="text/css" />
 }
 
 <h2 class="page-title">Your Notifications</h2>
@@ -14,7 +15,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th>
                 Source link
@@ -27,8 +28,8 @@
             </th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
+    <tbody id="notificationsTable">
+        @foreach (var item in Model.Notifications.Take(Model.TakeAmount))
         {
             <tr>
                 <td>
@@ -50,7 +51,16 @@
         </div>
     </tbody>
 </table>
+<div class="container-fluid">
+    <div class="row">
+        <div class="justify-content-container">
+            <button class="button blue" id="download-more-notifications">Load more</button>
+            <input type="hidden" name="notificationReceiver" value="@Model.CurrentUser.UserName"/>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script src="/js/deleteNotification.js"></script>
+    <script src="/js/notification/notificationAjax.js"></script>
 }

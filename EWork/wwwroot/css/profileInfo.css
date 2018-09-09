@@ -17,12 +17,6 @@
     line-height: 1.42857;
 }
 
-.justify-content-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
 #addReviewButton,
 #editProfileButton,
 #sendMessageBtn {
