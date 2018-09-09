@@ -22,7 +22,7 @@
 
                 var order = 0;
                 var receiversIdsSet = new HashSet<string>();
-                foreach (var chat in dialogs.OrderBy(chat => chat.LastOrDefault()?.SendDate ?? DateTime.MinValue))
+                foreach (var chat in dialogs.OrderByDescending(chat => chat.LastOrDefault()?.SendDate ?? DateTime.MinValue))
                 {
                     var receiver = chat.Key.Receiver.Id == Model.CurrentUser.Id ?
                         chat.Key.Sender : chat.Key.Receiver;
