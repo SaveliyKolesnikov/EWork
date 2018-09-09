@@ -8,7 +8,7 @@ namespace EWork.ViewModels
 {
     public class NotificationViewModel
     {
-        public NotificationViewModel(User currentUser, IEnumerable<Notification> notifications, int takeAmount = 5)
+        public NotificationViewModel(User currentUser, IQueryable<Notification> notifications, int takeAmount = 5)
         {
             CurrentUser = currentUser;
             Notifications = notifications;
@@ -16,7 +16,7 @@ namespace EWork.ViewModels
         }
 
         public User CurrentUser { get; }
-        public IEnumerable<Notification> Notifications { get; }
+        public IQueryable<Notification> Notifications { get; }
         public int TakeAmount { get; }
     }
 }
