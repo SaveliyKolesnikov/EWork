@@ -7,6 +7,7 @@
 @section Styles {
     <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
     <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/button.css" rel="stylesheet" type="text/css" />
 }
 
 <h2 class="page-title">Your Notifications</h2>
@@ -27,7 +28,7 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="notificationsTable">
         @foreach (var item in Model)
         {
             <tr>
@@ -50,7 +51,15 @@
         </div>
     </tbody>
 </table>
+<div class="container-fluid">
+    <div class="row">
+        <div class="justify-content-container">
+            <button class="button blue" id="download-more-notifications">Load more</button>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script src="/js/deleteNotification.js"></script>
+    <script src="/js/notification/notificationPage.js"></script>
 }
