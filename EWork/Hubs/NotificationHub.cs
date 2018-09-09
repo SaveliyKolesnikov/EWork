@@ -38,12 +38,5 @@ namespace EWork.Hubs
 
             return base.OnDisconnectedAsync(exception);
         }
-
-        public async Task SendNotificationAsync(Notification notification)
-        {
-            if (Connections.ContainsKey(notification.Receiver.UserName) && 
-                Connections.TryGetValue(notification.Receiver.UserName, out var id))
-                await Clients.Client(id).SendAsync("NewNotification");
-        }
     }
 }
