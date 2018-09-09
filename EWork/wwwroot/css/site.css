@@ -49,6 +49,21 @@ body {
     width: 100%;
 }
 
+.page-title,
+.page-subtitle {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    color: #61CFFF;
+}
+
+.page-title {
+    font-size: 5em;
+}
+
+.page-subtitle {
+    font-size: 4em;
+}
+
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */
