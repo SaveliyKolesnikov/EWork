@@ -89,7 +89,7 @@ namespace EWork.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required]
-            [Range(0, 1)]
+            [Range(0, 1, ErrorMessage = "An invalid role has been chosen.")]
             public UserStatus UserStatus { get; set; }
         }
 
@@ -101,7 +101,7 @@ namespace EWork.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                User user = null;
+                User user;
 
                 switch (Input.UserStatus)
                 {
@@ -111,10 +111,10 @@ namespace EWork.Areas.Identity.Pages.Account
                     case UserStatus.Employeer:
                         user = new Employer();
                         break;
+                    default:
+                        ModelState.AddModelError(null, "Choose your role.");
+                        return Page();
                 }
-
-                if (user is null)
-                    return Page();
 
                 user.Name = Input.Name;
                 user.Surname = Input.Surname;

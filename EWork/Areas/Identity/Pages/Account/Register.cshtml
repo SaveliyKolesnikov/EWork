@@ -42,10 +42,18 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="Input.UserStatus"></label>
                 <input asp-for="Input.UserStatus" class="form-control" />
                 <span asp-validation-for="Input.UserStatus" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <label asp-for="Input.UserStatus"></label>
+                <select class="form-control" asp-for="Input.UserStatus">
+                    <option disabled="disabled">Choose your role</option>
+                    <option value="0">Employer</option>
+                    <option value="1">Freelancer</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-default">Register</button>
         </form>
