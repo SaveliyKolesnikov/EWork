@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Job>
+﻿@model EWork.ViewModels.JobBoardViewModel
 
 @{
     if (ViewData["Title"] is null)
@@ -21,7 +21,7 @@
     <div class="row">
         <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
         <div class="col-xs-12 col-md-offset-2 col-md-8" id="jobs-container">
-            @foreach (var job in Model)
+            @foreach (var job in Model.Jobs)
             {
                 <div class="job-container">
                     <h4 class="job-title">
