@@ -3,7 +3,7 @@
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    height: 534px;
+    height: 74.6vh;
     font-family: Helvetica, Arial, sans-serif;
 }
 
@@ -47,7 +47,7 @@
 
     #chat > #chat-history {
         flex-grow: 5;
-        height: 500px;
+        height: 70vh;
         overflow-y: auto;
     }
 
@@ -57,7 +57,7 @@
 
     /* ---------------- */
     /* Chat containers */
-    #chat .container {
+    #chat #chat-history .container {
         border: 2px solid #dedede;
         background-color: #f1f1f1;
         border-radius: 5px;

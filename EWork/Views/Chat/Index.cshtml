@@ -81,16 +81,17 @@
         <div class="col-xs-10 col-md-7" id="chat">
             <div id="chat-history">
             </div>
+            <div class="space-20 visible-xs"></div>
             <div id="send-message-form">
                 <form id="chatSendMessageForm" class="display-none">
                     <div class="row">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-10 form-group">
+                        <div class="col-xs-9 col-md-10 form-group">
                             <input name="Text" class="form-control" id="messageText" required="required" />
                         </div>
-                        <div class="col-xs-2 form-group">
+                        <div class="col-xs-2 col-md-2 form-group">
                             <input type="submit" value="Send" id="submitMessageButton" class="btn btn-default" />
                         </div>
                     </div>
