@@ -70,4 +70,12 @@ body {
     .carousel-caption {
         display: none;
     }
+
+    .page-title {
+        font-size: 3em;
+    }
+
+    .page-subtitle {
+        font-size: 2em;
+    }
 }
