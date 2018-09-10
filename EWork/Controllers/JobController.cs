@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Exceptions;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using EWork.Services.Mappers.Interfaces;
 using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace EWork.Controllers
@@ -24,36 +27,62 @@ namespace EWork.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _environment;
         private readonly IOptions<PhotoConfig> _photoOptions;
+        private readonly IJobMapper _jobMapper;
 
-        public JobController(IFreelancingPlatform freelancingPlatform, 
+        public JobController(IFreelancingPlatform freelancingPlatform,
             UserManager<User> userManager,
             IHostingEnvironment environment,
-            IOptions<PhotoConfig> photoOptions)
+            IOptions<PhotoConfig> photoOptions,
+            IJobMapper jobMapper)
         {
             _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
             _environment = environment;
             _photoOptions = photoOptions;
+            _jobMapper = jobMapper;
         }
 
         [Authorize(Roles = "employer, freelancer, moderator")]
         public IActionResult JobBoard(string requiredTags)
         {
-            var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
-            var usedTags = Enumerable.Empty<string>();
-            if (!(requiredTags is null))
-            {
-                // Tag length cannot be greater than 20.
-                var tags = usedTags = requiredTags.Split(' ').Where(tag => tag.Length <= 20);
-                jobs = jobs.Where(j => j.JobTags.Any(jt =>
-                    tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
-            }
+            var jobs = GetJobs(requiredTags);
+            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
 
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags);
+            var searchUrl = Url.Action("JobBoard");
+            var ajaxSearchUrl = Url.Action("GetJobsAjax");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
             return View(jobBoardViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> GetJobsAjax(int skipAmount, int takeAmount, string requiredTags)
+        {
+            var jobs = GetJobs(requiredTags);
+
+            if (User.IsInRole("freelancer"))
+                jobs = jobs.Where(j => j.HiredFreelancer == null);
+
+            jobs = jobs.Skip(skipAmount).Take(takeAmount);
+
+            return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
+        }
+
+        private IQueryable<Job> GetJobs(string requiredTags)
+        {
+            var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
+            if (!(requiredTags is null))
+            {
+                // Tag length cannot be greater than 20.
+                var tags = requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+                jobs = jobs.Where(j => j.JobTags.Any(jt =>
+                    tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
+            }
+
+            return jobs;
         }
 
         [HttpPost]
@@ -142,52 +171,156 @@ namespace EWork.Controllers
             return View(jobInfoViewModel);
         }
 
-        
+
 
         [Authorize(Roles = "freelancer")]
-        public async Task<IActionResult> FreelancerContracts()
+        public async Task<IActionResult> FreelancerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return BadRequest();
 
-            var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
+            var jobs = GetJobs(requiredTags).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
 
+            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+
+
+            var searchUrl = Url.Action("FreelancerContracts");
+            var ajaxSearchUrl = Url.Action("FreelancerContractsAjax");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
-            return View("JobBoard", jobs);
+            return View("JobBoard", jobBoardViewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "freelancer")]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> FreelancerContractsAjax(int skipAmount, int takeAmount, string requiredTags)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { message = "Authorization error." });
+            }
+
+            var jobs = GetJobs(requiredTags).Where(j => j.HiredFreelancer.Id == currentUser.Id)
+                .Skip(skipAmount).Take(takeAmount);
+
+            return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
         [Authorize(Roles = "employer")]
-        public async Task<IActionResult> OpenedJobs()
+        public async Task<IActionResult> OpenedJobs(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
 
-            var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => !j.IsClosed && j.Employer.Id == currentUser.Id);
+            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id);
+
+            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+
+
+            var searchUrl = Url.Action("OpenedJobs");
+            var ajaxSearchUrl = Url.Action("OpenedJobsAjax");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
 
             ViewData["Title"] = "Jobs";
             ViewBag.Heading = "Opened Jobs";
-            return View("JobBoard", jobs);
+            return View("JobBoard", jobBoardViewModel);
         }
 
+        [HttpPost]
         [Authorize(Roles = "employer")]
-        public async Task<IActionResult> EmployerContracts()
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> OpenedJobsAjax(int skipAmount, int takeAmount, string requiredTags)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { message = "Authorization error." });
+            }
+
+            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id)
+                .Skip(skipAmount).Take(takeAmount);
+
+            return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
+        }
+
+
+
+        [Authorize(Roles = "employer")]
+        public async Task<IActionResult> EmployerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
 
-            var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => !j.IsClosed && j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
+            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
+
+            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+
+            var searchUrl = Url.Action("EmployerContracts");
+            var ajaxSearchUrl = Url.Action("EmployerContractsAjax");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
 
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
-            return View("JobBoard", jobs);
+            return View("JobBoard", jobBoardViewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "employer")]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> EmployerContractsAjax(int skipAmount, int takeAmount, string requiredTags)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { message = "Authorization error." });
+            }
+
+            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null)
+                .Skip(skipAmount).Take(takeAmount);
+
+            return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
+        }
+
+        [Authorize(Roles = "freelancer")]
+        public async Task<IActionResult> AllFreelancerProposals(string requiredTags)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
+                return BadRequest();
+
+            var jobs = GetJobs(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id));
+            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+
+
+            var searchUrl = Url.Action("AllFreelancerProposals");
+            var ajaxSearchUrl = Url.Action("AllFreelancerProposalsAjax");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
+            ViewData["Title"] = "Proposals";
+            ViewBag.Heading = "Jobs with Your Proposal";
+            return View("~/Views/Job/JobBoard.cshtml", jobBoardViewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "employer")]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> AllFreelancerProposalsAjax(int skipAmount, int takeAmount, string requiredTags)
+        {
+            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { message = "Authorization error." });
+            }
+
+            var jobs = GetJobs(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id))
+                .Skip(skipAmount).Take(takeAmount);
+
+            return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() => 
+        public IActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

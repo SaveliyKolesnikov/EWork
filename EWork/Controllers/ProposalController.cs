@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -84,19 +85,6 @@ namespace EWork.Controllers
             return RedirectToAction("JobBoard", "Job");
         }
 
-        [Authorize(Roles = "freelancer")]
-        public async Task<IActionResult> AllFreelancerProposals()
-        {
-            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
-                return BadRequest();
-
-            var jobs = _freelancingPlatform.JobManager.GetAll()
-                .Where(j => j.Proposals.Any(p => !p.Job.IsClosed && p.Sender.Id == currentUser.Id));
-
-            ViewData["Title"] = "Proposals";
-            ViewBag.Heading = "Jobs with Your Proposal";
-            return View("~/Views/Job/JobBoard.cshtml", jobs);
-        }
 
         [HttpPost]
         [Authorize(Roles = "employer")]

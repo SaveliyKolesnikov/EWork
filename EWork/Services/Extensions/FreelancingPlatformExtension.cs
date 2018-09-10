@@ -3,6 +3,8 @@ using EWork.Data.Interfaces;
 using EWork.Data.Repositories;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using EWork.Services.Mappers;
+using EWork.Services.Mappers.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EWork.Services.Extensions
@@ -10,7 +12,7 @@ namespace EWork.Services.Extensions
     public static class FreelancingPlatformExtension
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
-            service.AddFreelancingPlatformDbContext()
+            service.AddFreelancingPlatformDbContext().AddMappers()
                 .AddRepositories().AddModelManagers().AddMessageMapper()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
@@ -74,8 +76,18 @@ namespace EWork.Services.Extensions
             service.AddScoped<IRepository<Review>, ReviewRepository>();
         #endregion
 
+        #region Mappers
+
+        private static IServiceCollection AddMappers(this IServiceCollection service) =>
+            service.AddMessageMapper().AddJobMapper();
+
         private static IServiceCollection AddMessageMapper(this IServiceCollection service) =>
             service.AddSingleton<IMessageMapper, MessageMapper>();
+
+        private static IServiceCollection AddJobMapper(this IServiceCollection service) =>
+            service.AddSingleton<IJobMapper, JobMapper>();
+
+        #endregion
 
         private static IServiceCollection AddRandomStringGenerator(this IServiceCollection service) =>
             service.AddSingleton<IRandomStringGenerator, RandomStringGenerator>();
