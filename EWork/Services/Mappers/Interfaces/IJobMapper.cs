@@ -7,7 +7,7 @@ using EWork.Models.Json;
 
 namespace EWork.Services.Mappers.Interfaces
 {
-    interface IJobMapper
+    public interface IJobMapper
     {
         JsonJob Map(Job job);
         IEnumerable<JsonJob> MapRange(IEnumerable<Job> jobs);

@@ -13,11 +13,12 @@ namespace EWork.Services.Mappers
         public JsonJob Map(Job job) => 
             new JsonJob
             {
+                Id = job.Id,
                 Title = job.Title,
                 Description = job.Description,
                 Budget = job.Budget,
                 CreationDate = job.CreationDate,
-                Tags = string.Join(' ', job.JobTags.Select(jt => jt.Tag.Text)),
+                Tags = job.JobTags.Select(jt => jt.Tag.Text),
                 EmployerRating = job.Employer.Reviews.Count == 0 ? 0d : job.Employer.Reviews.Average(r => r.Value)
             };
 

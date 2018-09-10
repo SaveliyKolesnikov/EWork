@@ -8,6 +8,8 @@ namespace EWork.Models.Json
 {
     public class JsonJob
     {
+        public int Id { get; set; }
+
         [Required]
         [StringLength(50, MinimumLength = 6, ErrorMessage = "{0} length must be in the range 6..50")]
         [Display(Name = "Title")]
@@ -26,7 +28,7 @@ namespace EWork.Models.Json
         [DataType(DataType.DateTime)]
         public DateTime CreationDate { get; set; }
 
-        public string Tags { get; set; }
+        public IEnumerable<string> Tags { get; set; }
 
         public double EmployerRating { get; set; }
     }
