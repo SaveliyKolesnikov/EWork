@@ -26,7 +26,7 @@ namespace EWork.Models.Json
         [DataType(DataType.DateTime)]
         public DateTime CreationDate { get; set; }
 
-        public IEnumerable<string> Tags { get; set; }
+        public string Tags { get; set; }
 
         public double EmployerRating { get; set; }
     }
