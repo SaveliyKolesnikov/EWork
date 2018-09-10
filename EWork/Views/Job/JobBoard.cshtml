@@ -15,12 +15,13 @@
 @section Styles {
     <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
     <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/button.css" rel="stylesheet" type="text/css" />
 }
 
 <div class="container-fluid">
     <div class="row">
         <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
-        <form method="get" class="col-xs-12 col-md-offset-2 col-md-8" asp-controller="Job" asp-action="JobBoard" role="search">
+        <form method="get" class="col-xs-12 col-md-offset-2 col-md-8" action="@Model.SearchUrl" role="search">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Searching by tags" name="RequiredTags" id="SearchingByTags" value="@string.Join(" ", Model.UsedTags)">
                 <div class="input-group-btn">
@@ -31,7 +32,7 @@
             </div>
         </form>
         <div class="col-xs-12 col-md-offset-2 col-md-8" id="jobs-container">
-            @foreach (var job in Model.Jobs)
+            @foreach (var job in Model.Jobs.Take(Model.TakeAmount))
             {
                 <div class="job-container">
                     <h4 class="job-title">
@@ -52,7 +53,7 @@
                     <div class="job-tags">
                         @foreach (var tag in job.JobTags.Select(jt => jt.Tag))
                         {
-                            <div class="job-tag">@tag.Text</div>
+                            <div class="job-tag" data-searchurl="@Model.SearchUrl">@tag.Text</div>
                         }
                     </div>
                     <div class="space-20"></div>
@@ -72,9 +73,17 @@
         </div>
     </div>
 </div>
+<div class="space-20"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="justify-content-container">
+            <button class="button blue" id="download-more-notifications">Load more</button>
+        </div>
+    </div>
+</div>
 
 @section Scripts
-{
+    {
     <script type="text/javascript" src="/js/searchingByClickingOnTags.js"></script>
 }
 

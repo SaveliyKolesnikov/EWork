@@ -52,7 +52,8 @@ namespace EWork.Controllers
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
 
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags);
+            var searchUrl = Url.Action("JobBoard");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl);
             return View(jobBoardViewModel);
         }
 
@@ -145,7 +146,7 @@ namespace EWork.Controllers
         
 
         [Authorize(Roles = "freelancer")]
-        public async Task<IActionResult> FreelancerContracts()
+        public async Task<IActionResult> FreelancerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return BadRequest();
@@ -153,13 +154,24 @@ namespace EWork.Controllers
             var jobs = _freelancingPlatform.JobManager.GetAll()
                 .Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
 
+            var usedTags = Enumerable.Empty<string>();
+            if (!(requiredTags is null))
+            {
+                // Tag length cannot be greater than 20.
+                var tags = usedTags = requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+                jobs = jobs.Where(j => j.JobTags.Any(jt =>
+                    tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
+            }
+
+            var searchUrl = Url.Action("FreelancerContracts");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl);
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
-            return View("JobBoard", jobs);
+            return View("JobBoard", jobBoardViewModel);
         }
 
         [Authorize(Roles = "employer")]
-        public async Task<IActionResult> OpenedJobs()
+        public async Task<IActionResult> OpenedJobs(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
@@ -167,13 +179,25 @@ namespace EWork.Controllers
             var jobs = _freelancingPlatform.JobManager.GetAll()
                 .Where(j => !j.IsClosed && j.Employer.Id == currentUser.Id);
 
+            var usedTags = Enumerable.Empty<string>();
+            if (!(requiredTags is null))
+            {
+                // Tag length cannot be greater than 20.
+                var tags = usedTags = requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+                jobs = jobs.Where(j => j.JobTags.Any(jt =>
+                    tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
+            }
+
+            var searchUrl = Url.Action("OpenedJobs");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl);
+
             ViewData["Title"] = "Jobs";
             ViewBag.Heading = "Opened Jobs";
-            return View("JobBoard", jobs);
+            return View("JobBoard", jobBoardViewModel);
         }
 
         [Authorize(Roles = "employer")]
-        public async Task<IActionResult> EmployerContracts()
+        public async Task<IActionResult> EmployerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return BadRequest();
@@ -181,9 +205,21 @@ namespace EWork.Controllers
             var jobs = _freelancingPlatform.JobManager.GetAll()
                 .Where(j => !j.IsClosed && j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
 
+            var usedTags = Enumerable.Empty<string>();
+            if (!(requiredTags is null))
+            {
+                // Tag length cannot be greater than 20.
+                var tags = usedTags = requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+                jobs = jobs.Where(j => j.JobTags.Any(jt =>
+                    tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
+            }
+
+            var searchUrl = Url.Action("EmployerContracts");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl);
+
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
-            return View("JobBoard", jobs);
+            return View("JobBoard", jobBoardViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

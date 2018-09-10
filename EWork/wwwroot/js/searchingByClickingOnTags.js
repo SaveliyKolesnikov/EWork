@@ -1,6 +1,6 @@
-﻿$('.job-tag').click(function() { findJobsByTag(this.innerHTML) });
+﻿$('.job-tag').click(function() { findJobsByTag(this) });
 
-function findJobsByTag(tagValue = "") {
-    let url = `/Job/JobBoard?RequiredTags=${tagValue}`;
+function findJobsByTag(tagElem) {
+    let url = `${tagElem.dataset.searchurl}?RequiredTags=${tagElem.innerHTML}`;
     window.location.replace(url);
 }

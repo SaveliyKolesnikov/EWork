@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -85,17 +86,27 @@ namespace EWork.Controllers
         }
 
         [Authorize(Roles = "freelancer")]
-        public async Task<IActionResult> AllFreelancerProposals()
+        public async Task<IActionResult> AllFreelancerProposals(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return BadRequest();
 
             var jobs = _freelancingPlatform.JobManager.GetAll()
                 .Where(j => j.Proposals.Any(p => !p.Job.IsClosed && p.Sender.Id == currentUser.Id));
+            var usedTags = Enumerable.Empty<string>();
+            if (!(requiredTags is null))
+            {
+                // Tag length cannot be greater than 20.
+                var tags = usedTags = requiredTags.Split(' ').Where(tag => tag.Length <= 20);
+                jobs = jobs.Where(j => j.JobTags.Any(jt =>
+                    tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
+            }
 
+            var searchUrl = Url.Action("AllFreelancerProposals");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl);
             ViewData["Title"] = "Proposals";
             ViewBag.Heading = "Jobs with Your Proposal";
-            return View("~/Views/Job/JobBoard.cshtml", jobs);
+            return View("~/Views/Job/JobBoard.cshtml", jobBoardViewModel);
         }
 
         [HttpPost]
