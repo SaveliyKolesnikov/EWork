@@ -76,6 +76,7 @@
 <div id="antiForgeryToken">
     @Html.AntiForgeryToken()
 </div>
+<input type="hidden" name="getJobsAjaxMethodUrl" value="@Model.GetJobsAjaxMethodUrl" />
 <div class="space-20"></div>
 <div class="container-fluid">
     <div class="row">
@@ -87,7 +88,8 @@
 
 @section Scripts
     {
-    <script type="text/javascript" src="/js/searchingByClickingOnTags.js"></script>
+    <script type="text/javascript" src="/js/job/searchingByClickingOnTags.js"></script>
+    <script type="text/javascript" src="/js/job/ajaxJobDownload.js"></script>
 }
 
 @* Job template *@
