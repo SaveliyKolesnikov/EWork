@@ -38,18 +38,18 @@ namespace EWork.Controllers
             _messageMapper = messageMapper;
         }
 
-        public async Task<IActionResult> Index(string recieverUsername)
+        public async Task<IActionResult> Index(string receiverUsername)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var reciever = string.IsNullOrWhiteSpace(recieverUsername) ?
-                null : await _userManager.FindByNameAsync(recieverUsername);
+            var receiver = string.IsNullOrWhiteSpace(receiverUsername) ?
+                null : await _userManager.FindByNameAsync(receiverUsername);
             var currentUserId = _userManager.GetUserId(User);
             var messages = _messageManager.GetAll()
                 .Where(m => m.Receiver.Id == currentUserId || m.Sender.Id == currentUserId)
                 .OrderBy(m => m.SendDate);
             var pathToProfilePhotos = Path.Combine(_environment.ContentRootPath, _photoOptions.Value.UsersPhotosPath);
 
-            var chatViewModel = new ChatViewModel(currentUser, messages, pathToProfilePhotos, reciever);
+            var chatViewModel = new ChatViewModel(currentUser, messages, pathToProfilePhotos, receiver);
             return View(chatViewModel);
         }
 
