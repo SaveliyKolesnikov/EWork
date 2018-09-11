@@ -54,6 +54,14 @@ namespace EWork.Controllers
             return View(chatViewModel);
         }
 
+        [Authorize(Roles = "moderator, administrator")]
+        public IActionResult Dialog(string username1, string username2)
+        {
+            var chatHistory = _messageManager.GetChatHistory(username1, username2).OrderBy(m => m.SendDate);
+            return View(chatHistory);
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> GetMessages(string username1, string username2)
         {
@@ -65,7 +73,7 @@ namespace EWork.Controllers
                 return Json(new {message = "Authorization error."});
             }
 
-            var chat = await _messageManager.GetChatHistory(username1, username2).ToArrayAsync();
+            var chat = await _messageManager.GetChatHistory(username1, username2).OrderBy(m => m.SendDate).ToArrayAsync();
             var jsonChat = _messageMapper.MapRange(chat);
 
             return Json(jsonChat, new JsonSerializerSettings
