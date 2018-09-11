@@ -11,7 +11,7 @@
 }
 <script>
     let currentUserName = '@Model.CurrentUser.UserName';
-    let currentReceiver = '';
+    let currentReceiver = '@(Model.Receiver?.UserName ?? "")';
 </script>
 <div class="space-30"></div>
 <div class="container-fluid">
@@ -72,7 +72,6 @@
                             </div>
                         </div>
                     }
-                    <script>let makeDialogActiveQuery = `.message-bar-elem[data-receiverusername="@Model.Receiver.UserName"]`;</script>
                 }
 
                 <script>let maxOrder = @order</script>

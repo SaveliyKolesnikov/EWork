@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Models;
@@ -53,10 +54,26 @@ namespace EWork.Controllers
             return View(chatViewModel);
         }
 
+        [Authorize(Roles = "moderator, administrator")]
+        public IActionResult Dialog(string username1, string username2)
+        {
+            var chatHistory = _messageManager.GetChatHistory(username1, username2).OrderBy(m => m.SendDate);
+            return View(chatHistory);
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> GetMessages(string username1, string username2)
         {
-            var chat = await _messageManager.GetChatHistory(username1, username2).ToArrayAsync();
+            var currentUserName = _userManager.GetUserName(User);
+            if (!(currentUserName == username1 || currentUserName == username2 ||
+                User.IsInRole("moderator") || User.IsInRole("administrator")))
+            {
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new {message = "Authorization error."});
+            }
+
+            var chat = await _messageManager.GetChatHistory(username1, username2).OrderBy(m => m.SendDate).ToArrayAsync();
             var jsonChat = _messageMapper.MapRange(chat);
 
             return Json(jsonChat, new JsonSerializerSettings

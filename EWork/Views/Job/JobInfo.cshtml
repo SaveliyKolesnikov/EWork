@@ -206,7 +206,7 @@ else if (User.IsInRole("employer"))
                         </div>
                         <div class="space-10"></div>
                         <h4 class="text-center">
-                            <a asp-controller="Profile" asp-action="Profile" asp-route-id="@proposal.Sender.Id">
+                            <a asp-controller="Profile" asp-action="Profile" asp-route-username="@proposal.Sender.UserName">
                                 @@@proposal.Sender.UserName
                             </a>
                         </h4>
@@ -358,7 +358,7 @@ else if (User.IsInRole("moderator"))
                                 </div>
                                 <div class="row">
                                     <h3 class="cyan-color text-center">
-                                        <a>Chat history</a>
+                                        <a asp-controller="Chat" asp-action="Dialog" asp-route-username1="@Model.Job.Employer.UserName" asp-route-username2="@Model.Job.HiredFreelancer.UserName">Chat history</a>
                                     </h3>
                                 </div>
                             </div>

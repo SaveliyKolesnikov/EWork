@@ -6,9 +6,8 @@ const chat = document.getElementById('chat-history');
 const messagesQueue = [];
 
 $('.message-bar-elem').click(getMessages);
-if (typeof makeDialogActiveQuery !== 'undefined') {
-    $(makeDialogActiveQuery).click();
-}
+if (currentReceiver !== '')
+    $(`.message-bar-elem[data-receiverusername="${currentReceiver}`).click();
 
 document.getElementById('submitMessageButton').addEventListener('click', function (e) {
     e.preventDefault();

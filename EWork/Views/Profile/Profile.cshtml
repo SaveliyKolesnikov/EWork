@@ -42,7 +42,7 @@
                 <div class="justify-content-container">
                     @if (_userManager.GetUserName(User) != profileOwner.UserName)
                     {
-                        <a asp-controller="Chat" asp-action="Index" asp-route-recieverUsername="@profileOwner.UserName" title="Send Message" class="justify-content-container" style="width: 100%; text-decoration: none;">
+                        <a asp-controller="Chat" asp-action="Index" asp-route-receiverUsername="@profileOwner.UserName" title="Send Message" class="justify-content-container" style="width: 100%; text-decoration: none;">
                             <button class="button blue" id="sendMessageBtn">Send Message</button>
                         </a>
                     }
