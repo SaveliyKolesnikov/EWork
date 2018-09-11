@@ -1,0 +1,59 @@
+﻿@using System.IO
+@using Microsoft.EntityFrameworkCore
+@model IQueryable<Message>
+
+@{
+    ViewData["Title"] = "Dialog";
+}
+
+@section Styles
+    {
+    <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/chat.css" rel="stylesheet" type="text/css" />
+    <link href="/css/profile.css" rel="stylesheet" type="text/css" />
+}
+
+<h2 class="page-title text-center">Dialog</h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-md-offset-2 col-md-8" id="chat">
+            <div id="chat-history">
+                @{
+                    var messages = Model.OrderBy(m => m.SendDate);
+                    var lastMessage = await messages.LastOrDefaultAsync();
+                    if (!(lastMessage is null))
+                    {
+                        var user1 = lastMessage.Sender;
+                        var user2 = lastMessage.Receiver;
+                        foreach (var message in messages)
+                        {
+                            string containerClass, timePosition;
+                            if (user1.Id == message.Sender.Id)
+                            {
+                                containerClass = "container darker";
+                                timePosition = "time-left";
+                            }
+                            else if (user2.Id == message.Sender.Id)
+                            {
+                                containerClass = "container";
+                                timePosition = "time-right";
+                            }
+                            else
+                            {
+                                throw new InvalidDataException("More than 2 people in dialog.");
+                            }
+
+                            var sender = message.Sender.UserName;
+
+                            <div class="@containerClass">
+                                <a class="sender" style="cursor: pointer" asp-controller="Profile" asp-action="Profile" asp-route-username="@sender">@sender</a>
+                                <p>@message.Text</p>
+                                <span class="@timePosition">@message.SendDate.ToString("M/dd/yyyy hh:MM tt")</span>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
