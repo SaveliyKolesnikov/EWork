@@ -67,33 +67,33 @@
         font-family: "Open Sans", serif;
     }
 
-    #chat .sender {
+    #chat #chat-history .sender {
         font-size: 1.1em;
         font-weight: bold;
         font-family: "Open Sans", serif;
     }
 
     /* Darker chat container */
-    #chat .darker {
+    #chat #chat-history .darker {
         border-color: #ccc;
         background-color: #ddd;
     }
 
     /* Clear floats */
-    #chat .container::after {
+    #chat #chat-history .container::after {
         content: "";
         clear: both;
         display: table;
     }
 
     /* Style time text */
-    #chat .time-right {
+    #chat #chat-history .time-right {
         float: right;
         color: #aaa;
     }
 
     /* Style time text */
-    #chat .time-left {
+    #chat #chat-history .time-left {
         float: left;
         color: #999;
     }
