@@ -358,7 +358,7 @@ else if (User.IsInRole("moderator"))
                                 </div>
                                 <div class="row">
                                     <h3 class="cyan-color text-center">
-                                        <a>Chat history</a>
+                                        <a asp-controller="Chat" asp-action="Dialog" asp-route-username1="@Model.Job.Employer.UserName" asp-route-username2="@Model.Job.Employer.UserName">Chat history</a>
                                     </h3>
                                 </div>
                             </div>
