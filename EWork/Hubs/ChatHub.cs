@@ -99,7 +99,7 @@ namespace EWork.Hubs
                 {
                     Receiver = receiver,
                     Title = $"New message from {sender.FullName}({sender.UserName}).",
-                    Source = $"/Chat/Index?recieverUsername={sender.UserName}",
+                    Source = $"/Chat/Index?receiverUsername={sender.UserName}",
                     CreatedDate = DateTime.UtcNow
                 };
 
