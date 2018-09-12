@@ -1,0 +1,11 @@
+﻿<ul class="nav nav-pills nav-stacked">
+    @if (User.IsInRole("administrator"))
+    {
+        <li class="@AdminNavPages.IndexNavClass(ViewContext)"><a asp-action="AllJobs">Jobs</a></li>
+        <li class="@AdminNavPages.UsersNavClass(ViewContext)"><a asp-action="Users">Users</a></li>
+    }
+    @if (User.IsInRole("moderator") || User.IsInRole("administrator"))
+    {
+        <li class="@AdminNavPages.OpenedDisputesNavClass(ViewContext)"><a asp-action="OpenedDisputes">Opened Disputes</a></li>
+    }
+</ul>
