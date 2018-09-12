@@ -10,6 +10,7 @@ using EWork.Models;
 using EWork.Services.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace EWork
 {
@@ -29,8 +30,9 @@ namespace EWork
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.Configure<PhotoConfig>(Configuration.GetSection("Profile").GetSection("Photo"));
+            services.Configure<PhotoConfig>(Configuration.GetSection("Profile:Photo"));
             services.Configure<FreelancingPlatformConfig>(Configuration.GetSection("FreelancingPlatform"));
+            services.Configure<UsersConfig>(Configuration.GetSection("FreelancingPlatform:Users"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -81,7 +83,7 @@ namespace EWork
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=AllJobs}/{id?}");
             });
         }
     }
