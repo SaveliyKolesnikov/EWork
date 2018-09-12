@@ -69,7 +69,7 @@ namespace EWork.Controllers
             if (!(currentUserName == username1 || currentUserName == username2 ||
                 User.IsInRole("moderator") || User.IsInRole("administrator")))
             {
-                HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Json(new {message = "Authorization error."});
             }
 

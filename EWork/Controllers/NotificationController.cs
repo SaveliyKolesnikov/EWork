@@ -39,7 +39,7 @@ namespace EWork.Controllers
             var notification = await _freelancingPlatform.NotificationManager.FindAsync(n => n.Id == notificationId);
 
             if (notification is null)
-                return BadRequest();
+                return UnprocessableEntity(notificationId);
 
             await _freelancingPlatform.NotificationManager.DeleteNotificationAsync(user, notification);
             return Ok();
@@ -47,11 +47,11 @@ namespace EWork.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> GetNotifications(int skipAmount, int takeAmount, string receiverUserName)
+        public JsonResult GetNotifications(int skipAmount, int takeAmount, string receiverUserName)
         {
             if (_userManager.GetUserName(User) != receiverUserName)
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Json(new { message = "Authorization error." });
             }
 

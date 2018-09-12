@@ -33,7 +33,7 @@ namespace EWork.Controllers
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
-                return BadRequest();
+                return NotFound(username);
 
             var currentUser = await _userManager.GetUserAsync(User);
             var isCurrentUserCanAddReview =
@@ -57,7 +57,7 @@ namespace EWork.Controllers
 
             var currentUser = await _userManager.GetUserAsync(User) ?? throw new AuthenticationException();
             if (!await IsUserCanAddReviewAsync(reviewedUser: reviewedUser, senderOfReview: currentUser))
-                return BadRequest();
+                return Forbid();
 
             if (ModelState.IsValid)
             {
@@ -103,7 +103,7 @@ namespace EWork.Controllers
 
                 var currentUser = await _userManager.GetUserAsync(User) ?? throw new AuthenticationException();
                 if (!await IsUserCanAddReviewAsync(reviewedUser: reviewedUser, senderOfReview: currentUser))
-                    return BadRequest();
+                    return Forbid();
 
 
                 review.SendDate = DateTime.Now;
