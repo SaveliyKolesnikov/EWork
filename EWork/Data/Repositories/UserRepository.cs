@@ -44,6 +44,6 @@ namespace EWork.Data.Repositories
         public async Task<User> FindAsync(Predicate<User> predicate) =>
             await GetAll().FirstOrDefaultAsync(user => predicate(user));
 
-        public IQueryable<User> GetAll() => _db.Employers.ExtractAll().Union(_db.Freelancers.ExtractAll());
+        public IQueryable<User> GetAll() => _db.Users.ExtractAll();
     }
 }
