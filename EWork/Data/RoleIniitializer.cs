@@ -10,35 +10,55 @@ namespace EWork.Data
 {
     public class RoleInitializer
     {
-        public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IOptions<PhotoConfig> photoOptions)
+        public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
+            IOptions<PhotoConfig> photoOptions, IOptions<UsersConfig> usersOptions)
         {
-            const string moderatorEmail = "moderator@gmail.com";
-            const string username = "moderator";
-            const string password = "asdzxc";
-
+            await AddRoleAsync(roleManager, "administrator");
             await AddRoleAsync(roleManager, "moderator");
             await AddRoleAsync(roleManager, "employer");
             await AddRoleAsync(roleManager, "freelancer");
 
-            if (await userManager.FindByNameAsync(username) is null)
+            foreach (var moderatorData in usersOptions.Value.Moderators)
             {
                 var moderator = new Moderator
                 {
-                    Name = "Moderator",
-                    Surname = "Moderator",
-                    Email = moderatorEmail,
-                    UserName = username,
+                    Name = moderatorData.Name,
+                    Surname = moderatorData.Surname,
+                    Email = moderatorData.Email,
+                    UserName = moderatorData.UserName,
                     SingUpDate = DateTime.Now,
                     Balance = new Balance(),
-                    Jobs = new List<Job>(),
-                    Notifications = new List<Notification>(),
                     ProfilePhotoName = photoOptions.Value.DefaultPhoto
                 };
 
-                var result = await userManager.CreateAsync(moderator, password);
-                if (result.Succeeded)
+                await AddUserAsync(moderator, moderatorData.Password, moderator.Role);
+            }
+
+            foreach (var administratorData in usersOptions.Value.Administrators)
+            {
+                var administrator = new Administrator
                 {
-                    await userManager.AddToRoleAsync(moderator, "moderator");
+                    Name = administratorData.Name,
+                    Surname = administratorData.Surname,
+                    Email = administratorData.Email,
+                    UserName = administratorData.UserName,
+                    SingUpDate = DateTime.Now,
+                    Balance = new Balance(),
+                    ProfilePhotoName = photoOptions.Value.DefaultPhoto
+                };
+
+                await AddUserAsync(administrator, administratorData.Password, administrator.Role);
+            }
+            
+            async Task AddUserAsync(User user, string password, string role)
+            {
+                if (await userManager.FindByNameAsync(user.UserName) is null)
+                {
+                    var result = await userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(user, role);
+                    }
                 }
             }
         }
