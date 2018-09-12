@@ -1,8 +1,9 @@
-﻿@model IEnumerable<Job>
+﻿@model EWork.ViewModels.AdminPageViewModel<Job>
 
 @{
     ViewData["ActivePage"] = "AllJobs";
     ViewData["Title"] = "Job manager";
+    var jobs = Model.Items;
 }
 
 @functions {
@@ -41,13 +42,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
+                Id
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreationDate)
+                CreationDate
             </th>
             <th>
                 Employer
@@ -61,33 +62,33 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var job in jobs)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                    @Html.DisplayFor(modelItem => job.Id)
                 </td>
                 <td>
-                    <a asp-controller="Job" asp-action="JobInfo" asp-route-jobid="@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
+                    <a asp-controller="Job" asp-action="JobInfo" asp-route-jobid="@job.Id">@Html.DisplayFor(modelItem => job.Title)</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CreationDate)
+                    @Html.DisplayFor(modelItem => job.CreationDate)
                 </td>
                 <td>
-                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@item.Employer.UserName">@Html.DisplayFor(modelItem => item.Employer.UserName)</a>
-                    <rating>(Rating: @GetUserRating(item.Employer.Reviews))</rating>
+                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@job.Employer.UserName">@Html.DisplayFor(modelItem => job.Employer.UserName)</a>
+                    <rating>(Rating: @GetUserRating(job.Employer.Reviews))</rating>
                 </td>
                 <td>
-                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@(item.HiredFreelancer?.UserName ?? "")">
-                        @Html.DisplayFor(modelItem => item.HiredFreelancer.UserName)
+                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@(job.HiredFreelancer?.UserName ?? "")">
+                        @Html.DisplayFor(modelItem => job.HiredFreelancer.UserName)
                     </a>
-                    @if (!(item.HiredFreelancer is null))
+                    @if (!(job.HiredFreelancer is null))
                     {
-                        <rating>(Rating: @GetUserRating(item.HiredFreelancer?.Reviews))</rating>
+                        <rating>(Rating: @GetUserRating(job.HiredFreelancer?.Reviews))</rating>
                     }
                 </td>
                 <td>
-                    <a asp-controller="Job" asp-action="DeleteJob" asp-route-jobid="@item.Id">Delete</a>
+                    <a asp-controller="Job" asp-action="DeleteJob" asp-route-jobid="@job.Id">Delete</a>
                 </td>
             </tr>
         }
