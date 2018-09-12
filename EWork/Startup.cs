@@ -1,4 +1,6 @@
-﻿using EWork.Config;
+﻿using System.Collections.Generic;
+using System.IO;
+using EWork.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -25,18 +27,21 @@ namespace EWork
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.Configure<PhotoConfig>(Configuration.GetSection("Profile:Photo"));
-            services.Configure<FreelancingPlatformConfig>(Configuration.GetSection("FreelancingPlatform"));
-            services.Configure<UsersConfig>(Configuration.GetSection("FreelancingPlatform:Users"));
+
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.Configure<PhotoConfig>(Configuration.GetSection("Profile:Photo"));
+            services.Configure<FreelancingPlatformConfig>(Configuration.GetSection("FreelancingPlatform"));
+            services.Configure<UsersConfig>(Configuration.GetSection("FreelancingPlatform").GetSection("Users"));
 
             services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -83,7 +88,7 @@ namespace EWork
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=AllJobs}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
