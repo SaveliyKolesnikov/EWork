@@ -30,13 +30,9 @@ namespace EWork.Data.Extensions
                         .ThenInclude(jt => jt.Tag);
         }
 
-        public static IQueryable<User> ExtractAll(this DbSet<Employer> dbSet) =>
-            dbSet.Include(u => u.Reviews)
-                .Include(u => u.Balance);
+        public static IQueryable<User> ExtractAll(this DbSet<User> dbSet) =>
+            dbSet.Include(u => u.Reviews).Include(u => u.Balance);
 
-        public static IQueryable<User> ExtractAll(this DbSet<Freelancer> dbSet) =>
-            dbSet.Include(u => u.Reviews)
-                .Include(u => u.Balance);
 
         public static IQueryable<Review> ExtractAll(this DbSet<Review> dbSet) =>
             dbSet.Include(p => p.Sender).ThenInclude(s => s.Reviews);
