@@ -9,6 +9,7 @@ using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Controllers
 {
@@ -38,7 +39,7 @@ namespace EWork.Controllers
         }
 
         [Authorize(Roles = "administrator")]
-        public IActionResult Users(string searchString)
+        public async Task<IActionResult> Users(string searchString)
         {
             var users = _freelancingPlatform.UserExtractor.GetAll();
 
@@ -47,6 +48,11 @@ namespace EWork.Controllers
                 users = users.Where(u => u.UserName.StartsWith(searchString));
             }
 
+            foreach (var user in users)
+            {
+                user.Jobs = await _freelancingPlatform.JobManager.GetAll().Where(j =>
+                    !(j.IsClosed && j.IsPaymentDenied) && j.Employer.Id == user.Id || j.HiredFreelancer.Id == user.Id).ToListAsync();
+            }
             var adminPageViewModel = new AdminPageViewModel<User>(users, searchString);
             return View(adminPageViewModel);
         }
