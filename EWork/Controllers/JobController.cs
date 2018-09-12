@@ -45,7 +45,7 @@ namespace EWork.Controllers
         [Authorize(Roles = "employer, freelancer, moderator")]
         public IActionResult JobBoard(string requiredTags)
         {
-            var jobs = GetJobs(requiredTags);
+            var jobs = GetJobsByTags(requiredTags);
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
             if (User.IsInRole("freelancer"))
@@ -61,7 +61,7 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> GetJobsAjax(int skipAmount, int takeAmount, string requiredTags)
         {
-            var jobs = GetJobs(requiredTags);
+            var jobs = GetJobsByTags(requiredTags);
 
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
@@ -71,7 +71,7 @@ namespace EWork.Controllers
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
-        private IQueryable<Job> GetJobs(string requiredTags)
+        private IQueryable<Job> GetJobsByTags(string requiredTags)
         {
             var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
             if (!(requiredTags is null))
@@ -83,6 +83,20 @@ namespace EWork.Controllers
             }
 
             return jobs;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> GetJobsByTitleAjax(int skipAmount, int takeAmount, string title)
+        {
+            var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed && j.Title.StartsWith(title));
+
+            if (User.IsInRole("freelancer"))
+                jobs = jobs.Where(j => j.HiredFreelancer == null);
+
+            jobs = jobs.Skip(skipAmount).Take(takeAmount);
+
+            return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
         [HttpPost]
@@ -179,7 +193,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return Forbid();
 
-            var jobs = GetJobs(requiredTags).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
+            var jobs = GetJobsByTags(requiredTags).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
 
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
@@ -203,7 +217,7 @@ namespace EWork.Controllers
                 return Json(new { message = "Authorization error." });
             }
 
-            var jobs = GetJobs(requiredTags).Where(j => j.HiredFreelancer.Id == currentUser.Id)
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.HiredFreelancer.Id == currentUser.Id)
                 .Skip(skipAmount).Take(takeAmount);
 
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
@@ -215,7 +229,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Forbid();
 
-            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id);
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id);
 
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
@@ -240,7 +254,7 @@ namespace EWork.Controllers
                 return Json(new { message = "Authorization error." });
             }
 
-            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id)
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id)
                 .Skip(skipAmount).Take(takeAmount);
 
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
@@ -254,7 +268,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Forbid();
 
-            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
 
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
@@ -278,7 +292,7 @@ namespace EWork.Controllers
                 return Json(new { message = "Authorization error." });
             }
 
-            var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null)
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null)
                 .Skip(skipAmount).Take(takeAmount);
 
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
@@ -290,7 +304,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return Forbid();
 
-            var jobs = GetJobs(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id));
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id));
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
 
@@ -313,7 +327,7 @@ namespace EWork.Controllers
                 return Json(new { message = "Authorization error." });
             }
 
-            var jobs = GetJobs(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id))
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id))
                 .Skip(skipAmount).Take(takeAmount);
 
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
