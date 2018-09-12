@@ -92,11 +92,11 @@ namespace EWork.Controllers
         {
             var deletedJob = await _freelancingPlatform.JobManager.FindAsync(job => !job.IsClosed && job.Id == jobId);
             if (deletedJob is null)
-                return BadRequest();
+                return UnprocessableEntity(jobId);
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (deletedJob.Employer.Id != currentUser.Id)
-                return BadRequest();
+                return Forbid();
 
             await _freelancingPlatform.JobManager.DeleteAsync(deletedJob);
             return Ok();
@@ -110,10 +110,10 @@ namespace EWork.Controllers
         public async Task<IActionResult> CreateJob(Job job, string tags)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+                return UnprocessableEntity(ModelState);
 
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
             var curUserBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id);
@@ -134,8 +134,8 @@ namespace EWork.Controllers
 
             if (!(tags is null))
             {
-                var splittedTags = tags.Trim().Split(' ').Where(tag => tag.Length <= 20);
-                var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(splittedTags);
+                var splitTags = tags.Trim().Split(' ').Where(tag => tag.Length <= 20);
+                var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(splitTags);
                 foreach (var tag in newTags)
                     job.JobTags.Add(new JobTags { Tag = tag });
             }
@@ -150,7 +150,7 @@ namespace EWork.Controllers
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job is null)
-                return BadRequest();
+                return UnprocessableEntity(jobId);
 
             if (job.IsClosed)
                 ViewBag.Heading = "Closed Job";
@@ -160,7 +160,7 @@ namespace EWork.Controllers
             if (User.IsInRole("freelancer"))
             {
                 if (!(job.HiredFreelancer is null) && job.HiredFreelancer.Id != _userManager.GetUserId(User))
-                    return BadRequest();
+                    return Forbid();
 
                 currentUser = await _userManager.GetUserAsync(User);
                 proposal = job.Proposals.Find(p => p.Sender.Id == currentUser.Id);
@@ -177,7 +177,7 @@ namespace EWork.Controllers
         public async Task<IActionResult> FreelancerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var jobs = GetJobs(requiredTags).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
 
@@ -199,7 +199,7 @@ namespace EWork.Controllers
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Json(new { message = "Authorization error." });
             }
 
@@ -213,7 +213,7 @@ namespace EWork.Controllers
         public async Task<IActionResult> OpenedJobs(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id);
 
@@ -236,7 +236,7 @@ namespace EWork.Controllers
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Json(new { message = "Authorization error." });
             }
 
@@ -252,7 +252,7 @@ namespace EWork.Controllers
         public async Task<IActionResult> EmployerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var jobs = GetJobs(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
 
@@ -274,7 +274,7 @@ namespace EWork.Controllers
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Json(new { message = "Authorization error." });
             }
 
@@ -288,7 +288,7 @@ namespace EWork.Controllers
         public async Task<IActionResult> AllFreelancerProposals(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var jobs = GetJobs(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id));
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
@@ -309,7 +309,7 @@ namespace EWork.Controllers
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Json(new { message = "Authorization error." });
             }
 

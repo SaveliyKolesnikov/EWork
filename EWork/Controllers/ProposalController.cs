@@ -28,11 +28,11 @@ namespace EWork.Controllers
         {
             var deletedProposal = await _freelancingPlatform.ProposalManager.FindAsync(proposal => proposal.Id == proposalId);
             if (deletedProposal is null)
-                return BadRequest();
+                return UnprocessableEntity(proposalId);
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (deletedProposal.Sender.Id != currentUser.Id)
-                return BadRequest();
+                return Forbid();
 
             await _freelancingPlatform.ProposalManager.DeleteAsync(deletedProposal);
             return RedirectToAction("JobBoard", "Job");
@@ -44,16 +44,16 @@ namespace EWork.Controllers
         public async Task<IActionResult> CreateProposal(Proposal proposal, int jobId)
         {
             if (!ModelState.IsValid)
-                return BadRequest(); //TODO: Сделать возвращение JSON с сообщением об ошибке
+                return UnprocessableEntity(ModelState);
 
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var wantedJob = await _freelancingPlatform.JobManager.FindAsync(job => job.Id == jobId);
             if (wantedJob is null || wantedJob.IsClosed ||
                 !(wantedJob.HiredFreelancer is null) ||
                 wantedJob.Proposals.Any(p => p.Sender.Id == currentUser.Id))
-                return BadRequest();
+                return Forbid();
 
             proposal.Sender = currentUser;
             proposal.SendDate = DateTime.Now;
@@ -69,14 +69,14 @@ namespace EWork.Controllers
         public async Task<IActionResult> UpdateProposal(Proposal proposal, bool isDeleting)
         {
             if (!ModelState.IsValid)
-                return BadRequest(); //TODO: Сделать возвращение JSON с сообщением об ошибке
+                return UnprocessableEntity(ModelState);
 
             if (isDeleting)
                 return await DeleteProposal(proposal.Id);
 
             var oldProposal = await _freelancingPlatform.ProposalManager.FindAsync(p => p.Id == proposal.Id);
             if (oldProposal is null || oldProposal.Job.IsClosed || oldProposal.Job.IsPaymentDenied)
-                return BadRequest();
+                return Forbid();
 
             oldProposal.SendDate = DateTime.Now;
             oldProposal.Text = proposal.Text;
@@ -92,16 +92,16 @@ namespace EWork.Controllers
         public async Task<IActionResult> AcceptProposal(int jobId, int proposalId)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job is null || !(job.HiredFreelancer is null) || job.Employer.Id != currentUser.Id ||
                 job.IsClosed || job.IsPaymentDenied)
-                return BadRequest();
+                return Forbid();
 
             var proposal = job.Proposals.FirstOrDefault(p => p.Id == proposalId);
             if (proposal?.Sender is null)
-                return BadRequest();
+                return UnprocessableEntity(proposalId);
 
             job.HiredFreelancer = proposal.Sender;
             var deletedProposals = job.Proposals.Except(new[] { proposal });

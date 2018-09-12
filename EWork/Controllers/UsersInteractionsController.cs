@@ -28,16 +28,16 @@ namespace EWork.Controllers
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job?.HiredFreelancer is null || job.IsClosed)
-                return BadRequest();
+                return UnprocessableEntity(jobId);
 
             var currentUser = await _userManager.GetUserAsync(User);
             switch (currentUser)
             {
                 case Moderator _ when !job.IsPaymentDenied:
-                    return BadRequest();
+                    return Forbid();
                 case Employer employer:
                     if (employer.Id != job.Employer.Id)
-                        return BadRequest();
+                        return Forbid();
                     break;
             }
 
@@ -57,11 +57,11 @@ namespace EWork.Controllers
         public async Task<IActionResult> DenyFreelancersWork(int jobId)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
-                return BadRequest();
+                return Forbid();
 
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job?.HiredFreelancer is null || job.IsClosed)
-                return BadRequest();
+                return UnprocessableEntity(jobId);
 
             job.IsPaymentDenied = true;
             await _freelancingPlatform.JobManager.UpdateAsync(job);
@@ -85,7 +85,7 @@ namespace EWork.Controllers
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job is null || job.IsClosed || !job.IsPaymentDenied)
-                return BadRequest();
+                return UnprocessableEntity(jobId);
 
 
             var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
@@ -103,12 +103,12 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RefuseDenying(int jobId)
         {
-            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
-                return BadRequest();
+            if (!(await _userManager.GetUserAsync(User) is Freelancer))
+                return Forbid();
 
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
             if (job is null || job.IsClosed || !job.IsPaymentDenied)
-                return BadRequest();
+                return UnprocessableEntity(jobId);
 
             await _freelancingPlatform.JobManager.UpdateAsync(job);
             var notification = new Notification
