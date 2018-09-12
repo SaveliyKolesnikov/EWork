@@ -20,6 +20,8 @@ namespace EWork.Models
         [Display(Name = "Overview")]
         public string Description { get; set; }
 
+        public bool IsBlocked { get; set; } = false;
+
         public string ProfilePhotoName { get; set; }
 
         public DateTime SignUpDate { get; set; }
