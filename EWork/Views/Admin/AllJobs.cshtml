@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Job>
+
+@{
+    ViewData["ActivePage"] = "AllJobs";
+    ViewData["Title"] = "Job manager";
+}
+
+@functions {
+    double GetUserRating(IEnumerable<Review> reviews)
+    {
+        if (reviews is null)
+            return 0;
+
+        var res = 0d;
+        try
+        {
+            res = reviews.Average(r => r.Value);
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        return res;
+    }
+}
+
+<h2>Test manager</h2>
+<form asp-controller="Admin" asp-action="AllJobs" method="get">
+    <div class="form-group">
+        <label for="SearchString">Job title:</label>
+        <div class="row">
+            <div class="col-xs-12 col-md-7">
+                <input type="text" class="form-control" name="SearchString" id="SearchString">
+            </div>
+            <div class="col-xs-12 col-md-offset-2 col-md-3">
+                <input type="submit" class="form-control " id="submit" value="Search">
+            </div>
+        </div>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreationDate)
+            </th>
+            <th>
+                Employer
+            </th>
+            <th>
+                Hired Freelancer
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    <a asp-controller="Job" asp-action="JobInfo" asp-route-jobid="@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationDate)
+                </td>
+                <td>
+                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@item.Employer.UserName">@Html.DisplayFor(modelItem => item.Employer.UserName)</a>
+                    <rating>(Rating: @GetUserRating(item.Employer.Reviews))</rating>
+                </td>
+                <td>
+                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@(item.HiredFreelancer?.UserName ?? "")">
+                        @Html.DisplayFor(modelItem => item.HiredFreelancer.UserName)
+                    </a>
+                    @if (!(item.HiredFreelancer is null))
+                    {
+                        <rating>(Rating: @GetUserRating(item.HiredFreelancer?.Reviews))</rating>
+                    }
+                </td>
+                <td>
+                    <a asp-controller="Job" asp-action="DeleteJob" asp-route-jobid="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="row">
+    <div class="col-md-offset-3 col-md-6 text-center">
+        <button type="button" class="btn btn-primary" id="getMoreJobsButton">Load more jobs</button>
+    </div>
+</div>
+
