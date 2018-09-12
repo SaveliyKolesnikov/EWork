@@ -26,7 +26,7 @@ namespace EWork.Data
                     Surname = moderatorData.Surname,
                     Email = moderatorData.Email,
                     UserName = moderatorData.UserName,
-                    SingUpDate = DateTime.Now,
+                    SignUpDate = DateTime.Now,
                     Balance = new Balance(),
                     ProfilePhotoName = photoOptions.Value.DefaultPhoto
                 };
@@ -42,7 +42,7 @@ namespace EWork.Data
                     Surname = administratorData.Surname,
                     Email = administratorData.Email,
                     UserName = administratorData.UserName,
-                    SingUpDate = DateTime.Now,
+                    SignUpDate = DateTime.Now,
                     Balance = new Balance(),
                     ProfilePhotoName = photoOptions.Value.DefaultPhoto
                 };

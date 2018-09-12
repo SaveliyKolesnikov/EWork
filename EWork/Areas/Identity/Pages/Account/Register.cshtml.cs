@@ -124,7 +124,7 @@ namespace EWork.Areas.Identity.Pages.Account
                 user.Balance = new Balance();
                 user.Jobs = new List<Job>();
                 user.Reviews = new List<Review>();
-                user.SingUpDate = DateTime.Now;
+                user.SignUpDate = DateTime.Now;
                 user.Notifications = new List<Notification>();
                 
 
