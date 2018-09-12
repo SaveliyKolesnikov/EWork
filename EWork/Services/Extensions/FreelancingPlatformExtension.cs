@@ -12,8 +12,8 @@ namespace EWork.Services.Extensions
     public static class FreelancingPlatformExtension
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
-            service.AddFreelancingPlatformDbContext().AddMappers()
-                .AddRepositories().AddModelManagers().AddMessageMapper()
+            service.AddFreelancingPlatformDbContext().AddMappers().AddRepositories()
+                .AddModelManagers().AddMessageMapper().AddUserExtractor()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
         #region Managers
@@ -55,7 +55,10 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddRepositories(this IServiceCollection service) =>
             service.AddProposalRepository().AddNotificationRepository().AddBalanceRepository()
-                .AddJobRepository().AddReviewRepository().AddMessageRepository();
+                .AddJobRepository().AddReviewRepository().AddMessageRepository().AddUserRepository();
+
+        private static IServiceCollection AddUserRepository(this IServiceCollection service) =>
+            service.AddScoped<IRepository<User>, UserRepository>();
 
         private static IServiceCollection AddBalanceRepository(this IServiceCollection service) =>
             service.AddScoped<IBalanceRepository, BalanceRepository>();
@@ -89,8 +92,8 @@ namespace EWork.Services.Extensions
 
         #endregion
 
-        private static IServiceCollection AddRandomStringGenerator(this IServiceCollection service) =>
-            service.AddSingleton<IRandomStringGenerator, RandomStringGenerator>();
+        private static IServiceCollection AddUserExtractor(this IServiceCollection service) =>
+            service.AddScoped<IUserExtractor, UserExtractor>();
 
         private static IServiceCollection AddFreelancingPlatformDbContext(this IServiceCollection service) =>
             service.AddScoped<IFreelancingPlatiformDbContext, ApplicationDbContext>();
