@@ -12,22 +12,17 @@ namespace EWork.Middlewares
     public class UserBlockedMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
 
-        public UserBlockedMiddleware(RequestDelegate next, UserManager<User> userManager, SignInManager<User> signInManager)
-        {
-            _next = next;
-            _userManager = userManager;
-            _signInManager = signInManager;
-        }
+        public UserBlockedMiddleware(RequestDelegate next) => _next = next;
 
         public async Task Invoke(HttpContext context)
         {
-            var user = await _userManager.GetUserAsync(context.User);
+            var userManager = context.RequestServices.GetRequiredService<UserManager<User>>();
+            var signInManager = context.RequestServices.GetRequiredService<SignInManager<User>>();
+            var user = await userManager.GetUserAsync(context.User);
             if (!(user is null) && user.IsBlocked)
             {
-                await _signInManager.SignOutAsync();
+                await signInManager.SignOutAsync();
                 context.Response.Redirect("/Identity/Account/Login");
             }
 
