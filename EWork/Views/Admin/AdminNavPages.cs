@@ -16,6 +16,7 @@ namespace AdminNavPages
         public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
         public static string UsersNavClass(ViewContext viewContext) => PageNavClass(viewContext, Users);
+
         public static string OpenedDisputesNavClass(ViewContext viewContext) => PageNavClass(viewContext, OpenedDisputes);
 
         public static string PageNavClass(ViewContext viewContext, string page)
