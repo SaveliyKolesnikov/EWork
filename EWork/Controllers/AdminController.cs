@@ -88,9 +88,7 @@ namespace EWork.Controllers
 
             return RedirectToAction("Users");
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> BlockUser(string userId)
         {
             var blockedUser = await _userManager.FindByIdAsync(userId);
@@ -106,6 +104,20 @@ namespace EWork.Controllers
             return RedirectToAction("Users");
         }
 
+        public async Task<IActionResult> UnblockUser(string userId)
+        {
+            var blockedUser = await _userManager.FindByIdAsync(userId);
+            if (blockedUser is null)
+                return UnprocessableEntity(userId);
+
+            if (blockedUser.IsBlocked)
+            {
+                blockedUser.IsBlocked = false;
+                await _userManager.UpdateAsync(blockedUser);
+            }
+
+            return RedirectToAction("Users");
+        }
 
     }
 }
