@@ -25,10 +25,7 @@ namespace EWork.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
         [Authorize(Roles = "administrator")]
         public IActionResult AllJobs(string searchString)
@@ -50,8 +47,9 @@ namespace EWork.Controllers
 
             foreach (var user in users)
             {
-                user.Jobs = await _freelancingPlatform.JobManager.GetAll().Where(j =>
-                    !(j.IsClosed && j.IsPaymentDenied) && j.Employer.Id == user.Id || j.HiredFreelancer.Id == user.Id).ToListAsync();
+                user.Jobs = await _freelancingPlatform.JobManager.GetAll()
+                    .Where(j => !(j.IsClosed && j.IsPaymentDenied) && j.Employer.Id == user.Id || j.HiredFreelancer.Id == user.Id)
+                    .ToListAsync();
             }
             var adminPageViewModel = new AdminPageViewModel<User>(users, searchString);
             return View(adminPageViewModel);
@@ -75,5 +73,39 @@ namespace EWork.Controllers
 
             return jobs;
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+#if AllowUserDeletion
+            var deletedUser = await _userManager.FindByIdAsync(userId);
+            if (deletedUser is null)
+                return UnprocessableEntity(userId);
+
+            await _userManager.DeleteAsync(deletedUser);
+#endif
+
+            return RedirectToAction("Users");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BlockUser(string userId)
+        {
+            var blockedUser = await _userManager.FindByIdAsync(userId);
+            if (blockedUser is null)
+                return UnprocessableEntity(userId);
+
+            if (!blockedUser.IsBlocked)
+            {
+                blockedUser.IsBlocked = true;
+                await _userManager.UpdateAsync(blockedUser);
+            }
+
+            return RedirectToAction("Users");
+        }
+
+
     }
 }
