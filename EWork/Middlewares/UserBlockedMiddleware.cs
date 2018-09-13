@@ -32,7 +32,7 @@ namespace EWork.Middlewares
             }
 
             if (!(_next is null))
-                await _next.Invoke();
+                await _next.Invoke(context);
         }
     }
 }
