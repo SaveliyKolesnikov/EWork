@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using EWork.Config;
+using EWork.Exceptions;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using EWork.ViewModels;
@@ -10,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace EWork.Controllers
 {
@@ -18,11 +22,14 @@ namespace EWork.Controllers
     {
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
+        private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformOptions;
 
-        public AdminController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager)
+        public AdminController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager,
+            IOptions<FreelancingPlatformConfig> freelancingPlatformOptions)
         {
             _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
+            _freelancingPlatformOptions = freelancingPlatformOptions;
         }
 
         public IActionResult Index() => View();
@@ -88,7 +95,9 @@ namespace EWork.Controllers
 
             return RedirectToAction("Users");
         }
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> BlockUser(string userId)
         {
             var blockedUser = await _userManager.FindByIdAsync(userId);
@@ -104,6 +113,8 @@ namespace EWork.Controllers
             return RedirectToAction("Users");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UnblockUser(string userId)
         {
             var blockedUser = await _userManager.FindByIdAsync(userId);
@@ -119,5 +130,43 @@ namespace EWork.Controllers
             return RedirectToAction("Users");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReplenishBalance(int balanceId, decimal amount) => 
+            await DoTransferAsync(_freelancingPlatformOptions.Value.BalanceId, balanceId, amount);
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DecreaseBalance(int balanceId, decimal amount) =>
+            await DoTransferAsync(balanceId, _freelancingPlatformOptions.Value.BalanceId, amount);
+
+        private async Task<IActionResult> DoTransferAsync(int senderBalanceId, int recipientBalanceId, decimal amount)
+        {
+            if (amount < 0)
+                return UnprocessableEntity(amount);
+
+            if (amount == 0)
+                return RedirectToAction("Users");
+
+            var senderBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.Id == senderBalanceId);
+            if (senderBalance is null)
+                return UnprocessableEntity(recipientBalanceId);
+
+            var recipientBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.Id == recipientBalanceId);
+            if (recipientBalance is null)
+                return UnprocessableEntity(recipientBalanceId);
+
+            try
+            {
+                await _freelancingPlatform.BalanceManager.TransferMoneyAsync(senderBalance: senderBalance,
+                    recipientBalance: recipientBalance, amount: amount);
+            }
+            catch (NotEnoughMoneyException e)
+            {
+                return Content(e.Message);
+            }
+
+            return RedirectToAction("Users");
+        }
     }
 }
