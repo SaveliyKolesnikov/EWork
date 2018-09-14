@@ -20,12 +20,12 @@
 }
 
 <h2>User manager</h2>
-<form asp-controller="Admin" asp-action="AllJobs" method="get">
+<form asp-controller="Admin" asp-action="Users" method="get">
     <div class="form-group">
         <label for="SearchString">Job title:</label>
         <div class="row">
             <div class="col-xs-12 col-md-7">
-                <input type="text" class="form-control" name="SearchString" id="SearchString">
+                <input type="text" class="form-control" name="SearchString" id="SearchString" value="@Model.SearchString">
             </div>
             <div class="col-xs-12 col-md-offset-2 col-md-3">
                 <input type="submit" class="form-control " id="submit" value="Search">
@@ -62,7 +62,7 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="usersContainer">
         @foreach (var user in users)
         {
             <tr>
@@ -94,22 +94,22 @@
                     @if (user.IsBlocked)
                     {
                         <form asp-action="UnblockUser">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-text="Unblock @user.UserName">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter"  data-username="@user.UserName" data-text="Unblock @user.UserName">
                                 Unblock
                             </a><br />
                             <input type="hidden" name="userid" value="@user.Id" />
-                            <input id="blockUserSubmit" type="submit" style="display: none;" />
+                            <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
                             @Html.AntiForgeryToken()
                         </form>
                     }
                     else
                     {
                         <form asp-action="BlockUser">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-text="Block @user.UserName">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter"  data-username="@user.UserName" data-text="Block @user.UserName">
                                 Block
                             </a><br />
                             <input type="hidden" name="userId" value="@user.Id" />
-                            <input id="blockUserSubmit" type="submit" style="display: none;" />
+                            <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
                             @Html.AntiForgeryToken()
                         </form>
                     }
@@ -120,12 +120,12 @@
                                 Delete
                             </a><br />
                             <input type="hidden" name="userId" value="@user.Id" />
-                            <input id="deleteUserSubmit" type="submit" style="display: none;" />
+                            <input id="deleteUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
                             @Html.AntiForgeryToken()
                         </form>
 
-                        <form asp-action="ReplenishBalance">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#replenishBalanceModal" data-username="@user.UserName">
+                        <form asp-action="ReplenishBalance" class="replenish-balance-form" data-balanceid="@user.Balance.Id">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#replenishBalanceModal">
                                 Replenish Balance
                             </a><br />
 
@@ -135,8 +135,8 @@
                             @Html.AntiForgeryToken()
                         </form>
 
-                        <form asp-action="DecreaseBalance">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#decreaseBalanceModal" data-username="@user.UserName">
+                        <form asp-action="DecreaseBalance" class="decrease-balance-form" data-balanceid="@user.Balance.Id">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#decreaseBalanceModal">
                                 Decrease Balance
                             </a><br />
 
@@ -174,7 +174,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn" data-dismiss="modal">No</button>
                 <button type="button" class="btn btn-primary confirm-button">Yes</button>
-                <input type="hidden" name="actionUrl" />
+                <input type="hidden" name="blockedUserUserName" />
             </div>
         </div>
     </div>
@@ -195,7 +195,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn" data-dismiss="modal">No</button>
                 <button type="button" class="btn btn-primary confirm-button">Yes</button>
-                <input type="hidden" name="actionUrl" />
+                <input type="hidden" name="deletedUserUserName" />
             </div>
         </div>
     </div>
@@ -222,7 +222,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary confirm-button">Replenish</button>
-                <input type="hidden" name="actionUrl" />
+                <input type="hidden" name="balanceid" />
             </div>
         </div>
     </div>
@@ -249,7 +249,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary confirm-button">Decrease</button>
-                <input type="hidden" name="actionUrl" />
+                <input type="hidden" name="balanceId" />
             </div>
         </div>
     </div>

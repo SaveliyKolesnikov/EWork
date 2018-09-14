@@ -5,11 +5,13 @@
         const modal = $(this);
         modal.find('.modal-title').text(action);
         modal.find('.modal-body').text(`Are you sure you want to ${action}?`);
+        modal.find('input[name="blockedUserUserName"]').val(button.data('username'));
     });
 
 $('#confirmBlockingModalCenter .confirm-button').click(function (e) {
     e.preventDefault();
-    $('#blockUserSubmit').click();
+    const userName = $(this).parent().find('input[name="blockedUserUserName"]').val();
+    $(`#blockUserSubmit[data-username="${userName}"]`).click();
 });
 
 $('#deleteUserModal').on('show.bs.modal',
@@ -19,11 +21,13 @@ $('#deleteUserModal').on('show.bs.modal',
         const modal = $(this);
         modal.find('.modal-title').text(`Delete ${recipient}`);
         modal.find('.modal-body').text(`Are you sure you want to delete ${recipient}?`);
+        modal.find('input[name="deletedUserUserName"]').val(button.data('username'));
     });
 
 $('#deleteUserModal .confirm-button').click(function (e) {
     e.preventDefault();
-    $('#deleteUserSubmit').click();
+    const userName = $(this).parent().find('input[name="blockedUserUserName"]').val();
+    $(`#deleteUserSubmit[data-username="${userName}"]`).click();
 });
 
 $('#replenishBalanceModal').on('show.bs.modal',
@@ -32,6 +36,7 @@ $('#replenishBalanceModal').on('show.bs.modal',
         const recipient = button.data('username');
         const modal = $(this);
         modal.find('.modal-title').text(`Replenish a ${recipient} balance`);
+        modal.find('input[name="balanceid"]').val(button.parent().data('balanceid'));
     });
 
 $('#replenishBalanceModal .confirm-button').click(function (e) {
@@ -40,8 +45,10 @@ $('#replenishBalanceModal .confirm-button').click(function (e) {
     if (!amountOfReplenishment.trim())
         amountOfReplenishment = 0;
 
-    $('#amountOfReplenishmentInput').val(amountOfReplenishment);
-    $('#replenishBalanceSubmit').click();
+    const balanceId = $(this).parent().find('input[name="balanceid"]').val();
+    const targetForm = $(`.replenish-balance-form[data-balanceid="${balanceId}"]`);
+    $('#amountOfReplenishmentInput', targetForm).val(amountOfReplenishment);
+    $('#replenishBalanceSubmit', targetForm).click();
 });
 
 document.querySelector('#amountOfReplenishment').addEventListener("keyup", function (event) {
@@ -60,16 +67,19 @@ $('#decreaseBalanceModal').on('show.bs.modal',
         const recipient = button.data('username');
         const modal = $(this);
         modal.find('.modal-title').text(`Decrease a ${recipient} balance`);
+        modal.find('input[name="balanceId"]').val(button.parent().data('balanceid'));
     });
 
-$('#decreaseBalanceModal .confirm-button').click(function (e) {
+$('#decreaseBalanceModal .confirm-button').click(function(e) {
     e.preventDefault();
     let amountOfReplenishment = $('#decreaseAmount').val();
     if (!amountOfReplenishment.trim())
         amountOfReplenishment = 0;
 
-    $('#decreaseAmountInput').val(amountOfReplenishment);
-    $('#decreaseBalanceSubmit').click();
+    const balanceId = $(this).parent().find('input[name="balanceId"]').val();
+    const targetForm = $(`.decrease-balance-form[data-balanceid="${balanceId}"]`);
+    $('#decreaseAmountInput', targetForm).val(amountOfReplenishment);
+    $('#decreaseBalanceSubmit', targetForm).click();
 });
 
 document.querySelector('#decreaseAmount').addEventListener("keyup", function (event) {
