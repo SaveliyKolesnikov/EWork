@@ -1,18 +1,18 @@
 ﻿$('#download-more-notifications').click(function () {
     const takeAmount = 5;
-    downloadJobs(takeAmount);
+    const amountOfJobsNow = $('.job-container').length;
+    downloadJobs(takeAmount, amountOfJobsNow);
 });
 
-function downloadJobs(takeAmount) {
-    let token = $('input[name="__RequestVerificationToken"]', $('#antiForgeryToken')).val();
-    let amountOfJobsNow = $('.job-container').length;
-    let requiredTags = $('#SearchingByTags').val();
-    let getJobsAjaxMethod = $('input[name="getJobsAjaxMethodUrl"]').val();
+function downloadJobs(takeAmount, skipAmount) {
+    const token = $('input[name="__RequestVerificationToken"]', $('#antiForgeryToken')).val();
+    const requiredTags = $('#SearchingByTags').val();
+    const getJobsAjaxMethod = $('input[name="getJobsAjaxMethodUrl"]').val();
 
     $.post(getJobsAjaxMethod,
         {
             '__RequestVerificationToken': token,
-            'skipAmount': amountOfJobsNow,
+            'skipAmount': skipAmount,
             'takeAmount': takeAmount,
             'requiredTags': requiredTags
         },
@@ -25,8 +25,8 @@ function downloadJobs(takeAmount) {
 }
 
 function addJob(job) {
-    let container = $('<div/>', { class: 'job-container' });
-    let tags = [];
+    const container = $('<div/>', { class: 'job-container' });
+    const tags = [];
 
     let creationDate = new Date(job.creationDate);
     creationDate = removeSecondsFromDateString(creationDate.toLocaleString());
@@ -52,12 +52,12 @@ function addJob(job) {
                     </div>
                     <div class="space-20"></div>
                     <div class="user-rating">Employer rating: <span>${job.employerRating}</span></div>`);
-    let tagsContainer = $('.job-tags', container);
+    const tagsContainer = $('.job-tags', container);
     tags.forEach(tag => tagsContainer.append(tag));
     $('#jobs-container').append(container);
 
     function removeSecondsFromDateString(dateString) {
-        let lastColonIndex = dateString.lastIndexOf(':');
+        const lastColonIndex = dateString.lastIndexOf(':');
         let firstWhitespaceAfterLastColon = dateString.indexOf(' ', lastColonIndex);
         if (firstWhitespaceAfterLastColon === -1)
             firstWhitespaceAfterLastColon = dateString.length;
