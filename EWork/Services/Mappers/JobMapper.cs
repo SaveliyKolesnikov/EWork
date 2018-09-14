@@ -19,7 +19,8 @@ namespace EWork.Services.Mappers
                 Budget = job.Budget,
                 CreationDate = job.CreationDate,
                 Tags = job.JobTags.Select(jt => jt.Tag.Text),
-                EmployerRating = job.Employer.Reviews.Count == 0 ? 0d : job.Employer.Reviews.Average(r => r.Value)
+                EmployerRating = job.Employer.Reviews.Count == 0 ? 0d : job.Employer.Reviews.Average(r => r.Value),
+                EmployerUserName = job.Employer.UserName
             };
 
         public IEnumerable<JsonJob> MapRange(IEnumerable<Job> jobs) => jobs.Select(Map);
