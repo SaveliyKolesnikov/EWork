@@ -1,14 +1,8 @@
-﻿$('#getMoreJobsButton').click(function () {
-    const takeAmount = 5;
-    const amountOfUsersNow = $('#jobsContainer tr').length;
-    downloadJobs(takeAmount, amountOfUsersNow);
-});
-
-function downloadJobs(takeAmount, skipAmount) {
+﻿function downloadJobs(postUrl, takeAmount, skipAmount, isActionsRequired = false) {
     const token = $('input[name="__RequestVerificationToken"]').first().val();
     const searchString = $('#SearchString').val();
 
-    $.post('/Admin/GetJobsAjax',
+    $.post(postUrl,
         {
             '__RequestVerificationToken': token,
             'skipAmount': skipAmount,
@@ -16,14 +10,14 @@ function downloadJobs(takeAmount, skipAmount) {
             'searchString': searchString
         },
         function (jobs) {
-            jobs.forEach(addJobToTable);
+            jobs.forEach(j => addJobToTable(j, isActionsRequired));
         }).fail(
             function (errorObj) {
                 console.error(errorObj.responseJSON.message);
             });
 }
 
-function addJobToTable(job) {
+function addJobToTable(job, isActionsRequired = false) {
     const jobRow = $('<tr/>');
     jobRow.append($('<td/>', { text: job.id }));
     jobRow.append($('<td/>').append($('<a/>', { href: `/Job/JobInfo?jobid=${job.id}`, text: job.title })));
@@ -42,6 +36,8 @@ function addJobToTable(job) {
         freelancerProfileTd.append($('<rating/>', { text: `(Rating: ${job.hiredFreelancerRating})` }));
     jobRow.append(freelancerProfileTd);
 
-    jobRow.append($('<a/>', { href: `/Job/DeleteJob?jobid=${job.id}`, text: 'Delete' }));
+    if (isActionsRequired)
+        jobRow.append($('<a/>', { href: `/Job/DeleteJob?jobid=${job.id}`, text: 'Delete' }));
+
     $('#jobsContainer').append(jobRow);
 }

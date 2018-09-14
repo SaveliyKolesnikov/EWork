@@ -30,7 +30,7 @@ double GetUserRating(IEnumerable<Review> reviews)
         <label for="SearchString">Job title:</label>
         <div class="row">
             <div class="col-xs-12 col-md-7">
-                <input type="text" class="form-control" name="SearchString" id="SearchString">
+                <input type="text" class="form-control" name="SearchString" id="SearchString" value="@Model.SearchString">
             </div>
             <div class="col-xs-12 col-md-offset-2 col-md-3">
                 <input type="submit" class="form-control " id="submit" value="Search">
@@ -58,7 +58,7 @@ double GetUserRating(IEnumerable<Review> reviews)
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="jobsContainer">
         @foreach (var job in jobs)
         {
             <tr>
@@ -90,7 +90,12 @@ double GetUserRating(IEnumerable<Review> reviews)
 </table>
 <div class="row">
     <div class="col-md-offset-3 col-md-6 text-center">
-        <button type="button" class="btn btn-primary" onclick="getTests()">Load more tests</button>
+        <button type="button" class="btn btn-primary" id="getMoreJobsButton">Load more jobs</button>
     </div>
 </div>
 
+@section Scripts
+{
+    <script type="text/javascript" src="/js/admin/ajaxJobsDownload.js"></script>
+    <script type="text/javascript" src="/js/admin/disputedJobsDownload.js"></script>
+}
