@@ -30,7 +30,7 @@
         <label for="SearchString">Job title:</label>
         <div class="row">
             <div class="col-xs-12 col-md-7">
-                <input type="text" class="form-control" name="SearchString" id="SearchString">
+                <input type="text" class="form-control" name="SearchString" id="SearchString" value="@Model.SearchString">
             </div>
             <div class="col-xs-12 col-md-offset-2 col-md-3">
                 <input type="submit" class="form-control " id="submit" value="Search">
@@ -61,7 +61,7 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="jobsContainer">
         @foreach (var job in jobs)
         {
             <tr>
@@ -99,4 +99,8 @@
         <button type="button" class="btn btn-primary" id="getMoreJobsButton">Load more jobs</button>
     </div>
 </div>
-
+@Html.AntiForgeryToken()
+@section Scripts
+{
+    <script type="text/javascript" src="/js/admin/ajaxJobsDownload.js"></script>
+}
