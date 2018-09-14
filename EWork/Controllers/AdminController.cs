@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Exceptions;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using EWork.Services.Mappers.Interfaces;
 using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,13 +25,15 @@ namespace EWork.Controllers
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
         private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformOptions;
+        private readonly IJobMapper _jobMapper;
 
         public AdminController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager,
-            IOptions<FreelancingPlatformConfig> freelancingPlatformOptions)
+            IOptions<FreelancingPlatformConfig> freelancingPlatformOptions, IJobMapper jobMapper)
         {
             _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
             _freelancingPlatformOptions = freelancingPlatformOptions;
+            _jobMapper = jobMapper;
         }
 
         public IActionResult Index() => View();
@@ -37,7 +41,7 @@ namespace EWork.Controllers
         [Authorize(Roles = "administrator")]
         public IActionResult AllJobs(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString).Take(5);
+            var jobs = GetJobsByTitle(searchString).Take(0);
             var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
             return View(adminPageViewModel);
         }
@@ -189,6 +193,16 @@ namespace EWork.Controllers
                 BalanceId = u.Balance.Id
             });
 
+
+            return Json(res);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult GetJobsAjax(int skipAmount, int takeAmount, string searchString)
+        {
+            var users = GetJobsByTitle(searchString).Skip(skipAmount).Take(takeAmount);
+            var res = _jobMapper.MapRange(users);
 
             return Json(res);
         }
