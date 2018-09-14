@@ -37,7 +37,7 @@ namespace EWork.Controllers
         [Authorize(Roles = "administrator")]
         public IActionResult AllJobs(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString);
+            var jobs = GetJobsByTitle(searchString).Take(5);
             var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
             return View(adminPageViewModel);
         }
@@ -52,6 +52,7 @@ namespace EWork.Controllers
                 users = users.Where(u => u.UserName.StartsWith(searchString));
             }
 
+            users = users.Take(5);
             foreach (var user in users)
             {
                 user.Jobs = await _freelancingPlatform.JobManager.GetAll()
@@ -78,7 +79,7 @@ namespace EWork.Controllers
                 jobs = jobs.Where(job => job.Title.StartsWith(title));
             }
 
-            return jobs;
+            return jobs.Take(5);
         }
 
         [HttpPost]
@@ -98,32 +99,23 @@ namespace EWork.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> BlockUser(string userId)
-        {
-            var blockedUser = await _userManager.FindByIdAsync(userId);
-            if (blockedUser is null)
-                return UnprocessableEntity(userId);
-
-            if (!blockedUser.IsBlocked)
-            {
-                blockedUser.IsBlocked = true;
-                await _userManager.UpdateAsync(blockedUser);
-            }
-
-            return RedirectToAction("Users");
-        }
+        public async Task<IActionResult> BlockUser(string userId) =>
+            await ChangeBanStatus(userId, true);
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UnblockUser(string userId)
+        public async Task<IActionResult> UnblockUser(string userId) =>
+            await ChangeBanStatus(userId, false);
+
+        private async Task<IActionResult> ChangeBanStatus(string userId, bool banStatus)
         {
             var blockedUser = await _userManager.FindByIdAsync(userId);
             if (blockedUser is null)
                 return UnprocessableEntity(userId);
 
-            if (blockedUser.IsBlocked)
+            if (blockedUser.IsBlocked != banStatus)
             {
-                blockedUser.IsBlocked = false;
+                blockedUser.IsBlocked = banStatus;
                 await _userManager.UpdateAsync(blockedUser);
             }
 
