@@ -45,22 +45,30 @@ namespace EWork.Controllers
         [Authorize(Roles = "administrator")]
         public async Task<IActionResult> Users(string searchString)
         {
+            var users = GetUsersByUserName(searchString).Take(5);
+
+            foreach (var user in users)
+            {
+                user.Jobs = await GetUserJobs(user.Id).ToListAsync();
+            }
+            var adminPageViewModel = new AdminPageViewModel<User>(users, searchString);
+            return View(adminPageViewModel);
+        }
+
+        private IQueryable<Job> GetUserJobs(string userId) =>
+            _freelancingPlatform.JobManager.GetAll().Where(j =>
+                !(j.IsClosed && j.IsPaymentDenied) && j.Employer.Id == userId || j.HiredFreelancer.Id == userId);
+
+        private IQueryable<User> GetUsersByUserName(string searchString)
+        {
             var users = _freelancingPlatform.UserExtractor.GetAll();
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {
-                users = users.Where(u => u.UserName.StartsWith(searchString));
+                users = users.Where(u => u.UserName.Contains(searchString));
             }
 
-            users = users.Take(5);
-            foreach (var user in users)
-            {
-                user.Jobs = await _freelancingPlatform.JobManager.GetAll()
-                    .Where(j => !(j.IsClosed && j.IsPaymentDenied) && j.Employer.Id == user.Id || j.HiredFreelancer.Id == user.Id)
-                    .ToListAsync();
-            }
-            var adminPageViewModel = new AdminPageViewModel<User>(users, searchString);
-            return View(adminPageViewModel);
+            return users;
         }
 
         public IActionResult OpenedDisputes(string searchString)
@@ -124,7 +132,7 @@ namespace EWork.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ReplenishBalance(int balanceId, decimal amount) => 
+        public async Task<IActionResult> ReplenishBalance(int balanceId, decimal amount) =>
             await DoTransferAsync(_freelancingPlatformOptions.Value.BalanceId, balanceId, amount);
 
         [HttpPost]
@@ -160,5 +168,31 @@ namespace EWork.Controllers
 
             return RedirectToAction("Users");
         }
+
+        #region AjaxMethods
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GetUsersAjax(int skipAmount, int takeAmount, string searchString)
+        {
+            var users = await GetUsersByUserName(searchString).Skip(skipAmount).Take(takeAmount).ToArrayAsync();
+            var res =  users.Select(u => new
+            {
+                u.Id,
+                u.UserName,
+                u.FullName,
+                u.SignUpDate,
+                u.Balance.Money,
+                u.IsBlocked,
+                Rating = u.Reviews.Count == 0 ? 0 : u.Reviews.Average(r => r.Value),
+                Jobs = GetUserJobs(u.Id).Select(j => j.Id).ToList(),
+                BalanceId = u.Balance.Id
+            });
+
+
+            return Json(res);
+        }
+
+        #endregion
     }
 }
