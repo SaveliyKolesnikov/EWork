@@ -7,21 +7,21 @@
 }
 
 @functions {
-    double GetUserRating(IEnumerable<Review> reviews)
-    {
-        if (reviews is null)
-            return 0;
+double GetUserRating(IEnumerable<Review> reviews)
+{
+    if (reviews is null)
+        return 0;
 
-        var res = 0d;
-        try
-        {
-            res = reviews.Average(r => r.Value);
-        }
-        catch (InvalidOperationException)
-        {
-        }
-        return res;
+    var res = 0d;
+    try
+    {
+        res = reviews.Average(r => r.Value);
     }
+    catch (InvalidOperationException)
+    {
+    }
+    return res;
+}
 }
 
 <h2>Test manager</h2>
@@ -101,6 +101,7 @@
 </div>
 @Html.AntiForgeryToken()
 @section Scripts
-{
+    {
     <script type="text/javascript" src="/js/admin/ajaxJobsDownload.js"></script>
+    <script type="text/javascript" src="/js/admin/allJobsDownload.js"></script>
 }
