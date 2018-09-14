@@ -7,22 +7,22 @@
 }
 
 @functions {
-    double GetUserRating(IEnumerable<Review> reviews)
-    {
-        if (reviews is null)
-            return 0;
+double GetUserRating(IEnumerable<Review> reviews)
+{
+    if (reviews is null)
+        return 0;
 
-        var reviewsArr = reviews as Review[] ?? reviews.ToArray();
-        var res = reviewsArr.Length == 0 ? 0d : reviewsArr.Average(r => r.Value);
+    var reviewsArr = reviews as Review[] ?? reviews.ToArray();
+    var res = reviewsArr.Length == 0 ? 0d : reviewsArr.Average(r => r.Value);
 
-        return res;
-    }
+    return res;
+}
 }
 
 <h2>User manager</h2>
 <form asp-controller="Admin" asp-action="Users" method="get">
     <div class="form-group">
-        <label for="SearchString">Job title:</label>
+        <label for="SearchString">User name:</label>
         <div class="row">
             <div class="col-xs-12 col-md-7">
                 <input type="text" class="form-control" name="SearchString" id="SearchString" value="@Model.SearchString">
@@ -94,7 +94,7 @@
                     @if (user.IsBlocked)
                     {
                         <form asp-action="UnblockUser">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter"  data-username="@user.UserName" data-text="Unblock @user.UserName">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Unblock @user.UserName">
                                 Unblock
                             </a><br />
                             <input type="hidden" name="userid" value="@user.Id" />
@@ -105,7 +105,7 @@
                     else
                     {
                         <form asp-action="BlockUser">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter"  data-username="@user.UserName" data-text="Block @user.UserName">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Block @user.UserName">
                                 Block
                             </a><br />
                             <input type="hidden" name="userId" value="@user.Id" />
@@ -158,7 +158,6 @@
 </div>
 
 <!-- Modals -->
-
 <!-- Block user modal -->
 <div class="modal fade" id="confirmBlockingModalCenter" tabindex="-1" role="dialog" aria-labelledby="blockUserModalTitle" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -215,7 +214,7 @@
                 <form class="disable-submitting-on-enter">
                     <div class="form-group">
                         <label for="amountOfReplenishment" class="label">Amount of replenishment:</label>
-                        <input type="number" step="0.01" class="form-control" id="amountOfReplenishment" min="0" value="0"/>
+                        <input type="number" step="0.01" class="form-control" id="amountOfReplenishment" min="0" value="0" />
                     </div>
                 </form>
             </div>
@@ -242,7 +241,7 @@
                 <form class="disable-submitting-on-enter">
                     <div class="form-group">
                         <label for="amountOfReplenishment" class="label">Decrease amount:</label>
-                        <input type="number" step="0.01" class="form-control" id="decreaseAmount" min="0" value="0"/>
+                        <input type="number" step="0.01" class="form-control" id="decreaseAmount" min="0" value="0" />
                     </div>
                 </form>
             </div>
@@ -259,4 +258,5 @@
 @section Scripts
     {
     <script type="text/javascript" src="~/js/admin/UsersView/modalsBindingMethods.js"></script>
+    <script type="text/javascript" src="~/js/admin/UsersView/ajaxUsersDownloading.js"></script>
 }

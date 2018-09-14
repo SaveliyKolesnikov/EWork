@@ -70,7 +70,7 @@ $('#decreaseBalanceModal').on('show.bs.modal',
         modal.find('input[name="balanceId"]').val(button.parent().data('balanceid'));
     });
 
-$('#decreaseBalanceModal .confirm-button').click(function(e) {
+$('#decreaseBalanceModal .confirm-button').click(function (e) {
     e.preventDefault();
     let amountOfReplenishment = $('#decreaseAmount').val();
     if (!amountOfReplenishment.trim())
@@ -82,20 +82,24 @@ $('#decreaseBalanceModal .confirm-button').click(function(e) {
     $('#decreaseBalanceSubmit', targetForm).click();
 });
 
-document.querySelector('#decreaseAmount').addEventListener("keyup", function (event) {
-    event.preventDefault();
+function refreshEventListeners() {
+    document.querySelector('#decreaseAmount').addEventListener("keyup", function (event) {
+        event.preventDefault();
 
-    // Number 13 is the "Enter" key on the keyboard
-    if (event.keyCode === 13) {
-        // Trigger the button element with a click
-        $('#decreaseBalanceModal .confirm-button').click();
-    }
-});
+        // Number 13 is the "Enter" key on the keyboard
+        if (event.keyCode === 13) {
+            // Trigger the button element with a click
+            $('#decreaseBalanceModal .confirm-button').click();
+        }
+    });
 
-$('.disable-submitting-on-enter').on('keyup keypress', function (e) {
-    const keyCode = e.keyCode || e.which;
-    if (keyCode === 13) {
-        e.preventDefault();
-        return false;
-    }
-});
+    $('.disable-submitting-on-enter').on('keyup keypress', function (e) {
+        const keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+}
+
+refreshEventListeners();
