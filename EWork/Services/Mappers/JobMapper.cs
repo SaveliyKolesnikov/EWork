@@ -20,7 +20,9 @@ namespace EWork.Services.Mappers
                 CreationDate = job.CreationDate,
                 Tags = job.JobTags.Select(jt => jt.Tag.Text),
                 EmployerRating = job.Employer.Reviews.Count == 0 ? 0d : job.Employer.Reviews.Average(r => r.Value),
-                EmployerUserName = job.Employer.UserName
+                EmployerUserName = job.Employer.UserName,
+                HiredFreelancerUserName = job.HiredFreelancer?.UserName ?? "",
+                HiredFreelancerRating = (job.HiredFreelancer?.Reviews.Count ?? 0) == 0 ? 0d : job.HiredFreelancer.Reviews.Average(r => r.Value),
             };
 
         public IEnumerable<JsonJob> MapRange(IEnumerable<Job> jobs) => jobs.Select(Map);

@@ -31,5 +31,10 @@ namespace EWork.Models.Json
         public double EmployerRating { get; set; }
 
         public string EmployerUserName { get; set; }
+
+        public double HiredFreelancerRating { get; set; }
+
+        public string HiredFreelancerUserName { get; set; }
+
     }
 }
