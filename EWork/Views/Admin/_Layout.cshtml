@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Freelancing platform management";
+}
+@if (User.IsInRole("admin"))
+{
+    <h2>Administration</h2>
+}
+@if (User.IsInRole("moderator"))
+{
+    <h2>Moderation</h2>
+}
+<div>
+    <div style="height: 25px;"></div>
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    @RenderSection("Scripts", required: false)
+}

@@ -49,7 +49,7 @@ namespace EWork.Services
             if (amount <= 0)
                 throw new ArgumentException("The amount must be greater than 0", nameof(amount));
             if (senderBalance.Money < amount)
-                throw new NotEnoughMoneyException($"The user {senderBalance.User.Name} hasn't got enough money for this operation");
+                throw new NotEnoughMoneyException($"The user {senderBalance.User?.Name ?? "freelancing platform"} hasn't got enough money for this operation");
 
             senderBalance.Money -= amount;
             recipientBalance.Money += amount;

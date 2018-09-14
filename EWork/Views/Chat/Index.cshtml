@@ -40,7 +40,9 @@
                                 <p class="visible-xs-inline-block visible-sm-inline-block text-center">@receiver.UserName</p>
                             </div>
                             <div class="col-md-8 visible-md visible-lg dialog-info">
-                                <div class="receiver-name margin-bottom-5">@receiver.UserName</div>
+                                <div class="receiver-name margin-bottom-5">
+                                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@receiver.UserName" style="text-decoration: none; color: inherit;">@receiver.UserName</a>
+                                </div>
                                 @{
                                     var messagePreview = chat.LastOrDefault()?.Text ?? "";
                                     const int maxMessageLength = 18;

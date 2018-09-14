@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EWork.Models.Json
 {
@@ -31,5 +29,12 @@ namespace EWork.Models.Json
         public IEnumerable<string> Tags { get; set; }
 
         public double EmployerRating { get; set; }
+
+        public string EmployerUserName { get; set; }
+
+        public double HiredFreelancerRating { get; set; }
+
+        public string HiredFreelancerUserName { get; set; }
+
     }
 }

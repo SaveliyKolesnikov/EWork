@@ -18,6 +18,7 @@ namespace EWork.Data
         public DbSet<Moderator> Moderators { get; set; }
         public DbSet<Freelancer> Freelancers { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Administrator> Administrators { get; set; }
 
         async Task IFreelancingPlatiformDbContext.SaveChangesAsync() => await SaveChangesAsync();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using EWork.Config;
@@ -9,6 +10,7 @@ using EWork.Services.Interfaces;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,7 +31,8 @@ namespace EWork
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     var photoOptions = services.GetRequiredService<IOptions<PhotoConfig>>();
-                    await RoleInitializer.InitializeAsync(userManager, rolesManager, photoOptions);
+                    var usersOptions = services.GetRequiredService<IOptions<UsersConfig>>();
+                    await RoleInitializer.InitializeAsync(userManager, rolesManager, photoOptions, usersOptions);
                 }
                 catch (Exception ex)
                 {

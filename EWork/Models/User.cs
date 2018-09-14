@@ -20,9 +20,11 @@ namespace EWork.Models
         [Display(Name = "Overview")]
         public string Description { get; set; }
 
+        public bool IsBlocked { get; set; } = false;
+
         public string ProfilePhotoName { get; set; }
 
-        public DateTime SingUpDate { get; set; }
+        public DateTime SignUpDate { get; set; }
         public Balance Balance { get; set; }
         public List<Review> Reviews { get; set; }
         public List<Job> Jobs { get; set; }
@@ -30,6 +32,7 @@ namespace EWork.Models
 
         [NotMapped]
         public string FullName => $"{Name} {Surname}";
+
         [NotMapped]
         public abstract string Role { get; }
     }

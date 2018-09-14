@@ -4,6 +4,7 @@
     {
         ITagManager TagManager { get; }
         IJobManager JobManager { get; }
+        IUserExtractor UserExtractor { get; }
         IReviewManager ReviewManager { get; }
         IBalanceManager BalanceManager { get; }
         IProposalManager ProposalManager { get; }

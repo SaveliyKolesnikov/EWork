@@ -1,4 +1,6 @@
-﻿using EWork.Config;
+﻿using System.Collections.Generic;
+using System.IO;
+using EWork.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -6,10 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using EWork.Data;
 using EWork.Hubs;
+using EWork.Middlewares;
 using EWork.Models;
 using EWork.Services.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace EWork
 {
@@ -24,17 +29,21 @@ namespace EWork
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.Configure<PhotoConfig>(Configuration.GetSection("Profile").GetSection("Photo"));
-            services.Configure<FreelancingPlatformConfig>(Configuration.GetSection("FreelancingPlatform"));
+
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.Configure<PhotoConfig>(Configuration.GetSection("Profile:Photo"));
+            services.Configure<FreelancingPlatformConfig>(Configuration.GetSection("FreelancingPlatform"));
+            services.Configure<UsersConfig>(Configuration.GetSection("FreelancingPlatform").GetSection("Users"));
 
             services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -70,6 +79,7 @@ namespace EWork
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+            app.UseMiddleware<UserBlockedMiddleware>();
 
             app.UseSignalR(route =>
             {

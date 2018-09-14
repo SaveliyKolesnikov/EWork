@@ -1,0 +1,262 @@
+﻿@model EWork.ViewModels.AdminPageViewModel<User>
+
+@{
+    ViewData["ActivePage"] = "Users";
+    ViewData["Title"] = "User manager";
+    var users = Model.Items;
+}
+
+@functions {
+double GetUserRating(IEnumerable<Review> reviews)
+{
+    if (reviews is null)
+        return 0;
+
+    var reviewsArr = reviews as Review[] ?? reviews.ToArray();
+    var res = reviewsArr.Length == 0 ? 0d : reviewsArr.Average(r => r.Value);
+
+    return res;
+}
+}
+
+<h2>User manager</h2>
+<form asp-controller="Admin" asp-action="Users" method="get">
+    <div class="form-group">
+        <label for="SearchString">User name:</label>
+        <div class="row">
+            <div class="col-xs-12 col-md-7">
+                <input type="text" class="form-control" name="SearchString" id="SearchString" value="@Model.SearchString">
+            </div>
+            <div class="col-xs-12 col-md-offset-2 col-md-3">
+                <input type="submit" class="form-control " id="submit" value="Search">
+            </div>
+        </div>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                UserName
+            </th>
+            <th>
+                FullName
+            </th>
+            <th>
+                Sign up date
+            </th>
+            <th>
+                Rating
+            </th>
+            <th>
+                Jobs
+            </th>
+            <th>
+                Money
+            </th>
+            <th>
+                IsBlocked
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody id="usersContainer">
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@user.UserName" title="@user.Id">@Html.DisplayFor(modelItem => user.UserName)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.SignUpDate)
+                </td>
+                <td>
+                    <rating>Rating: @GetUserRating(user.Reviews)</rating>
+                </td>
+                <td>
+                    @foreach (var job in user.Jobs ?? Enumerable.Empty<Job>())
+                    {
+                        <a asp-controller="Job" asp-action="JobInfo" asp-route-jobId="@job.Id">@job.Id </a>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Balance.Money)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.IsBlocked)
+                </td>
+                <td>
+                    @if (user.IsBlocked)
+                    {
+                        <form asp-action="UnblockUser">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Unblock @user.UserName">
+                                Unblock
+                            </a><br />
+                            <input type="hidden" name="userid" value="@user.Id" />
+                            <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
+                            @Html.AntiForgeryToken()
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="BlockUser">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Block @user.UserName">
+                                Block
+                            </a><br />
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
+                            @Html.AntiForgeryToken()
+                        </form>
+                    }
+                    @if (User.IsInRole("administrator"))
+                    {
+                        <form asp-action="DeleteUser">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#deleteUserModal" data-username="@user.UserName">
+                                Delete
+                            </a><br />
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <input id="deleteUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
+                            @Html.AntiForgeryToken()
+                        </form>
+
+                        <form asp-action="ReplenishBalance" class="replenish-balance-form" data-balanceid="@user.Balance.Id">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#replenishBalanceModal">
+                                Replenish Balance
+                            </a><br />
+
+                            <input type="hidden" name="balanceId" value="@user.Balance.Id" />
+                            <input id="amountOfReplenishmentInput" type="hidden" name="amount" value="0" />
+                            <input id="replenishBalanceSubmit" type="submit" style="display: none;" />
+                            @Html.AntiForgeryToken()
+                        </form>
+
+                        <form asp-action="DecreaseBalance" class="decrease-balance-form" data-balanceid="@user.Balance.Id">
+                            <a style="cursor: pointer;" data-toggle="modal" data-target="#decreaseBalanceModal">
+                                Decrease Balance
+                            </a><br />
+
+                            <input type="hidden" name="balanceId" value="@user.Balance.Id" />
+                            <input id="decreaseAmountInput" type="hidden" name="amount" value="0" />
+                            <input id="decreaseBalanceSubmit" type="submit" style="display: none;" />
+                            @Html.AntiForgeryToken()
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="row">
+    <div class="col-md-offset-3 col-md-6 text-center">
+        <button type="button" class="btn btn-primary" id="getMoreUsersButton">Load more users</button>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Block user modal -->
+<div class="modal fade" id="confirmBlockingModalCenter" tabindex="-1" role="dialog" aria-labelledby="blockUserModalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title text-capitalize" id="blockUserModalTitle"></h5>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary confirm-button">Yes</button>
+                <input type="hidden" name="blockedUserUserName" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete user modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title text-capitalize" id="deleteUserModalTitle"></h5>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary confirm-button">Yes</button>
+                <input type="hidden" name="deletedUserUserName" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Replenish balance modal-->
+<div class="modal fade" id="replenishBalanceModal" tabindex="-1" role="dialog" aria-labelledby="amountOfReplenishment" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title text-capitalize" id="replenishBalanceModalTitle"></h5>
+            </div>
+            <div class="modal-body">
+                <form class="disable-submitting-on-enter">
+                    <div class="form-group">
+                        <label for="amountOfReplenishment" class="label">Amount of replenishment:</label>
+                        <input type="number" step="0.01" class="form-control" id="amountOfReplenishment" min="0" value="0" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary confirm-button">Replenish</button>
+                <input type="hidden" name="balanceid" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Decrease balance modal-->
+<div class="modal fade" id="decreaseBalanceModal" tabindex="-1" role="dialog" aria-labelledby="decreaseBalanceModalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title text-capitalize" id="decreaseBalanceModalTitle"></h5>
+            </div>
+            <div class="modal-body">
+                <form class="disable-submitting-on-enter">
+                    <div class="form-group">
+                        <label for="amountOfReplenishment" class="label">Decrease amount:</label>
+                        <input type="number" step="0.01" class="form-control" id="decreaseAmount" min="0" value="0" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary confirm-button">Decrease</button>
+                <input type="hidden" name="balanceId" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+    {
+    <script type="text/javascript" src="~/js/admin/UsersView/modalsBindingMethods.js"></script>
+    <script type="text/javascript" src="~/js/admin/UsersView/ajaxUsersDownloading.js"></script>
+}

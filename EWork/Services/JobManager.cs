@@ -16,7 +16,13 @@ namespace EWork.Services
 
         public Task AddAsync(Job item) => _repository.AddAsync(item);
 
-        public Task DeleteAsync(Job item) => _repository.DeleteAsync(item);
+        public Task DeleteAsync(Job item)
+        {
+            if (!item.IsClosed && !(item.HiredFreelancer is null))
+                throw new ArgumentException("Job isn't closed.", nameof(item));
+
+            return _repository.DeleteAsync(item);
+        }
 
         public async Task DeleteRangeAsync(IEnumerable<Job> items) => await _repository.DeleteRangeAsync(items);
 

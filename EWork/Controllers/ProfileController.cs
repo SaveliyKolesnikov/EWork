@@ -35,6 +35,13 @@ namespace EWork.Controllers
             if (user is null)
                 return NotFound(username);
 
+            var isCurrentUserAdmin = User.IsInRole("moderator") || User.IsInRole("administrator");
+            switch (user)
+            {
+                case Moderator _ when !isCurrentUserAdmin:
+                    return Forbid();
+            }
+            
             var currentUser = await _userManager.GetUserAsync(User);
             var isCurrentUserCanAddReview =
                 await IsUserCanAddReviewAsync(reviewedUser: user, senderOfReview: currentUser);
