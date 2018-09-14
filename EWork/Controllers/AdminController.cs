@@ -41,7 +41,7 @@ namespace EWork.Controllers
         [Authorize(Roles = "administrator")]
         public IActionResult AllJobs(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString).Take(0);
+            var jobs = GetJobsByTitle(searchString).Take(5);
             var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
             return View(adminPageViewModel);
         }
@@ -77,7 +77,7 @@ namespace EWork.Controllers
 
         public IActionResult OpenedDisputes(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied);
+            var jobs = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied).Take(5);
             var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
             return View(adminPageViewModel);
         }
@@ -100,7 +100,7 @@ namespace EWork.Controllers
         {
 #if AllowUserDeletion
             var deletedUser = await _userManager.FindByIdAsync(userId);
-            if (deletedUser is null)
+            if (deletedUser is null || deletedUser is Administrator)
                 return UnprocessableEntity(userId);
 
             await _userManager.DeleteAsync(deletedUser);
@@ -122,7 +122,7 @@ namespace EWork.Controllers
         private async Task<IActionResult> ChangeBanStatus(string userId, bool banStatus)
         {
             var blockedUser = await _userManager.FindByIdAsync(userId);
-            if (blockedUser is null)
+            if (blockedUser is null || blockedUser is Administrator)
                 return UnprocessableEntity(userId);
 
             if (blockedUser.IsBlocked != banStatus)
@@ -207,6 +207,13 @@ namespace EWork.Controllers
             return Json(res);
         }
 
+        public IActionResult GetDisputedJobsAjax(int skipAmount, int takeAmount, string searchString)
+        {
+            var users = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied).Skip(skipAmount).Take(takeAmount);
+            var res = _jobMapper.MapRange(users);
+
+            return Json(res);
+        }
         #endregion
     }
 }
