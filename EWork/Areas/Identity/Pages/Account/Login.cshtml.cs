@@ -82,7 +82,7 @@ namespace EWork.Areas.Identity.Pages.Account
                     return Page();
                 }
 
-                if (currUser.IsBlocked)
+                if (currUser.IsBlocked && (await _signInManager.CheckPasswordSignInAsync(currUser, Input.Password, true)).Succeeded)
                 {
                     ModelState.AddModelError(string.Empty, "User is blocked.");
                     return Page();
