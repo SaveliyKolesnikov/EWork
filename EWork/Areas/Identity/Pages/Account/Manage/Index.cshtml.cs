@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Text.Encodings.Web;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Models;
@@ -212,6 +213,16 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                     using (var inputStream = new MemoryStream())
                     {
                         await Input.UploadedImage.CopyToAsync(inputStream);
+                            
+                        // A check on a hacking try.
+                        var content = System.Text.Encoding.UTF8.GetString(inputStream.GetBuffer());
+                        if (Regex.IsMatch(content, @"<script|<html|<head|<title|<body|<pre|<table|<a\s+href|<img|<plaintext|<cross\-domain\-policy",
+                            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline))
+                        {
+                            ModelState.AddModelError(string.Empty, "The profile picture must be an image.");
+                            return await OnGetAsync();
+                        }
+
                         using (var temp = new Bitmap(inputStream))
                         {
                             Image image;
