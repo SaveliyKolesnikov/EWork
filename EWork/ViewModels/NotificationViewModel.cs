@@ -6,10 +6,7 @@ namespace EWork.ViewModels
     public class NotificationViewModel
     {
         public NotificationViewModel(User currentUser, IQueryable<Notification> notifications)
-        {
-            CurrentUser = currentUser;
-            Notifications = notifications;
-        }
+            => (CurrentUser, Notifications) = (currentUser, notifications);
 
         public User CurrentUser { get; }
         public IQueryable<Notification> Notifications { get; }

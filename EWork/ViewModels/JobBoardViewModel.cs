@@ -7,13 +7,7 @@ namespace EWork.ViewModels
     public class JobBoardViewModel
     {
         public JobBoardViewModel(IQueryable<Job> jobs, IEnumerable<string> usedTags, string searchUrl, string getJobsAjaxMethodUrl, User currentUser = null)
-        {
-            Jobs = jobs;
-            UsedTags = usedTags;
-            SearchUrl = searchUrl;
-            GetJobsAjaxMethodUrl = getJobsAjaxMethodUrl;
-            CurrentUser = currentUser;
-        }
+            => (Jobs, UsedTags, SearchUrl, GetJobsAjaxMethodUrl, CurrentUser) = (jobs, usedTags, searchUrl, getJobsAjaxMethodUrl, currentUser);
 
         public User CurrentUser { get; }
         public IQueryable<Job> Jobs { get; }
