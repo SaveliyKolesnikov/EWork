@@ -23,6 +23,7 @@ namespace EWork.Controllers
     [Authorize(Roles = "employer, freelancer, moderator, administrator")]
     public class JobController : Controller
     {
+        private const int TakeAmount = 5;
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _environment;
@@ -42,17 +43,19 @@ namespace EWork.Controllers
             _jobMapper = jobMapper;
         }
 
-        public IActionResult JobBoard(string requiredTags)
+        public async Task<IActionResult> JobBoard(string requiredTags)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
             var jobs = GetJobsByTags(requiredTags);
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
 
+            jobs = jobs.Take(TakeAmount);
             var searchUrl = Url.Action("JobBoard");
             var ajaxSearchUrl = Url.Action("GetJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl, currentUser);
             return View(jobBoardViewModel);
         }
 
@@ -192,7 +195,7 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return Forbid();
 
-            var jobs = GetJobsByTags(requiredTags).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id);
+            var jobs = GetJobsByTags(requiredTags).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id).Take(TakeAmount);
 
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
@@ -222,20 +225,20 @@ namespace EWork.Controllers
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
-        [Authorize(Roles = "employer, moderator, administrator")]
-        public async Task<IActionResult> OpenedJobs(string requiredTags)
+        [Authorize(Roles = "employer")]
+        public async Task<IActionResult> EmployerOpenedJobs(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Forbid();
 
-            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id);
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer == null).Take(TakeAmount);
 
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
 
-            var searchUrl = Url.Action("OpenedJobs");
-            var ajaxSearchUrl = Url.Action("OpenedJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
+            var searchUrl = Url.Action("EmployerOpenedJobs");
+            var ajaxSearchUrl = Url.Action("EmployerOpenedJobsAjax");
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl, currentUser);
 
             ViewData["Title"] = "Jobs";
             ViewBag.Heading = "Opened Jobs";
@@ -243,9 +246,9 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer, moderator, administrator")]
+        [Authorize(Roles = "employer")]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> OpenedJobsAjax(int skipAmount, int takeAmount, string requiredTags)
+        public async Task<JsonResult> EmployerOpenedJobsAjax(int skipAmount, int takeAmount, string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
             {
@@ -253,27 +256,25 @@ namespace EWork.Controllers
                 return Json(new { message = "Authorization error." });
             }
 
-            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id)
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer == null)
                 .Skip(skipAmount).Take(takeAmount);
 
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
-
-
-        [Authorize(Roles = "employer, moderator, administrator")]
+        [Authorize(Roles = "employer")]
         public async Task<IActionResult> EmployerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Forbid();
 
-            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null);
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null).Take(TakeAmount);
 
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
             var searchUrl = Url.Action("EmployerContracts");
             var ajaxSearchUrl = Url.Action("EmployerContractsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl, currentUser);
 
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
@@ -281,7 +282,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer, moderator, administrator")]
+        [Authorize(Roles = "employer")]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> EmployerContractsAjax(int skipAmount, int takeAmount, string requiredTags)
         {
@@ -300,10 +301,9 @@ namespace EWork.Controllers
         [Authorize(Roles = "freelancer, moderator, administrator")]
         public async Task<IActionResult> AllFreelancerProposals(string requiredTags)
         {
-            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
-                return Forbid();
+            var currentUser = await _userManager.GetUserAsync(User);
 
-            var jobs = GetJobsByTags(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id));
+            var jobs = GetJobsByTags(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id)).Take(TakeAmount);
             var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
 
@@ -320,11 +320,7 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> AllFreelancerProposalsAjax(int skipAmount, int takeAmount, string requiredTags)
         {
-            if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
-            {
-                Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                return Json(new { message = "Authorization error." });
-            }
+            var currentUser = await _userManager.GetUserAsync(User);
 
             var jobs = GetJobsByTags(requiredTags).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id))
                 .Skip(skipAmount).Take(takeAmount);

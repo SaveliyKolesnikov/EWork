@@ -50,17 +50,24 @@
                                 </div>
                             </div>
                         </form>
-                        <li><a asp-area="" asp-controller="Job" asp-action="JobBoard">Job Board</a></li>
-
-                        if (User.IsInRole("employer"))
-                        {
-                            <li><a asp-area="" asp-controller="Job" asp-action="CreateJob">Create Job</a></li>
-                        }
-                        else if (User.IsInRole("freelancer"))
-                        {
-                            <li><a asp-area="" asp-controller="Job" asp-action="AllFreelancerProposals">My Proposals</a></li>
-                        }
-
+                        <li class="navbar-btn dropdown visible-md visible-lg visible-sm" >
+                            <button class="btn dropdown-toggle jobs-toggle" type="button" data-toggle="dropdown">Jobs
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a asp-area="" asp-controller="Job" asp-action="JobBoard">Job Board</a></li>
+                                @if (User.IsInRole("employer"))
+                                {
+                                    <li><a asp-area="" asp-controller="Job" asp-action="EmployerOpenedJobs">Opened Jobs</a></li>
+                                    <li><a asp-area="" asp-controller="Job" asp-action="EmployerContracts">My Contracts</a></li>
+                                    <li><a asp-area="" asp-controller="Job" asp-action="CreateJob">Create Job</a></li>
+                                }
+                                else if (User.IsInRole("freelancer"))
+                                {
+                                    <li><a asp-area="" asp-controller="Job" asp-action="FreelancerContracts">My Contracts</a></li>
+                                    <li><a asp-area="" asp-controller="Job" asp-action="AllFreelancerProposals">My Proposals</a></li>
+                                }
+                            </ul>
+                        </li>
 
                         var currentUser = await UserManager.GetUserAsync(User);
                         var numOfNotifications =

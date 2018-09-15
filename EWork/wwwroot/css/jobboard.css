@@ -2,6 +2,7 @@
     background: white;
     font-family: 'Poppins', sans-serif;
     font-size: 1.2em;
+    position: relative;
 }
 
     #jobs-container > * {
@@ -71,8 +72,19 @@
     font-family: Helvetica, Arial, sans-serif;
 }
 
-.job-tag:hover {
-    color: white;
-    background: #47d1f8;
-    cursor: pointer;
+    .job-tag:hover {
+        color: white;
+        background: #47d1f8;
+        cursor: pointer;
+    }
+
+
+.close-job {
+    background: transparent;
+    border: none;
+    position: absolute;
+    color: red;
+    right: 4%;
+    top: 2%;
+    font-size: 1.2em;
 }
