@@ -64,6 +64,17 @@ body {
     font-size: 4em;
 }
 
+.jobs-toggle {
+    color: #9d9d9d;
+    background: transparent;
+}
+
+    .jobs-toggle:hover,
+    .jobs-toggle:active ,
+    .jobs-toggle:focus{
+        color: white;
+    }
+
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */
