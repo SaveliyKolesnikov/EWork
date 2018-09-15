@@ -16,26 +16,26 @@
 }
 
 @functions {
-    double GetUserRating(IEnumerable<Review> reviews)
-    {
-        if (reviews is null)
-            return 0;
+double GetUserRating(IEnumerable<Review> reviews)
+{
+    if (reviews is null)
+        return 0;
 
-        var res = 0d;
-        try
-        {
-            res = reviews.Average(r => r.Value);
-        }
-        catch (InvalidOperationException)
-        {
-        }
-        return res;
-    }
-
-    string CreatePathToImage(string fileName)
+    var res = 0d;
+    try
     {
-        return System.IO.Path.Combine(Model.PathToProfilePhotos, fileName);
+        res = reviews.Average(r => r.Value);
     }
+    catch (InvalidOperationException)
+    {
+    }
+    return res;
+}
+
+string CreatePathToImage(string fileName)
+{
+    return System.IO.Path.Combine(Model.PathToProfilePhotos, fileName);
+}
 }
 
 @section Styles
@@ -49,322 +49,307 @@
 }
 
 <div class="container-fluid">
-<div class="row">
-    <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
-</div>
-<div class="row row-eq-height">
-    <div class="col-xs-12 col-md-8" id="jobs-container">
-        <div class="job-container">
-            <h4 class="job-title">
-                @job.Title
-            </h4>
-            <h5 class="posted-date">
-                Posted <span>@job.CreationDate</span>
-            </h5>
-            <div class="space-10"></div>
-            <div class="job-budget">
-                @job.Budget$ <br />
-            </div>
-            <p class="fixed-price">Fixed price</p>
-            <div class="job-description">
-                @job.Description
-            </div>
-            <div class="space-30"></div>
-            <div class="job-tags">
-                @foreach (var tag in job.JobTags.Select(jt => jt.Tag))
-                {
-                    <div class="job-tag">@tag.Text</div>
-                }
-            </div>
-            <div class="space-20"></div>
-            <div class="user-rating">Employer's rating: <span class="rating-value">@GetUserRating(job.Employer.Reviews)</span></div>
-        </div>
-    </div>
-    <div class="col-xs-12 col-md-4 profile-info padding-20">
-        <div class="row ">
-            <div class="col-xs-12 text-center">
-                <img class="profile-photo" src="@CreatePathToImage(job.Employer.ProfilePhotoName)" alt="Profile photo" />
-            </div>
-        </div>
-        <div class="space-10"></div>
-        <h4 class="text-center">
-            <a asp-controller="Profile" asp-action="Profile" asp-route-username="@job.Employer.UserName">
-                @@@job.Employer.UserName
-            </a>
-        </h4>
-        <h4 class="text-center">@job.Employer.FullName</h4>
-    </div>
-</div>
-<hr />
-@if (User.IsInRole("freelancer"))
-{
-    var hasProposalBeenSent = !(modelProposal is null);
-
     <div class="row">
-        <div class="col-xs-12 col-md-offset-1 col-md-10">
-            <h2 class="additional-details">Additional details</h2>
-            @if (hasProposalBeenSent)
-            {
-                var isFreelancerHired = !(Model?.CurrentUser?.Id is null) && !(Model.Job?.HiredFreelancer?.Id is null) &&
-                                        Model.CurrentUser.Id == Model.Job.HiredFreelancer.Id;
-                var readonlyTextArea = isFreelancerHired ? "readonly" : "";
-                if (isFreelancerHired)
-                {
-                    <label for="comment">Cover Letter:</label>
-                    <textarea class="form-control cover-letter " rows="5" id="comment" name="Proposal.Text" @readonlyTextArea>@modelProposal.Text</textarea>
-                    <div class="space-10"></div>
-                    <div class="row">
-                        <div class="col-xs-12 col-md-offset-3 col-md-6">
-                            @if (!job.IsClosed)
-                            {
-                                if (job.IsPaymentDenied)
-                                {
-                                    <h3 class="text-center alert-danger">
-                                        @job.Employer.UserName wants to deny a job.
-                                    </h3>
+        <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
+    </div>
+    <div class="row row-eq-height">
+        <div class="col-xs-12 col-md-8" id="jobs-container">
+            <div class="job-container">
+                <h4 class="job-title">
+                    @job.Title
+                </h4>
+                <h5 class="posted-date">
+                    Posted <span>@job.CreationDate</span>
+                </h5>
+                <div class="space-10"></div>
+                <div class="job-budget">
+                    @job.Budget$ <br />
+                </div>
+                <p class="fixed-price">Fixed price</p>
+                <div class="job-description">
+                    @job.Description
+                </div>
+                <div class="space-30"></div>
+                <div class="job-tags">
+                    @foreach (var tag in job.JobTags.Select(jt => jt.Tag))
+                    {
+                        <div class="job-tag">@tag.Text</div>
+                    }
+                </div>
+                <div class="space-20"></div>
+                <div class="user-rating">Employer's rating: <span class="rating-value">@GetUserRating(job.Employer.Reviews)</span></div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4 profile-info padding-20">
+            <div class="row ">
+                <div class="col-xs-12 text-center">
+                    <img class="profile-photo" src="@CreatePathToImage(job.Employer.ProfilePhotoName)" alt="Profile photo" />
+                </div>
+            </div>
+            <div class="space-10"></div>
+            <h4 class="text-center">
+                <a asp-controller="Profile" asp-action="Profile" asp-route-username="@job.Employer.UserName">
+                    @@@job.Employer.UserName
+                </a>
+            </h4>
+            <h4 class="text-center">@job.Employer.FullName</h4>
+        </div>
+    </div>
+    <hr />
+    @if (User.IsInRole("freelancer"))
+    {
+        var hasProposalBeenSent = !(modelProposal is null);
 
-                                    <div class="space-10"></div>
-                                    <div class="row">
-                                        <div class="col-xs-12 col-md-offset-1 col-md-5">
-                                            <form class="form-group" asp-controller="UsersInteractions" asp-action="AcceptDenying">
-                                                <input type="hidden" value="@job.Id" name="jobId" />
-                                                <input type="submit" class="button blue submit-input" value="Accept" />
-                                            </form>
-                                        </div>
-                                        <div class="col-xs-12 col-md-5">
-                                            <form class="form-group" asp-controller="UsersInteractions" asp-action="RefuseDenying">
-                                                <input type="hidden" value="@job.Id" name="jobId" />
-                                                <input type="submit" class="button red submit-input" value="Refuse" />
-                                            </form>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <h3 class="text-center cyan-color">
-                                        You are hired on this job.
-                                    </h3>
-                                }
-                            }
-                        </div>
-                    </div>
-                }
-                else if (!job.IsClosed)
+        <div class="row">
+            <div class="col-xs-12 col-md-offset-1 col-md-10">
+                <h2 class="additional-details">Additional details</h2>
+                @if (hasProposalBeenSent)
                 {
-                    <form class="form-group" asp-controller="Proposal" asp-action="UpdateProposal">
-                        <input type="hidden" value="@modelProposal.Id" name="Proposal.Id" />
-                        <input type="hidden" value="false" name="isDeleting" id="isDeleting" />
+                    var isFreelancerHired = !(Model?.CurrentUser?.Id is null) && !(Model.Job?.HiredFreelancer?.Id is null) &&
+                                            Model.CurrentUser.Id == Model.Job.HiredFreelancer.Id;
+                    var readonlyTextArea = isFreelancerHired ? "readonly" : "";
+                    if (isFreelancerHired)
+                    {
                         <label for="comment">Cover Letter:</label>
                         <textarea class="form-control cover-letter " rows="5" id="comment" name="Proposal.Text" @readonlyTextArea>@modelProposal.Text</textarea>
                         <div class="space-10"></div>
                         <div class="row">
-                            <div class="col-xs-12 col-md-offset-3 col-md-3">
-                                <input type="submit" class="button blue submit-input" value="Update A Proposal" />
-                            </div>
-                            <div class="col-xs-12 col-md-3">
-                                <input type="submit" class="button submit-input" value="Delete a proposal" onclick="$('#isDeleting').val(true);" />
-                            </div>
-                        </div>
-                    </form>
-
-                }
-
-            }
-            else if (!job.IsClosed)
-            {
-                <form class="form-group" asp-controller="Proposal" asp-action="CreateProposal">
-                    <input type="hidden" value="@job.Id" name="JobId" />
-                    <label for="comment">Cover Letter:</label>
-                    <textarea class="form-control cover-letter" rows="5" id="comment" name="Text"></textarea>
-                    <div class="space-10"></div>
-                    <div class="row">
-                        <div class="col-xs-12 col-md-offset-3 col-md-3">
-                            <input type="submit" class="button blue submit-input" value="Submit A Proposal" />
-                        </div>
-                        <div class="col-xs-12 col-md-3">
-                            <button asp-action="JobBoard" class="button submit-input">Cancel</button>
-                        </div>
-                    </div>
-                </form>
-            }
-        </div>
-    </div>
-
-}
-else if (User.IsInRole("employer"))
-{
-    var isFirstProposal = true;
-    var isFreelancerHired = !(job.HiredFreelancer is null);
-    <div class="row margin-bottom-20">
-        <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@(isFreelancerHired ? "Accepted proposal" : "Proposals")</h2>
-    </div>
-    <div id="proposals-container">
-        @foreach (var proposal in Model.Job.Proposals)
-        {
-            if (!isFirstProposal)
-            {
-                <hr />
-            }
-            else
-            {
-                isFirstProposal = false;
-            }
-            <div class="proposal">
-                <div class="row margin-bottom-25" style="">
-                    <div class="col-xs-12 col-md-4 profile-info padding-20">
-                        <div class="row">
-                            <div class="col-xs-12 text-center">
-                                <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo" />
-                            </div>
-                        </div>
-                        <div class="space-10"></div>
-                        <h4 class="text-center">
-                            <a asp-controller="Profile" asp-action="Profile" asp-route-username="@proposal.Sender.UserName">
-                                @@@proposal.Sender.UserName
-                            </a>
-                        </h4>
-                        <h4 class="text-center">@proposal.Sender.FullName</h4>
-                    </div>
-                    <div class="col-xs-12 col-md-8">
-                        <div class="row">
-                            <h3 class="proposal-cover-letter">Cover Letter:</h3>
-                            <div class="job-description">
-                                @proposal.Text
-                            </div>
-                            <h5 class="posted-date">
-                                Posted <span>@proposal.SendDate</span>
-                            </h5>
-                            <div class="user-rating">Freelancer's rating: <span class="rating-value">@GetUserRating(proposal.Sender.Reviews)</span></div>
-                        </div>
-                        @if (!job.IsClosed)
-                        {
-                            <div class="row" style="margin-top: 50px;">
-                                @if (!isFreelancerHired)
-                                {
-                                    <div class="col-xs-12 col-md-offset-4 col-md-4">
-                                        <form asp-controller="Proposal" asp-action="AcceptProposal">
-                                            <input type="hidden" value="@job.Id" name="JobId" />
-                                            <input type="hidden" value="@proposal.Id" name="ProposalId" />
-                                            <input type="submit" class="button blue submit-input" value="Hire Now" />
-                                        </form>
-                                    </div>
-                                }
-                                else
+                            <div class="col-xs-12 col-md-offset-3 col-md-6">
+                                @if (!job.IsClosed)
                                 {
                                     if (job.IsPaymentDenied)
                                     {
-                                        <h2 class="text-center text-danger" style="margin-top: -50px;">
-                                            Cancel requested.
-                                        </h2>
-                                    }
-                                    else
-                                    {
-                                        <div class="col-xs-12 col-md-offset-1 col-md-8">
-                                            <div class="row">
-                                                <div class="col-xs-6">
-                                                    <form asp-controller="UsersInteractions" asp-action="ApproveJob">
-                                                        <input type="hidden" value="@job.Id" name="JobId" />
-                                                        <input type="submit" class="button blue submit-input" value="Approve" />
-                                                    </form>
-                                                </div>
-                                                <div class="col-xs-6">
-                                                    <form asp-controller="UsersInteractions" asp-action="DenyFreelancersWork">
-                                                        <input type="hidden" value="@job.Id" name="JobId" />
-                                                        <input type="submit" class="button red submit-input" value="Deny" />
-                                                    </form>
-                                                </div>
+                                        <h3 class="text-center alert-danger">
+                                            @job.Employer.UserName wants to deny a job.
+                                        </h3>
+
+                                        <div class="space-10"></div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-offset-1 col-md-5">
+                                                <form class="form-group" asp-controller="UsersInteractions" asp-action="AcceptDenying">
+                                                    <input type="hidden" value="@job.Id" name="jobId" />
+                                                    <input type="submit" class="button blue submit-input" value="Accept" />
+                                                </form>
+                                            </div>
+                                            <div class="col-xs-12 col-md-5">
+                                                <form class="form-group" asp-controller="UsersInteractions" asp-action="RefuseDenying">
+                                                    <input type="hidden" value="@job.Id" name="jobId" />
+                                                    <input type="submit" class="button red submit-input" value="Refuse" />
+                                                </form>
                                             </div>
                                         </div>
                                     }
+                                    else
+                                    {
+                                        <h3 class="text-center cyan-color">
+                                            You are hired on this job.
+                                        </h3>
+                                    }
                                 }
                             </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
-else if (User.IsInRole("moderator") || User.IsInRole("administrator"))
-{
-    var isFirstProposal = true;
-    var isFreelancerHired = !(job.HiredFreelancer is null);
-    <div class="row">
-        <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@(isFreelancerHired ? "Accepted proposal" : "Proposals")</h2>
-    </div>
-    <div id="proposals-container">
-        @foreach (var proposal in Model.Job.Proposals)
-        {
-            if (!isFirstProposal)
-            {
-                <hr />
-            }
-            else
-            {
-                isFirstProposal = false;
-            }
-            <div class="proposal">
-                <div class="row margin-bottom-25">
-                    <div class="col-xs-12 col-md-4 profile-info padding-20">
-                        <div class="row">
-                            <div class="col-xs-12 text-center">
-                                <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo" />
-                            </div>
                         </div>
+                    }
+                    else if (!job.IsClosed)
+                    {
+                        <form class="form-group" asp-controller="Proposal" asp-action="UpdateProposal">
+                            <input type="hidden" value="@modelProposal.Id" name="Proposal.Id" />
+                            <input type="hidden" value="false" name="isDeleting" id="isDeleting" />
+                            <label for="comment">Cover Letter:</label>
+                            <textarea class="form-control cover-letter " rows="5" id="comment" name="Proposal.Text" @readonlyTextArea>@modelProposal.Text</textarea>
+                            <div class="space-10"></div>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-offset-3 col-md-3">
+                                    <input type="submit" class="button blue submit-input" value="Update A Proposal" />
+                                </div>
+                                <div class="col-xs-12 col-md-3">
+                                    <input type="submit" class="button submit-input" value="Delete a proposal" onclick="$('#isDeleting').val(true);" />
+                                </div>
+                            </div>
+                        </form>
+
+                    }
+
+                }
+                else if (!job.IsClosed)
+                {
+                    <form class="form-group" asp-controller="Proposal" asp-action="CreateProposal">
+                        <input type="hidden" value="@job.Id" name="JobId" />
+                        <label for="comment">Cover Letter:</label>
+                        <textarea class="form-control cover-letter" rows="5" id="comment" name="Text"></textarea>
                         <div class="space-10"></div>
-                        <h4 class="text-center">
-                            <a asp-controller="Profile" asp-action="Profile" asp-route-username="@proposal.Sender.UserName">
-                                @@@proposal.Sender.UserName
-                            </a>
-                        </h4>
-                        <h4 class="text-center">@proposal.Sender.FullName</h4>
-                    </div>
-                    <div class="col-xs-12 col-md-8">
                         <div class="row">
-                            <h3 class="proposal-cover-letter">Cover Letter:</h3>
-                            <div class="job-description">
-                                @proposal.Text
+                            <div class="col-xs-12 col-md-offset-3 col-md-3">
+                                <input type="submit" class="button blue submit-input" value="Submit A Proposal" />
                             </div>
-                            <h5 class="posted-date">
-                                Posted <span>@proposal.SendDate</span>
-                            </h5>
-                            <div class="user-rating">Freelancer's rating: <span class="rating-value">@GetUserRating(proposal.Sender.Reviews)</span></div>
+                            <div class="col-xs-12 col-md-3">
+                                <button asp-action="JobBoard" class="button submit-input">Cancel</button>
+                            </div>
                         </div>
-                        <div class="row" style="margin-top: 50px;">
-                            <div class="col-xs-12 col-md-offset-1 col-md-8">
-                                <div class="row">
-                                    @if (!job.IsClosed && job.IsPaymentDenied)
+                    </form>
+                }
+            </div>
+        </div>
+
+    }
+    else if (User.IsInRole("employer"))
+    {
+        var isFreelancerHired = !(job.HiredFreelancer is null);
+        <div class="row margin-bottom-20">
+            <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@(isFreelancerHired ? "Accepted proposal" : "Proposals")</h2>
+        </div>
+        <div id="proposals-container">
+            @foreach (var proposal in Model.Job.Proposals)
+            {
+                <div class="proposal">
+                    <div class="row margin-bottom-25" style="">
+                        <div class="col-xs-12 col-md-4 profile-info padding-20">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo" />
+                                </div>
+                            </div>
+                            <div class="space-10"></div>
+                            <h4 class="text-center">
+                                <a asp-controller="Profile" asp-action="Profile" asp-route-username="@proposal.Sender.UserName">
+                                    @@@proposal.Sender.UserName
+                                </a>
+                            </h4>
+                            <h4 class="text-center">@proposal.Sender.FullName</h4>
+                        </div>
+                        <div class="col-xs-12 col-md-8">
+                            <div class="row">
+                                <h3 class="proposal-cover-letter">Cover Letter:</h3>
+                                <div class="job-description">
+                                    @proposal.Text
+                                </div>
+                                <h5 class="posted-date">
+                                    Posted <span>@proposal.SendDate</span>
+                                </h5>
+                                <div class="user-rating">Freelancer's rating: <span class="rating-value">@GetUserRating(proposal.Sender.Reviews)</span></div>
+                            </div>
+                            @if (!job.IsClosed)
+                            {
+                                <div class="row" style="margin-top: 50px;">
+                                    @if (!isFreelancerHired)
                                     {
-                                        <div class="col-xs-6">
-                                            <form asp-controller="UsersInteractions" asp-action="ApproveJob">
+                                        <div class="col-xs-12 col-md-offset-4 col-md-4">
+                                            <form asp-controller="Proposal" asp-action="AcceptProposal">
                                                 <input type="hidden" value="@job.Id" name="JobId" />
-                                                <input type="submit" class="button blue submit-input" value="Pay" />
-                                            </form>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <form asp-controller="UsersInteractions" asp-action="AcceptDenying">
-                                                <input type="hidden" value="@job.Id" name="JobId" />
-                                                <input type="submit" class="button blue submit-input" value="Do not pay" />
+                                                <input type="hidden" value="@proposal.Id" name="ProposalId" />
+                                                <input type="submit" class="button blue submit-input" value="Hire Now" />
                                             </form>
                                         </div>
                                     }
+                                    else
+                                    {
+                                        if (job.IsPaymentDenied)
+                                        {
+                                            <h2 class="text-center text-danger" style="margin-top: -50px;">
+                                                Cancel requested.
+                                            </h2>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-xs-12 col-md-offset-1 col-md-8">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <form asp-controller="UsersInteractions" asp-action="ApproveJob">
+                                                            <input type="hidden" value="@job.Id" name="JobId" />
+                                                            <input type="submit" class="button blue submit-input" value="Approve" />
+                                                        </form>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <form asp-controller="UsersInteractions" asp-action="DenyFreelancersWork">
+                                                            <input type="hidden" value="@job.Id" name="JobId" />
+                                                            <input type="submit" class="button red submit-input" value="Deny" />
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
                                 </div>
-                                <div class="row">
-                                    <h3 class="cyan-color text-center">
-                                        <a asp-controller="Chat" asp-action="Dialog" asp-route-username1="@Model.Job.Employer.UserName" asp-route-username2="@Model.Job.HiredFreelancer.UserName">Chat history</a>
-                                    </h3>
-                                </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-}
+                <hr />
+            }
+        </div>
+    }
+    else if (User.IsInRole("moderator") || User.IsInRole("administrator"))
+    {
+        var isFreelancerHired = !(job.HiredFreelancer is null);
+        <div class="row">
+            <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@(isFreelancerHired ? "Accepted proposal" : "Proposals")</h2>
+        </div>
+        <div id="proposals-container">
+            @foreach (var proposal in Model.Job.Proposals)
+            {
+                <div class="proposal">
+                    <div class="row margin-bottom-25">
+                        <div class="col-xs-12 col-md-4 profile-info padding-20">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo" />
+                                </div>
+                            </div>
+                            <div class="space-10"></div>
+                            <h4 class="text-center">
+                                <a asp-controller="Profile" asp-action="Profile" asp-route-username="@proposal.Sender.UserName">
+                                    @@@proposal.Sender.UserName
+                                </a>
+                            </h4>
+                            <h4 class="text-center">@proposal.Sender.FullName</h4>
+                        </div>
+                        <div class="col-xs-12 col-md-8">
+                            <div class="row">
+                                <h3 class="proposal-cover-letter">Cover Letter:</h3>
+                                <div class="job-description">
+                                    @proposal.Text
+                                </div>
+                                <h5 class="posted-date">
+                                    Posted <span>@proposal.SendDate</span>
+                                </h5>
+                                <div class="user-rating">Freelancer's rating: <span class="rating-value">@GetUserRating(proposal.Sender.Reviews)</span></div>
+                            </div>
+                            @if (!job.IsClosed && job.IsPaymentDenied)
+                            {
+                                <div class="row" style="margin-top: 50px;">
+                                    <div class="col-xs-12 col-md-offset-1 col-md-8">
+                                        <div class="row">
+
+                                            <div class="col-xs-6">
+                                                <form asp-controller="UsersInteractions" asp-action="ApproveJob">
+                                                    <input type="hidden" value="@job.Id" name="JobId" />
+                                                    <input type="submit" class="button blue submit-input" value="Pay" />
+                                                </form>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <form asp-controller="UsersInteractions" asp-action="AcceptDenying">
+                                                    <input type="hidden" value="@job.Id" name="JobId" />
+                                                    <input type="submit" class="button blue submit-input" value="Do not pay" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <h3 class="cyan-color text-center">
+                                                <a asp-controller="Chat" asp-action="Dialog" asp-route-username1="@Model.Job.Employer.UserName" asp-route-username2="@Model.Job.HiredFreelancer.UserName">Chat history</a>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <hr />
+            }
+        </div>
+    }
 </div>
 
 @section Scripts
-{
+    {
     <script type="text/javascript" src="/js/job/searchingByClickingOnTags.js"></script>
 }
