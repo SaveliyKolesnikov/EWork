@@ -10,6 +10,8 @@
     {
         ViewBag.Heading = "Job Board";
     }
+
+    var isCurrentUserEmployer = Model.CurrentUser is Employer;
 }
 
 @section Styles {
@@ -32,7 +34,7 @@
             </div>
         </form>
         <div class="col-xs-12 col-md-offset-2 col-md-8" id="jobs-container">
-            @foreach (var job in Model.Jobs.Take(Model.TakeAmount))
+            @foreach (var job in Model.Jobs)
             {
                 <div class="job-container">
                     <h4 class="job-title">
@@ -68,6 +70,13 @@
                         }
                     }
                     <div class="user-rating">Employer rating: <span>@employerRating</span></div>
+                    @if (job.HiredFreelancer is null)
+                    {
+                        <form asp-action="DeleteJob">
+                            <input type="hidden" name="jobId" value="@job.Id" />
+                            <input type="submit" class="close-job" style="" value="&Chi;" />
+                        </form>
+                    }
                 </div>
             }
         </div>
