@@ -13,6 +13,7 @@ namespace EWork.Controllers
     [Authorize]
     public class NotificationController : Controller
     {
+        private const int TakeAmount = 5;
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
 
@@ -26,7 +27,7 @@ namespace EWork.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var userNotifications =
-                _freelancingPlatform.NotificationManager.GetAll().Where(n => n.Receiver.Id == user.Id);
+                _freelancingPlatform.NotificationManager.GetAll().Where(n => n.Receiver.Id == user.Id).Take(TakeAmount);
             var notificationViewModel = new NotificationViewModel(user, userNotifications);
             return View(notificationViewModel);
         }
@@ -40,6 +41,12 @@ namespace EWork.Controllers
 
             if (notification is null)
                 return UnprocessableEntity(notificationId);
+
+            if (notification.Receiver.Id != user.Id)
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return Json(new { message = "Authorization error." });
+            }
 
             await _freelancingPlatform.NotificationManager.DeleteNotificationAsync(user, notification);
             return Ok();

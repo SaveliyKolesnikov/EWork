@@ -4,11 +4,11 @@ using System.Linq;
 using EWork.Config;
 using EWork.Models;
 using EWork.Models.Json;
-using EWork.Services.Interfaces;
+using EWork.Services.Mappers.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace EWork.Services
+namespace EWork.Services.Mappers
 {
     public class MessageMapper : IMessageMapper
     {

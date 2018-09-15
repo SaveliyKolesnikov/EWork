@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EWork.Models;
 using EWork.Services.Interfaces;
-using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +21,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "freelancer")]
+        [Authorize(Roles = "freelancer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProposal(int proposalId)
         {

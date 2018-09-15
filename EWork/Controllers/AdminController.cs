@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Net;
-using System.Runtime.ExceptionServices;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using EWork.Config;
 using EWork.Exceptions;
@@ -22,6 +17,8 @@ namespace EWork.Controllers
     [Authorize(Roles = "moderator, administrator")]
     public class AdminController : Controller
     {
+        private const int TakeAmount = 5;
+
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
         private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformOptions;
@@ -41,7 +38,7 @@ namespace EWork.Controllers
         [Authorize(Roles = "administrator")]
         public IActionResult AllJobs(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString).Take(5);
+            var jobs = GetJobsByTitle(searchString).Take(TakeAmount);
             var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
             return View(adminPageViewModel);
         }
@@ -49,12 +46,13 @@ namespace EWork.Controllers
         [Authorize(Roles = "administrator")]
         public async Task<IActionResult> Users(string searchString)
         {
-            var users = GetUsersByUserName(searchString).Take(5);
+            var users = GetUsersByUserName(searchString).Take(TakeAmount);
 
             foreach (var user in users)
             {
                 user.Jobs = await GetUserJobs(user.Id).ToListAsync();
             }
+
             var adminPageViewModel = new AdminPageViewModel<User>(users, searchString);
             return View(adminPageViewModel);
         }
@@ -77,7 +75,7 @@ namespace EWork.Controllers
 
         public IActionResult OpenedDisputes(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied).Take(5);
+            var jobs = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied).Take(TakeAmount);
             var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
             return View(adminPageViewModel);
         }
@@ -91,12 +89,14 @@ namespace EWork.Controllers
                 jobs = jobs.Where(job => job.Title.StartsWith(title));
             }
 
-            return jobs.Take(5);
+            return jobs.Take(TakeAmount);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+#pragma warning disable 1998
         public async Task<IActionResult> DeleteUser(string userId)
+#pragma warning restore 1998
         {
 #if AllowUserDeletion
             var deletedUser = await _userManager.FindByIdAsync(userId);
@@ -214,6 +214,7 @@ namespace EWork.Controllers
 
             return Json(res);
         }
+
         #endregion
     }
 }

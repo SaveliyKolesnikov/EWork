@@ -2,7 +2,7 @@
 using EWork.Models;
 using EWork.Models.Json;
 
-namespace EWork.Services.Interfaces
+namespace EWork.Services.Mappers.Interfaces
 {
     public interface IMessageMapper
     {

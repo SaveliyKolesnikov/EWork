@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using EWork.Data.Extensions;
 using EWork.Data.Interfaces;
 using EWork.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Data.Repositories
@@ -13,12 +12,10 @@ namespace EWork.Data.Repositories
     public class BalanceRepository : IBalanceRepository
     {
         private readonly IFreelancingPlatiformDbContext _db;
-        private readonly UserManager<User> _userManager;
 
-        public BalanceRepository(IFreelancingPlatiformDbContext db, UserManager<User> userManager)
+        public BalanceRepository(IFreelancingPlatiformDbContext db)
         {
             _db = db;
-            _userManager = userManager;
         }
 
         public async Task AddAsync(Balance balance)

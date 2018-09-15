@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using EWork.Config;
+﻿using EWork.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -11,10 +9,8 @@ using EWork.Hubs;
 using EWork.Middlewares;
 using EWork.Models;
 using EWork.Services.Extensions;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace EWork
 {

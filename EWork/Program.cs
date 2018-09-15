@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using EWork.Config;
@@ -10,7 +9,6 @@ using EWork.Services.Interfaces;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

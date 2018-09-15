@@ -22,7 +22,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer, moderator")]
+        [Authorize(Roles = "employer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveJob(int jobId)
         {
@@ -79,7 +79,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "freelancer, moderator")]
+        [Authorize(Roles = "freelancer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcceptDenying(int jobId)
         {

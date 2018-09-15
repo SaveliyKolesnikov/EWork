@@ -100,7 +100,7 @@ namespace EWork.Controllers
             {
                 var reviewFromDb = await _freelancingPlatform.ReviewManager
                 .FindAsync(r => r.Id == review.Id) ??
-                      throw new ArgumentException($"User hasn't sent a review");
+                      throw new ArgumentException("User hasn't sent a review");
 
                 reviewFromDb.Text = review.Text;
                 reviewFromDb.Value = review.Value;

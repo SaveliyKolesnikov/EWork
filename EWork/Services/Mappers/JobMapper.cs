@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using EWork.Models;
 using EWork.Models.Json;
 using EWork.Services.Mappers.Interfaces;

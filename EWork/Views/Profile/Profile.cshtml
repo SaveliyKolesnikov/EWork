@@ -1,20 +1,20 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @model EWork.ViewModels.ProfileViewModel
-@inject UserManager<User> _userManager
+@inject UserManager<User> UserManager
 @{
     var profileOwner = Model.ProfileOwner;
     ViewData["Title"] = "Profile";
     ViewBag.Heading = $"{profileOwner.UserName}'s Profile";
     var reviewMessage = string.Empty;
     var hasReviewBeenSent = false;
-    Review sendedReview = null;
+    Review sentReview = null;
     if (Model.IsCanAddReview)
     {
-        sendedReview = Model.ProfileOwner.Reviews.FirstOrDefault(r => r.Sender.Id == Model.CurrentUser.Id);
-        hasReviewBeenSent = !(sendedReview is null);
+        sentReview = Model.ProfileOwner.Reviews.FirstOrDefault(r => r.Sender.Id == Model.CurrentUser.Id);
+        hasReviewBeenSent = !(sentReview is null);
         reviewMessage = (hasReviewBeenSent ? "Update" : "Send") + " Review";
     }
-    Model.Review = sendedReview;
+    Model.Review = sentReview;
 }
 
 @section Styles
@@ -40,7 +40,7 @@
                 </div>
                 <div class="space-10"></div>
                 <div class="justify-content-container">
-                    @if (_userManager.GetUserName(User) != profileOwner.UserName)
+                    @if (UserManager.GetUserName(User) != profileOwner.UserName)
                     {
                         <a asp-controller="Chat" asp-action="Index" asp-route-receiverUsername="@profileOwner.UserName" title="Send Message" class="justify-content-container" style="width: 100%; text-decoration: none;">
                             <button class="button blue" id="sendMessageBtn">Send Message</button>
@@ -78,7 +78,7 @@
                                                 <label asp-for="Review.Value"></label>
                                                 <input asp-for="Review.Value" id="review-rate" type="number" name="review.value" required="required" step="0.1" min="0.1" max="10" />
                                             </div>
-                                            <input type="hidden" name="review.id" value="@sendedReview.Id" />
+                                            <input type="hidden" name="review.id" value="@sentReview.Id" />
                                             <input type="hidden" name="nameOfReviewedUser" value="@Model.ProfileOwner.UserName" />
                                             <input id="submitReview" type="submit" style="display: none;" />
                                         </form>

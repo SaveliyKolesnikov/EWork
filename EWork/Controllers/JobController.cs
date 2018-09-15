@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
 
 namespace EWork.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "employer, freelancer, moderator, administrator")]
     public class JobController : Controller
     {
         private readonly IFreelancingPlatform _freelancingPlatform;
@@ -42,7 +42,6 @@ namespace EWork.Controllers
             _jobMapper = jobMapper;
         }
 
-        [Authorize(Roles = "employer, freelancer, moderator")]
         public IActionResult JobBoard(string requiredTags)
         {
             var jobs = GetJobsByTags(requiredTags);
@@ -74,6 +73,7 @@ namespace EWork.Controllers
         private IQueryable<Job> GetJobsByTags(string requiredTags)
         {
             var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
+
             if (!(requiredTags is null))
             {
                 // Tag length cannot be greater than 20.
@@ -100,7 +100,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer, moderator")]
+        [Authorize(Roles = "employer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteJob(int jobId)
         {
@@ -130,10 +130,11 @@ namespace EWork.Controllers
                 return Forbid();
 
             var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
-            var curUserBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id);
+            var currentUserBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id);
+
             try
             {
-                await _freelancingPlatform.BalanceManager.TransferMoneyAsync(curUserBalance, platformBalance,
+                await _freelancingPlatform.BalanceManager.TransferMoneyAsync(currentUserBalance, platformBalance,
                     job.Budget);
             }
             catch (NotEnoughMoneyException e)
@@ -158,8 +159,6 @@ namespace EWork.Controllers
             return Redirect("JobBoard");
         }
 
-        [HttpGet]
-        [Authorize(Roles = "employer, freelancer, moderator")]
         public async Task<IActionResult> JobInfo(int jobId)
         {
             var job = await _freelancingPlatform.JobManager.FindAsync(j => j.Id == jobId);
@@ -187,7 +186,7 @@ namespace EWork.Controllers
 
 
 
-        [Authorize(Roles = "freelancer")]
+        [Authorize(Roles = "freelancer, moderator, administrator")]
         public async Task<IActionResult> FreelancerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
@@ -207,7 +206,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "freelancer")]
+        [Authorize(Roles = "freelancer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> FreelancerContractsAjax(int skipAmount, int takeAmount, string requiredTags)
         {
@@ -223,7 +222,7 @@ namespace EWork.Controllers
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "employer, moderator, administrator")]
         public async Task<IActionResult> OpenedJobs(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
@@ -244,7 +243,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "employer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> OpenedJobsAjax(int skipAmount, int takeAmount, string requiredTags)
         {
@@ -262,7 +261,7 @@ namespace EWork.Controllers
 
 
 
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "employer, moderator, administrator")]
         public async Task<IActionResult> EmployerContracts(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
@@ -282,7 +281,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "employer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> EmployerContractsAjax(int skipAmount, int takeAmount, string requiredTags)
         {
@@ -298,7 +297,7 @@ namespace EWork.Controllers
             return Json(_jobMapper.MapRange(await jobs.ToArrayAsync()));
         }
 
-        [Authorize(Roles = "freelancer")]
+        [Authorize(Roles = "freelancer, moderator, administrator")]
         public async Task<IActionResult> AllFreelancerProposals(string requiredTags)
         {
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
@@ -317,7 +316,7 @@ namespace EWork.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "employer")]
+        [Authorize(Roles = "freelancer, moderator, administrator")]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> AllFreelancerProposalsAjax(int skipAmount, int takeAmount, string requiredTags)
         {

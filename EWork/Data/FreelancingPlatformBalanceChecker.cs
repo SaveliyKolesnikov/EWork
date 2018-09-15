@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using EWork.Config;
-using EWork.Data.Interfaces;
 using EWork.Exceptions;
 using EWork.Services.Interfaces;
 using Microsoft.Extensions.Options;
