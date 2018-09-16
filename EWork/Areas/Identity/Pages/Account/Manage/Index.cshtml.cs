@@ -179,11 +179,11 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var curUserBalance = await _balanceManager.FindAsync(b => b.UserId == user.Id);
-            if (Input.AmountOfReplenishment > 0)
-            {
-                await _balanceManager.ReplenishBalanceAsync(curUserBalance, Input.AmountOfReplenishment);
-            }
+            //var curUserBalance = await _balanceManager.FindAsync(b => b.UserId == user.Id);
+            //if (Input.AmountOfReplenishment > 0)
+            //{
+            //    await _balanceManager.ReplenishBalanceAsync(curUserBalance, Input.AmountOfReplenishment);
+            //}
 
             if (!(Input.UploadedImage is null || Input.UploadedImage.Length == 0))
             {
