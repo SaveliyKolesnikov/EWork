@@ -10,16 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EWork</title>
     @RenderSection("Styles", false)
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-    </environment>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -50,9 +42,11 @@
                                 </div>
                             </div>
                         </form>
-                        <li class="navbar-btn dropdown visible-md visible-lg visible-sm" >
-                            <button class="btn dropdown-toggle jobs-toggle" type="button" data-toggle="dropdown">Jobs
-                                <span class="caret"></span></button>
+                        <li class="navbar-btn dropdown visible-md visible-lg visible-sm">
+                            <button class="btn dropdown-toggle jobs-toggle" type="button" data-toggle="dropdown">
+                                Jobs
+                                <span class="caret"></span>
+                            </button>
                             <ul class="dropdown-menu">
                                 <li><a asp-area="" asp-controller="Job" asp-action="JobBoard">Job Board</a></li>
                                 @if (User.IsInRole("employer"))
