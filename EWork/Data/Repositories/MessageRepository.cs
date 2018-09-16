@@ -57,6 +57,9 @@ namespace EWork.Data.Repositories
                     case Moderator moderator:
                         _db.Moderators.Attach(moderator);
                         break;
+                    case Administrator administrator:
+                        _db.Administrators.Attach(administrator);
+                        break;
                 }
             }
         }

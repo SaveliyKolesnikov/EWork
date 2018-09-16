@@ -21,10 +21,10 @@ namespace EWork.Data.Repositories
             _userManager = userManager;
         }
 
-        [Obsolete("AddAsync user async is deprecated, please use UserManager method instead.")]
+        [Obsolete("AddAsync user async is deprecated. Please, use UserManager method instead.")]
         public Task AddAsync(User user)
         {
-            throw new NotImplementedException("AddAsync user async is deprecated, please use UserManager method instead.");
+            throw new NotImplementedException("AddAsync user async is deprecated. Please, use UserManager method instead.");
         }
 
         public Task DeleteAsync(User user) => _userManager.DeleteAsync(user);
