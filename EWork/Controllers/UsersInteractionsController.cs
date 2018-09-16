@@ -69,7 +69,7 @@ namespace EWork.Controllers
             var notification = new Notification
             {
                 Receiver = job.HiredFreelancer,
-                CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.UtcNow,
                 Source = Url.Action("JobInfo", "Job", new { jobId }),
                 Title = $"{currentUser.UserName} wants to deny a job. Please follow the link and choose an action."
             };
@@ -114,7 +114,7 @@ namespace EWork.Controllers
             var notification = new Notification
             {
                 Receiver = await _moderatorManager.GetModeratorAsync(),
-                CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.UtcNow,
                 Source = Url.Action("JobInfo", "Job", new { jobId }),
                 Title = $"{job.Employer} wants to deny a job. Please follow the link and choose an action."
             };
