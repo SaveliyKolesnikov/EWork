@@ -2,7 +2,6 @@
     background: white;
     font-family: 'Poppins', sans-serif;
     font-size: 1.2em;
-    position: relative;
 }
 
     #jobs-container > * {
@@ -13,6 +12,7 @@
     padding: 10px 30px;
     background: #F9FCFF;
     margin-bottom: 20px;
+    position: relative;
 }
 
     .job-container:hover {
