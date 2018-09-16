@@ -4,7 +4,7 @@
 });
 
 function downloadNotifications(takeAmount) {
-    let token = $('input[name="__RequestVerificationToken"]', $('#antiForgeryToken')).val();
+    let token = $('input[name="__RequestVerificationToken"]').first().val();
     let amountOfNotificationsNow = $('#notificationsTable>tr')
         .filter((idx, item) => $(item).css('display') !== 'none').length;
     let notificationReceiverUserName = $('input[name="notificationReceiver"]').val();
