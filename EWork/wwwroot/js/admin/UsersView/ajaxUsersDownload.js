@@ -37,6 +37,9 @@ function addUserToTable(user) {
             <a href="/Profile/Profile?username=${user.userName}">${user.userName}</a>
         </td >
         <td>
+            ${user.role}
+        </td>
+        <td>
             ${user.fullName}
         </td>
         <td>

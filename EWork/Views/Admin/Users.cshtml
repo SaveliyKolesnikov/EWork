@@ -40,6 +40,9 @@ double GetUserRating(IEnumerable<Review> reviews)
                 UserName
             </th>
             <th>
+                Role
+            </th>
+            <th>
                 FullName
             </th>
             <th>
@@ -65,89 +68,92 @@ double GetUserRating(IEnumerable<Review> reviews)
     <tbody id="usersContainer">
         @foreach (var user in users)
         {
-            <tr>
-                <td>
-                    <a asp-controller="Profile" asp-action="Profile" asp-route-username="@user.UserName" title="@user.Id">@Html.DisplayFor(modelItem => user.UserName)</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => user.FullName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => user.SignUpDate)
-                </td>
-                <td>
-                    <rating>Rating: @GetUserRating(user.Reviews)</rating>
-                </td>
-                <td>
-                    @foreach (var job in user.Jobs ?? Enumerable.Empty<Job>())
-                    {
-                        <a asp-controller="Job" asp-action="JobInfo" asp-route-jobId="@job.Id">@job.Id </a>
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => user.Balance.Money)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => user.IsBlocked)
-                </td>
-                <td>
-                    @if (user.IsBlocked)
-                    {
-                        <form asp-action="UnblockUser">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Unblock @user.UserName">
-                                Unblock
-                            </a><br />
-                            <input type="hidden" name="userid" value="@user.Id" />
-                            <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
-                        </form>
-                    }
-                    else
-                    {
-                        <form asp-action="BlockUser">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Block @user.UserName">
-                                Block
-                            </a><br />
-                            <input type="hidden" name="userId" value="@user.Id" />
-                            <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
-                        </form>
-                    }
-                    @if (User.IsInRole("administrator"))
-                    {
-                        <form asp-action="DeleteUser">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#deleteUserModal" data-username="@user.UserName">
-                                Delete
-                            </a><br />
-                            <input type="hidden" name="userId" value="@user.Id" />
-                            <input id="deleteUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
-                        </form>
+        <tr>
+            <td>
+                <a asp-controller="Profile" asp-action="Profile" asp-route-username="@user.UserName" title="@user.Id">@Html.DisplayFor(modelItem => user.UserName)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.Role)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.SignUpDate)
+            </td>
+            <td>
+                <rating>Rating: @GetUserRating(user.Reviews)</rating>
+            </td>
+            <td>
+                @foreach (var job in user.Jobs ?? Enumerable.Empty<Job>())
+                {
+                    <a asp-controller="Job" asp-action="JobInfo" asp-route-jobId="@job.Id">@job.Id </a>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.Balance.Money)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.IsBlocked)
+            </td>
+            <td>
+                @if (user.IsBlocked)
+                {
+                    <form asp-action="UnblockUser">
+                        <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Unblock @user.UserName">
+                            Unblock
+                        </a><br />
+                        <input type="hidden" name="userid" value="@user.Id" />
+                        <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
+                        @Html.AntiForgeryToken()
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="BlockUser">
+                        <a style="cursor: pointer;" data-toggle="modal" data-target="#confirmBlockingModalCenter" data-username="@user.UserName" data-text="Block @user.UserName">
+                            Block
+                        </a><br />
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
+                        @Html.AntiForgeryToken()
+                    </form>
+                }
+                @if (User.IsInRole("administrator"))
+                {
+                    <form asp-action="DeleteUser">
+                        <a style="cursor: pointer;" data-toggle="modal" data-target="#deleteUserModal" data-username="@user.UserName">
+                            Delete
+                        </a><br />
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <input id="deleteUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
+                        @Html.AntiForgeryToken()
+                    </form>
 
-                        <form asp-action="ReplenishBalance" class="replenish-balance-form" data-balanceid="@user.Balance.Id">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#replenishBalanceModal">
-                                Replenish Balance
-                            </a><br />
+                    <form asp-action="ReplenishBalance" class="replenish-balance-form" data-balanceid="@user.Balance.Id">
+                        <a style="cursor: pointer;" data-toggle="modal" data-target="#replenishBalanceModal">
+                            Replenish Balance
+                        </a><br />
 
-                            <input type="hidden" name="balanceId" value="@user.Balance.Id" />
-                            <input id="amountOfReplenishmentInput" type="hidden" name="amount" value="0" />
-                            <input id="replenishBalanceSubmit" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
-                        </form>
+                        <input type="hidden" name="balanceId" value="@user.Balance.Id" />
+                        <input id="amountOfReplenishmentInput" type="hidden" name="amount" value="0" />
+                        <input id="replenishBalanceSubmit" type="submit" style="display: none;" />
+                        @Html.AntiForgeryToken()
+                    </form>
 
-                        <form asp-action="DecreaseBalance" class="decrease-balance-form" data-balanceid="@user.Balance.Id">
-                            <a style="cursor: pointer;" data-toggle="modal" data-target="#decreaseBalanceModal">
-                                Decrease Balance
-                            </a><br />
+                    <form asp-action="DecreaseBalance" class="decrease-balance-form" data-balanceid="@user.Balance.Id">
+                        <a style="cursor: pointer;" data-toggle="modal" data-target="#decreaseBalanceModal">
+                            Decrease Balance
+                        </a><br />
 
-                            <input type="hidden" name="balanceId" value="@user.Balance.Id" />
-                            <input id="decreaseAmountInput" type="hidden" name="amount" value="0" />
-                            <input id="decreaseBalanceSubmit" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
-                        </form>
-                    }
-                </td>
-            </tr>
+                        <input type="hidden" name="balanceId" value="@user.Balance.Id" />
+                        <input id="decreaseAmountInput" type="hidden" name="amount" value="0" />
+                        <input id="decreaseBalanceSubmit" type="submit" style="display: none;" />
+                        @Html.AntiForgeryToken()
+                    </form>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

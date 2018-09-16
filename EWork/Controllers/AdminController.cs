@@ -183,6 +183,7 @@ namespace EWork.Controllers
             var res =  users.Select(u => new
             {
                 u.Id,
+                u.Role,
                 u.UserName,
                 u.FullName,
                 u.SignUpDate,
