@@ -47,7 +47,6 @@ string CreatePathToImage(string fileName)
     <link href="/css/button.css" rel="stylesheet" type="text/css" />
     <link href="/css/profile.css" rel="stylesheet" type="text/css" />
 }
-
 <div class="container-fluid">
     <div class="row">
         <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
@@ -102,6 +101,7 @@ string CreatePathToImage(string fileName)
 
         <div class="row">
             <div class="col-xs-12 col-md-offset-1 col-md-10">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <h2 class="additional-details">Additional details</h2>
                 @if (hasProposalBeenSent)
                 {
@@ -152,10 +152,12 @@ string CreatePathToImage(string fileName)
                     else if (!job.IsClosed)
                     {
                         <form class="form-group" asp-controller="Proposal" asp-action="UpdateProposal">
+                            <div asp-validation-summary="All" class="text-danger"></div>
                             <input type="hidden" value="@modelProposal.Id" name="Proposal.Id" />
                             <input type="hidden" value="false" name="isDeleting" id="isDeleting" />
                             <label for="comment">Cover Letter:</label>
-                            <textarea class="form-control cover-letter " rows="5" id="comment" name="Proposal.Text" @readonlyTextArea>@modelProposal.Text</textarea>
+                            <label></label>
+                            <textarea asp-for="Proposal.Text" class="form-control cover-letter " rows="5" id="comment" name="Proposal.Text" @readonlyTextArea>@modelProposal.Text</textarea>
                             <div class="space-10"></div>
                             <div class="row">
                                 <div class="col-xs-12 col-md-offset-3 col-md-3">
@@ -166,16 +168,16 @@ string CreatePathToImage(string fileName)
                                 </div>
                             </div>
                         </form>
-
                     }
-
                 }
                 else if (!job.IsClosed)
                 {
                     <form class="form-group" asp-controller="Proposal" asp-action="CreateProposal">
+                        <div asp-validation-summary="All" class="text-danger"></div>
                         <input type="hidden" value="@job.Id" name="JobId" />
                         <label for="comment">Cover Letter:</label>
-                        <textarea class="form-control cover-letter" rows="5" id="comment" name="Text"></textarea>
+                        <textarea asp-for="Proposal.Text" class="form-control cover-letter" rows="5" id="comment" name="Text"></textarea>
+                        <span asp-validation-for="Proposal.Text" class="text-danger"></span>
                         <div class="space-10"></div>
                         <div class="row">
                             <div class="col-xs-12 col-md-offset-3 col-md-3">
@@ -290,15 +292,15 @@ string CreatePathToImage(string fileName)
                     @if (proposal.Job.HiredFreelancer is null)
                     {
                         <form asp-controller="Proposal" asp-action="DeleteProposal">
-                            <input type="hidden" name="proposalId" value="@proposal.Id"/>
-                            <input type="submit" class="delete-proposal" style="" value="&Chi;"/>
+                            <input type="hidden" name="proposalId" value="@proposal.Id" />
+                            <input type="submit" class="delete-proposal" style="" value="&Chi;" />
                         </form>
                     }
                     <div class="row margin-bottom-25">
                         <div class="col-xs-12 col-md-4 profile-info padding-20">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo"/>
+                                    <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo" />
                                 </div>
                             </div>
                             <div class="space-10"></div>
@@ -328,14 +330,14 @@ string CreatePathToImage(string fileName)
 
                                             <div class="col-xs-6">
                                                 <form asp-controller="UsersInteractions" asp-action="ApproveJob">
-                                                    <input type="hidden" value="@job.Id" name="JobId"/>
-                                                    <input type="submit" class="button blue submit-input" value="Pay"/>
+                                                    <input type="hidden" value="@job.Id" name="JobId" />
+                                                    <input type="submit" class="button blue submit-input" value="Pay" />
                                                 </form>
                                             </div>
                                             <div class="col-xs-6">
                                                 <form asp-controller="UsersInteractions" asp-action="AcceptDenying">
-                                                    <input type="hidden" value="@job.Id" name="JobId"/>
-                                                    <input type="submit" class="button blue submit-input" value="Do not pay"/>
+                                                    <input type="hidden" value="@job.Id" name="JobId" />
+                                                    <input type="submit" class="button blue submit-input" value="Do not pay" />
                                                 </form>
                                             </div>
                                         </div>
@@ -359,4 +361,5 @@ string CreatePathToImage(string fileName)
 @section Scripts
     {
     <script type="text/javascript" src="/js/job/searchingByClickingOnTags.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
