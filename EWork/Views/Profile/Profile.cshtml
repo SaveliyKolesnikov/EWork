@@ -129,7 +129,10 @@
                 <p class="user-role cyan-color text-capitalize">@profileOwner.Role</p>
                 <h3 class="">Overview</h3>
                 <div class="user-description">
-                    @profileOwner.Description
+                    @foreach (var paragraph in profileOwner.Description?.Replace("\r", "").Split("\n") ?? Enumerable.Empty<string>())
+                    {
+                        <span>@paragraph</span><br/>
+                    }
                 </div>
                 <div class="space-20"></div>
                 @{
