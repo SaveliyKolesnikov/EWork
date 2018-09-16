@@ -30,11 +30,36 @@ namespace EWork.Controllers
                 return UnprocessableEntity(proposalId);
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if (deletedProposal.Sender.Id != currentUser.Id)
+            var isCurrentUserFromAdministration = currentUser is Administrator || currentUser is Moderator;
+            if (!isCurrentUserFromAdministration && deletedProposal.Sender.Id != currentUser.Id)
                 return Forbid();
 
             await _freelancingPlatform.ProposalManager.DeleteAsync(deletedProposal);
-            return RedirectToAction("JobBoard", "Job");
+
+            if (isCurrentUserFromAdministration)
+            {
+                var notification = new Notification
+                {
+                    Receiver = deletedProposal.Sender,
+                    Title =
+                        $"{FirstCharToUpper(currentUser.Role)} {currentUser.UserName} deleted your proposal on the job \"{deletedProposal.Job.Title}\".",
+                    Source = Url.Action("JobInfo", "Job", new { jobid = deletedProposal.Job.Id }),
+                    CreatedDate = DateTime.UtcNow
+                };
+                await _freelancingPlatform.NotificationManager.AddNotificationAsync(notification);
+            }
+
+            return RedirectToAction("JobInfo", "Job", new {jobid = deletedProposal.Job.Id});
+
+            string FirstCharToUpper(string input)
+            {
+                switch (input)
+                {
+                    case null: throw new ArgumentNullException(nameof(input));
+                    case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
+                    default: return input.First().ToString().ToUpper() + input.Substring(1);
+                }
+            }
         }
 
         [HttpPost]
