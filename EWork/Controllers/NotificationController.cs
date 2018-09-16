@@ -7,6 +7,8 @@ using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace EWork.Controllers
 {
@@ -23,14 +25,7 @@ namespace EWork.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> UserNotificationsPage()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            var userNotifications =
-                _freelancingPlatform.NotificationManager.GetAll().Where(n => n.Receiver.Id == user.Id).Take(TakeAmount);
-            var notificationViewModel = new NotificationViewModel(user, userNotifications);
-            return View(notificationViewModel);
-        }
+        public IActionResult UserNotificationsPage() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -66,7 +61,12 @@ namespace EWork.Controllers
                 .Where(n => n.Receiver.UserName == receiverUserName)
                 .Skip(skipAmount).Take(takeAmount)
                 .Select(n => new { n.Id, n.Title, n.Source, n.CreatedDate });
-            return Json(result);
+
+            return Json(result, new JsonSerializerSettings
+            {
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
         }
     }
 }
