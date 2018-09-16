@@ -19,6 +19,7 @@ namespace EWork.Data.Interfaces
         DbSet<Moderator> Moderators { get; set; }
         DbSet<Freelancer> Freelancers { get; set; }
         DbSet<Notification> Notifications { get; set; }
+        DbSet<Administrator> Administrators { get; set; }
 
         Task SaveChangesAsync();
         EntityEntry<T> Entry<T>(T obj) where T : class;
