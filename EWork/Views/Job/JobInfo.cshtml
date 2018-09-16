@@ -287,11 +287,18 @@ string CreatePathToImage(string fileName)
             @foreach (var proposal in Model.Job.Proposals)
             {
                 <div class="proposal">
+                    @if (proposal.Job.HiredFreelancer is null)
+                    {
+                        <form asp-controller="Proposal" asp-action="DeleteProposal">
+                            <input type="hidden" name="proposalId" value="@proposal.Id"/>
+                            <input type="submit" class="delete-proposal" style="" value="&Chi;"/>
+                        </form>
+                    }
                     <div class="row margin-bottom-25">
                         <div class="col-xs-12 col-md-4 profile-info padding-20">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo" />
+                                    <img class="profile-photo profile-photo-rounded" src="@CreatePathToImage(proposal.Sender.ProfilePhotoName)" alt="Profile photo"/>
                                 </div>
                             </div>
                             <div class="space-10"></div>
@@ -321,14 +328,14 @@ string CreatePathToImage(string fileName)
 
                                             <div class="col-xs-6">
                                                 <form asp-controller="UsersInteractions" asp-action="ApproveJob">
-                                                    <input type="hidden" value="@job.Id" name="JobId" />
-                                                    <input type="submit" class="button blue submit-input" value="Pay" />
+                                                    <input type="hidden" value="@job.Id" name="JobId"/>
+                                                    <input type="submit" class="button blue submit-input" value="Pay"/>
                                                 </form>
                                             </div>
                                             <div class="col-xs-6">
                                                 <form asp-controller="UsersInteractions" asp-action="AcceptDenying">
-                                                    <input type="hidden" value="@job.Id" name="JobId" />
-                                                    <input type="submit" class="button blue submit-input" value="Do not pay" />
+                                                    <input type="hidden" value="@job.Id" name="JobId"/>
+                                                    <input type="submit" class="button blue submit-input" value="Do not pay"/>
                                                 </form>
                                             </div>
                                         </div>
