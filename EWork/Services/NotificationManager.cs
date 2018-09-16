@@ -55,7 +55,11 @@ namespace EWork.Services
             // TODO: Decrease counter
         }
 
-        public Task AddAsync(Notification item) => _repository.AddAsync(item);
+        public Task AddAsync(Notification item)
+        {
+            item.CreatedDate = DateTime.UtcNow;
+            return _repository.AddAsync(item);
+        }
 
         public Task DeleteAsync(Notification item) => _repository.DeleteAsync(item);
 
