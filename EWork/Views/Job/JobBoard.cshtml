@@ -70,7 +70,7 @@
                         }
                     }
                     <div class="user-rating">Employer rating: <span>@employerRating</span></div>
-                    @if (job.HiredFreelancer is null)
+                    @if (job.HiredFreelancer is null && (Model.CurrentUser?.Id == job.Employer.Id || User.IsInRole("moderator") || User.IsInRole("administrator")))
                     {
                         <form asp-action="DeleteJob">
                             <input type="hidden" name="jobId" value="@job.Id" />
