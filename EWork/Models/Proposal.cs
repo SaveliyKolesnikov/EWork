@@ -8,7 +8,7 @@ namespace EWork.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(4096, MinimumLength = 30, ErrorMessage = "{0} length must be in the range 1..20")]
+        [StringLength(4096, MinimumLength = 30, ErrorMessage = "{0} length must be in the range 1..4096")]
         [Display(Name = "Proposal")]
         public string Text { get; set; }
 
