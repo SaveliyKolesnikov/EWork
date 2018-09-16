@@ -5,13 +5,11 @@
     Layout = "_Layout";
 }
 
-<h2>CreateJob</h2>
-
-<h4>Job</h4>
+<h2 class="page-title">Create Job</h2>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateJob">
+<div class="row" style="display: flex; justify-content: center;">
+    <div class="col-xs-10 col-md-6">
+        <form asp-action="CreateJob" >
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -21,7 +19,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control"/>
+                <textarea asp-for="Description" class="form-control" rows="5" style="resize: none;"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -41,7 +39,7 @@
 </div>
 
 <div>
-    <a asp-action="JobBoard">Back to List</a>
+    <a asp-action="JobBoard">Back to Job Board</a>
 </div>
 
 @section Scripts {
