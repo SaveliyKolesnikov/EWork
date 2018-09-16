@@ -1,6 +1,4 @@
-﻿@model EWork.ViewModels.NotificationViewModel
-
-@{
+﻿@{
     ViewData["Title"] = "Notifications";
 }
 
@@ -29,38 +27,20 @@
         </tr>
     </thead>
     <tbody id="notificationsTable">
-        @foreach (var item in Model.Notifications)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    <a href="@item.Source">link</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreatedDate)
-                </td>
-                <td>
-                    <a class="delete-notification" data-notificationid="@item.Id" style="cursor: pointer;">Delete</a>
-                </td>
-            </tr>
-        }
-        <div id="antiForgeryToken">
-            @Html.AntiForgeryToken()
-        </div>
     </tbody>
 </table>
 <div class="container-fluid">
     <div class="row">
         <div class="justify-content-container">
             <button class="button blue" id="download-more-notifications">Load more</button>
-            <input type="hidden" name="notificationReceiver" value="@Model.CurrentUser.UserName"/>
+            <input type="hidden" name="notificationReceiver" value="@User.Identity.Name"/>
         </div>
     </div>
 </div>
+@Html.AntiForgeryToken()
 
 @section Scripts {
     <script src="/js/deleteNotification.js"></script>
     <script src="/js/notification/notificationAjax.js"></script>
+    <script>$('#download-more-notifications').click();</script>
 }
