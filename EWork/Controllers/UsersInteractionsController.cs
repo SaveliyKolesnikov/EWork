@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using EWork.Config;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace EWork.Controllers
 {
@@ -13,12 +15,17 @@ namespace EWork.Controllers
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
         private readonly IModeratorManager _moderatorManager;
+        private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformConfig;
 
-        public UsersInteractionsController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager, IModeratorManager moderatorManager)
+        public UsersInteractionsController(IFreelancingPlatform freelancingPlatform,
+            UserManager<User> userManager, 
+            IModeratorManager moderatorManager,
+            IOptions<FreelancingPlatformConfig> freelancingPlatformConfig)
         {
             _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
             _moderatorManager = moderatorManager;
+            _freelancingPlatformConfig = freelancingPlatformConfig;
         }
 
         [HttpPost]
@@ -44,8 +51,12 @@ namespace EWork.Controllers
             var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
             var freelancerBalance =
                 await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == job.HiredFreelancer.Id);
+
+            var freelancingPlatformFeePercent = _freelancingPlatformConfig.Value.FeePercent / 100m;
+            var freelancersPay = job.Budget * (1 - freelancingPlatformFeePercent);
             await _freelancingPlatform.BalanceManager.TransferMoneyAsync(senderBalance: platformBalance,
-                recipientBalance: freelancerBalance, amount: job.Budget);
+                recipientBalance: freelancerBalance, amount: freelancersPay);
+
             job.IsClosed = true;
             await _freelancingPlatform.JobManager.UpdateAsync(job);
             return RedirectToAction("JobBoard", "Job");
