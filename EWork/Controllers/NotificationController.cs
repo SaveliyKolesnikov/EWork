@@ -15,7 +15,7 @@ namespace EWork.Controllers
     [Authorize]
     public class NotificationController : Controller
     {
-        private const int TakeAmount = 5;
+        private const int TakeAmount = 2;
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
 

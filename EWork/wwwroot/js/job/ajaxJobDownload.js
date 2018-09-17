@@ -1,5 +1,5 @@
 ﻿$('#download-more-notifications').click(function () {
-    const takeAmount = 5;
+    const takeAmount = 2;
     const amountOfJobsNow = $('.job-container').length;
     downloadJobs(takeAmount, amountOfJobsNow);
 });

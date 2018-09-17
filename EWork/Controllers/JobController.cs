@@ -23,7 +23,7 @@ namespace EWork.Controllers
     [Authorize(Roles = "employer, freelancer, moderator, administrator")]
     public class JobController : Controller
     {
-        private const int TakeAmount = 5;
+        private const int TakeAmount = 2;
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _environment;
@@ -85,7 +85,7 @@ namespace EWork.Controllers
                     tags.Any(tagText => jt.Tag.Text.Equals(tagText, StringComparison.InvariantCultureIgnoreCase))));
             }
 
-            return jobs;
+            return jobs.OrderByDescending(j => j.CreationDate);
         }
 
         [HttpPost]

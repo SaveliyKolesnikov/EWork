@@ -1,5 +1,5 @@
 ﻿$('#getMoreUsersButton').click(function () {
-    const takeAmount = 5;
+    const takeAmount = 2;
     const amountOfUsersNow = $('#usersContainer tr').length;
     downloadJobs(takeAmount, amountOfUsersNow);
 });

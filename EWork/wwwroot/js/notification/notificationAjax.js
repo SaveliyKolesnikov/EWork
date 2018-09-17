@@ -1,5 +1,5 @@
 ﻿$('#download-more-notifications').click(function () {
-    const downloadNotificationsAmount = 5;
+    const downloadNotificationsAmount = 2;
     downloadNotifications(downloadNotificationsAmount);
 });
 
