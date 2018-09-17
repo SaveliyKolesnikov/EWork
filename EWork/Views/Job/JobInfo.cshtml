@@ -66,7 +66,10 @@ string CreatePathToImage(string fileName)
                 </div>
                 <p class="fixed-price">Fixed price</p>
                 <div class="job-description">
-                    @job.Description
+                    @foreach (var paragraph in job.Description?.Replace("\r", "").Split("\n") ?? Enumerable.Empty<string>())
+                    {
+                        <span>@paragraph</span><br />
+                    }
                 </div>
                 <div class="space-30"></div>
                 <div class="job-tags">
