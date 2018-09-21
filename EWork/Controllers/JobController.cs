@@ -80,7 +80,6 @@ namespace EWork.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var jobs = GetJobsUsingFilters(filterModel);
-            var usedTags = filterModel.RequiredTags is null ? Enumerable.Empty<string>() : filterModel.RequiredTags.Split(' ').Where(tag => tag.Length <= 20);
 
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
@@ -92,7 +91,7 @@ namespace EWork.Controllers
                 .Take(TakeAmount);
             var searchUrl = Url.Action("JobBoard");
             var ajaxSearchUrl = Url.Action("GetJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, currentUser);
             return View(jobBoardViewModel);
         }
 
@@ -239,13 +238,9 @@ namespace EWork.Controllers
 
             var jobs = GetJobsUsingFilters(filterModel).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id).Take(TakeAmount);
 
-            var requiredTags = filterModel.RequiredTags;
-            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
-
-
             var searchUrl = Url.Action("FreelancerContracts");
             var ajaxSearchUrl = Url.Action("FreelancerContractsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl);
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
             return View("JobBoard", jobBoardViewModel);
@@ -276,13 +271,9 @@ namespace EWork.Controllers
 
             var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer == null).Take(TakeAmount);
 
-            var requiredTags = filterModel.RequiredTags;
-            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
-
-
             var searchUrl = Url.Action("EmployerOpenedJobs");
             var ajaxSearchUrl = Url.Action("EmployerOpenedJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, currentUser);
 
             ViewData["Title"] = "Jobs";
             ViewBag.Heading = "Opened Jobs";
@@ -314,12 +305,9 @@ namespace EWork.Controllers
 
             var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null).Take(TakeAmount);
 
-            var requiredTags = filterModel.RequiredTags;
-            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
-
             var searchUrl = Url.Action("EmployerContracts");
             var ajaxSearchUrl = Url.Action("EmployerContractsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, currentUser);
 
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
@@ -350,13 +338,9 @@ namespace EWork.Controllers
 
             var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id)).Take(TakeAmount);
 
-            var requiredTags = filterModel.RequiredTags;
-            var usedTags = requiredTags is null ? Enumerable.Empty<string>() : requiredTags.Split(' ').Where(tag => tag.Length <= 20);
-
-
             var searchUrl = Url.Action("AllFreelancerProposals");
             var ajaxSearchUrl = Url.Action("AllFreelancerProposalsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, usedTags, searchUrl, ajaxSearchUrl);
+            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl);
             ViewData["Title"] = "Proposals";
             ViewBag.Heading = "Jobs with Your Proposal";
             return View("~/Views/Job/JobBoard.cshtml", jobBoardViewModel);
