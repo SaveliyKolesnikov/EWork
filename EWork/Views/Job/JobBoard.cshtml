@@ -23,13 +23,45 @@
 <div class="container-fluid">
     <div class="row">
         <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
-        <form method="get" class="col-xs-12 col-md-offset-2 col-md-8" action="@Model.SearchUrl" role="search">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Searching by tags" name="RequiredTags" id="SearchingByTags" value="@string.Join(" ", Model.UsedTags)">
-                <div class="input-group-btn">
-                    <button class="btn btn-default" id="searchingSubmit" type="submit">
-                        <i class="glyphicon glyphicon-search"></i>
+        <form method="get" class="col-xs-12 col-md-offset-2 col-md-8" action="@Model.FilterModel.RequiredTags" role="search">
+            <div class="row">
+                <div class="dropdown col-xs-2 col-md-1" >
+                    <button class="btn job-board-filter dropdown" data-toggle="dropdown" type="button">
+                        <span class="glyphicon glyphicon-filter"></span>
+                        <span class="caret"></span>
                     </button>
+                    <ul class="dropdown-menu padding-10" role="menu" aria-labelledby="dropdownMenu1">
+                        <h5 class="text-center">Employer rating</h5>
+                        <label for="employerRatingFrom">From</label>
+                        <input class="form-control" type="number" name="employerRatingFrom" value="@Model.FilterModel.EmployerRatingFrom"
+                               value="@Model.FilterModel.EmployerRatingFrom"
+                               id="employerRatingFrom" min="0" step="0.01" max="10" maxlength="5"/>
+                        <div class="space-5"></div>
+                        <label for="employerRatingTo">To</label>
+                        <input class="form-control" type="number" name="employerRatingTo"
+                               value="@(Model.FilterModel.EmployerRatingTo < 0.001 ? 10d : Model.FilterModel.EmployerRatingTo)"
+                               id="employerRatingTo" min="0" step="0.01" max="10" maxlength="5"/>
+                        <div class="space-20"></div>
+
+                        <h5 class="text-center">Budget</h5>
+                        <label for="budgetFrom">From</label>
+                        <input class="form-control" type="number" name="budgetFrom" value="@Model.FilterModel.BudgetFrom"
+                               value="@Model.FilterModel.BudgetFrom"
+                               id="budgetFrom" min="0" step="0.01" maxlength="5"/>
+                        <div class="space-5"></div>
+                        <label for="budgetTo">To</label>
+                        <input class="form-control" type="number" name="budgetTo" 
+                               value="@((Model.FilterModel.BudgetTo < 0.001 ? double.MaxValue.ToString("F") : Model.FilterModel.BudgetTo.ToString("F")).Substring(0, 10))"
+                               id="budgetTo" min="0" step="0.01" maxlength="5"/>
+                    </ul>
+                </div>
+                <div class="input-group col-xs-9 col-md-11">
+                    <input type="text" class="form-control" placeholder="Searching by tags" name="RequiredTags" id="SearchingByTags" value="@Model.FilterModel.RequiredTags">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="searchingSubmit" type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -51,7 +83,7 @@
                     <div class="job-description">
                         @foreach (var paragraph in job.Description?.Replace("\r", "").Split("\n") ?? Enumerable.Empty<string>())
                         {
-                            <span>@paragraph</span><br/>
+                            <span>@paragraph</span><br />
                         }
                     </div>
                     <div class="space-30"></div>
