@@ -1,4 +1,4 @@
-﻿$('#download-more-notifications').click(function () {
+﻿$('#download-more-jobs').click(function () {
     const amountOfJobsNow = $('.job-container').length;
     if (!takeAmount)
         takeAmount = 5;
@@ -27,6 +27,10 @@ function downloadJobs(takeAmount, skipAmount) {
         },
         function (jobs) {
             jobs.forEach(addJob);
+            if (jobs.length < takeAmount) {
+                // Disable the download more jobs button.
+                $('#download-more-jobs').unbind('click').prop({ disabled: true }).removeClass('blue');
+            }
         }).fail(
             function (errorObj) {
                 console.error(errorObj.responseJSON.message);
