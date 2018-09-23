@@ -1,7 +1,7 @@
 ﻿function newNotification() {
-    let numOfNotifications = document.getElementById('numOfNotifications');
-    let currentNum = parseInt(numOfNotifications.innerHTML);
-    numOfNotifications.innerHTML = ++currentNum;
+    const numOfNotifications = document.getElementById('numOfNotifications');
+    let currentNumOfNotifications = parseInt(numOfNotifications.innerHTML);
+    numOfNotifications.innerHTML = ++currentNumOfNotifications;
 
     const animationDuration = 250;
     $(numOfNotifications).animate({
