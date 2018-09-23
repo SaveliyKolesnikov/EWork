@@ -28,8 +28,7 @@ function downloadJobs(takeAmount, skipAmount) {
         function (jobs) {
             jobs.forEach(addJob);
             if (jobs.length < takeAmount) {
-                // Disable the download more jobs button.
-                $('#download-more-jobs').unbind('click').prop({ disabled: true }).removeClass('blue');
+                disableDownloadMoreJobsButton();
             }
         }).fail(
             function (errorObj) {
