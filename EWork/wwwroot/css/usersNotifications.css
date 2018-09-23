@@ -1,0 +1,24 @@
+﻿a.disabled-deleteAll-link,
+a.disabled-deleteAll-link:hover,
+a.disabled-deleteAll-link:active,
+a.disabled-deleteAll-link:visited {
+    
+}
+
+#delete-all-notifications,
+.delete-notification {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    color: #00bfff;
+    outline: none;
+}
+
+    #delete-all-notifications:disabled,
+    .delete-notification:disabled {
+        color: #333;
+        cursor: inherit;
+        text-decoration: none;
+    }

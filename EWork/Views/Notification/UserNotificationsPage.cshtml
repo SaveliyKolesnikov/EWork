@@ -6,6 +6,7 @@
     <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
     <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/button.css" rel="stylesheet" type="text/css" />
+    <link href="/css/usersNotifications.css" rel="stylesheet" type="text/css" />
 }
 
 <h2 class="page-title">Your Notifications</h2>
@@ -22,18 +23,17 @@
                 Send date
             </th>
             <th>
-                <a id="delete-all-notifications" style="cursor: pointer;">Delete all</a>
+                <button id="delete-all-notifications">Delete all</button>
             </th>
         </tr>
     </thead>
-    <tbody id="notificationsTable">
-    </tbody>
+    <tbody id="notificationsTable"></tbody>
 </table>
 <div class="container-fluid">
     <div class="row">
         <div class="justify-content-container">
             <button class="button blue" id="download-more-notifications">Load more</button>
-            <input type="hidden" name="notificationReceiver" value="@User.Identity.Name"/>
+            <input type="hidden" name="notificationReceiver" value="@User.Identity.Name" />
         </div>
     </div>
 </div>
@@ -45,5 +45,12 @@
     </script>
     <script src="/js/deleteNotification.js"></script>
     <script src="/js/notification/notificationAjax.js"></script>
-    <script>$('#download-more-notifications').click();</script>
+    <script>
+        const downloadPromise = downloadNotifications(takeAmount);
+        downloadPromise.then(function() {
+            if ($('#notificationsTable tr').length === 0) {
+                document.getElementById('delete-all-notifications').disabled = true;
+            }
+        });
+    </script>
 }

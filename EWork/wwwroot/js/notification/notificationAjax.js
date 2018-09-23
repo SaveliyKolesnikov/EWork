@@ -7,7 +7,7 @@ function downloadNotifications(takeAmount) {
     let amountOfNotificationsNow = $('#notificationsTable>tr')
         .filter((idx, item) => $(item).css('display') !== 'none').length;
     let notificationReceiverUserName = $('input[name="notificationReceiver"]').val();
-    $.post('/Notification/GetNotifications',
+    return $.post('/Notification/GetNotifications',
         {
             '__RequestVerificationToken': token,
             'skipAmount': amountOfNotificationsNow,
@@ -40,8 +40,8 @@ function addNotification(notification) {
     let formattedDate = new Date(notification.createdDate);
     tr.append($('<td/>', { text: formattedDate.toLocaleString().replace(',', '') }));
 
-    let deleteLink = $('<a/>', { text: 'Delete', class: 'delete-notification' })
-        .data('notificationid', notification.id).css('cursor', 'pointer').click(deleteNotificationPost);
+    let deleteLink = $('<button/>', { text: 'Delete', class: 'delete-notification' })
+        .data('notificationid', notification.id).addClass('delete-notification').click(deleteNotificationPost);
     tr.append($('<td/>').append(deleteLink));
     $('#notificationsTable').append(tr);
 }

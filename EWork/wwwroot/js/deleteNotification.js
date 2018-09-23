@@ -23,5 +23,8 @@
 }
 
 $(".delete-notification").click(deleteNotificationPost);
-$('#delete-all-notifications').click(() => $('.delete-notification')
-    .filter((idx, item) => $(item).parent().parent().css('display') !== 'none').click());
+$('#delete-all-notifications').click(function () {
+    $('.delete-notification').filter((idx, item) => $(item).parent().parent().css('display') !== 'none').click();
+    if ($('#download-more-notifications').prop('disabled'))
+        $(this).attr('disabled', 'disabled');
+});
