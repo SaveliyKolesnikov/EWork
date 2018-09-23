@@ -18,44 +18,65 @@
     <link href="/css/button.css" rel="stylesheet" type="text/css" />
 }
 
+@functions {
+double GetUserRating(IEnumerable<Review> reviews)
+{
+    if (reviews is null)
+        return 0;
+
+    var reviewsArr = reviews as Review[] ?? reviews.ToArray();
+    var res = reviewsArr.Length == 0 ? 0d : reviewsArr.Average(r => r.Value);
+
+    return res;
+}
+}
+
 <div class="container-fluid">
     <div class="row">
         <h2 class="col-xs-12 col-md-offset-2 col-md-8 page-title">@ViewBag.Heading</h2>
-        <form method="get" class="col-xs-12 col-md-offset-2 col-md-8" action="@Model.FilterModel.RequiredTags" role="search">
+        <form id="searchJobsForm" method="get" class="col-xs-12 col-md-offset-2 col-md-8" action="@Model.FilterModel.RequiredTags" role="search">
             <div class="row">
-                <div class="dropdown col-xs-2 col-md-1" >
+                <div class="dropdown col-xs-2 col-md-1">
                     <button class="btn job-board-filter dropdown" data-toggle="dropdown" type="button">
                         <span class="glyphicon glyphicon-filter"></span>
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu padding-10" role="menu" aria-labelledby="dropdownMenu1" style="width: 250px;">
-                        <h5 class="text-center">Employer rating</h5>
+                    <div id="filtersInputs" class="dropdown-menu padding-10" role="menu" aria-labelledby="dropdownMenu1" style="width: 250px;">
+                        <h4 class="text-center margin-bottom-0">Employer rating</h4>
                         <label for="employerRatingFrom">From</label>
                         <input class="form-control" type="number" name="employerRatingFrom"
                                placeholder="0"
                                value="@Model.FilterModel.EmployerRatingFrom"
-                               id="employerRatingFrom" min="0" step="0.01" max="10" maxlength="5"/>
+                               id="employerRatingFrom" min="0" step="0.01" max="10" maxlength="5" />
                         <div class="space-5"></div>
                         <label for="employerRatingTo">To</label>
                         <input class="form-control" type="number" name="employerRatingTo"
                                placeholder="10"
                                value="@Model.FilterModel.EmployerRatingTo"
-                               id="employerRatingTo" min="0" step="0.01" max="10" maxlength="5"/>
+                               id="employerRatingTo" min="0" step="0.01" max="10" maxlength="5" />
                         <div class="space-20"></div>
 
-                        <h5 class="text-center">Budget</h5>
+                        <h4 class="text-center margin-bottom-0">Budget</h4>
                         <label for="budgetFrom">From</label>
                         <input class="form-control" type="number" name="budgetFrom"
                                placeholder="0"
                                value="@Model.FilterModel.BudgetFrom"
-                               id="budgetFrom" min="0" step="0.01" maxlength="5"/>
+                               id="budgetFrom" min="0" step="0.01" maxlength="5" />
                         <div class="space-5"></div>
                         <label for="budgetTo">To</label>
-                        <input class="form-control" type="number" name="budgetTo" 
+                        @{
+                            var budgetToString = Model.FilterModel.BudgetTo.ToString("F");
+                            budgetToString = budgetToString.Substring(0, Math.Min(budgetToString.Length, 10));
+                        }
+                        <input class="form-control" type="number" name="budgetTo"
                                placeholder="@double.MaxValue.ToString("F").Substring(0, 10)"
-                               value="@Model.FilterModel.BudgetTo.ToString("F").Substring(0, 10)"
-                               id="budgetTo" min="0" step="0.01" maxlength="5"/>
-                    </ul>
+                               value="@budgetToString"
+                               id="budgetTo" min="0" step="0.01" maxlength="5" />
+                        <div class="space-10"></div>
+                        <div class="justify-content-container">
+                            <input id="resetFiltersButton" class="text-center button blue" type="button" value="Reset filters"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="input-group col-xs-9 col-md-11">
                     <input type="text" class="form-control" placeholder="Searching by tags" name="RequiredTags" id="SearchingByTags" value="@Model.FilterModel.RequiredTags">
@@ -96,17 +117,7 @@
                         }
                     </div>
                     <div class="space-20"></div>
-                    @{
-                        var employerRating = 0d;
-                        try
-                        {
-                            employerRating = job.Employer.Reviews.Average(r => r.Value);
-                        }
-                        catch (InvalidOperationException)
-                        {
-                        }
-                    }
-                    <div class="user-rating">Employer rating: <span>@employerRating</span></div>
+                    <div class="user-rating">Employer rating: <span>@GetUserRating(job.Employer.Reviews)</span></div>
                     @if (job.HiredFreelancer is null && (Model.CurrentUser?.Id == job.Employer.Id || User.IsInRole("moderator") || User.IsInRole("administrator")))
                     {
                         <form asp-action="DeleteJob">
@@ -138,6 +149,7 @@
     <script type="text/javascript" src="/lib/dateFormatter.min.js"></script>
     <script type="text/javascript" src="/js/job/searchingByClickingOnTags.js"></script>
     <script type="text/javascript" src="/js/job/ajaxJobDownload.js"></script>
+    <script type="text/javascript" src="/js/job/jobBoard.js"></script>
 }
 
 @* Job template *@
