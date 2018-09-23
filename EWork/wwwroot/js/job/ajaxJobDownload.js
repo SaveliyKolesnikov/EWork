@@ -7,6 +7,10 @@
 function downloadJobs(takeAmount, skipAmount) {
     const token = $('input[name="__RequestVerificationToken"]', $('#antiForgeryToken')).val();
     const requiredTags = $('#SearchingByTags').val();
+    const employerRatingFrom = $('input[name="employerRatingFrom"]').val();
+    const employerRatingTo = $('input[name="employerRatingTo"]').val();
+    const budgetTo = $('input[name="budgetTo"]').val();
+    const budgetFrom = $('input[name="budgetFrom"]').val();
     const getJobsAjaxMethod = $('input[name="getJobsAjaxMethodUrl"]').val();
 
     $.post(getJobsAjaxMethod,
@@ -14,7 +18,11 @@ function downloadJobs(takeAmount, skipAmount) {
             '__RequestVerificationToken': token,
             'skipAmount': skipAmount,
             'takeAmount': takeAmount,
-            'requiredTags': requiredTags
+            'requiredTags': requiredTags,
+            'employerRatingFrom': employerRatingFrom,
+            'employerRatingTo': employerRatingTo,
+            'budgetFrom': budgetFrom,
+            'budgetTo': budgetTo
         },
         function (jobs) {
             jobs.forEach(addJob);

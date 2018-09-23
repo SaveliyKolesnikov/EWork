@@ -88,3 +88,13 @@
     top: 2%;
     font-size: 1.2em;
 }
+
+#SearchingByTags {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+button.job-board-filter {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
