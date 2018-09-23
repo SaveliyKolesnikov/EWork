@@ -145,7 +145,8 @@ double GetUserRating(IEnumerable<Review> reviews)
 </div>
 
 @section Scripts
-    {
+{
+    <script>const takeAmount = @Model.TakeAmount</script>
     <script type="text/javascript" src="/lib/dateFormatter.min.js"></script>
     <script type="text/javascript" src="/js/job/searchingByClickingOnTags.js"></script>
     <script type="text/javascript" src="/js/job/ajaxJobDownload.js"></script>
