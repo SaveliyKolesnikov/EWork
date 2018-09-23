@@ -7,21 +7,16 @@
 }
 
 @functions {
-double GetUserRating(IEnumerable<Review> reviews)
-{
-    if (reviews is null)
-        return 0;
+    double GetUserRating(IEnumerable<Review> reviews)
+    {
+        if (reviews is null)
+            return 0;
 
-    var res = 0d;
-    try
-    {
-        res = reviews.Average(r => r.Value);
+        var reviewsArr = reviews as Review[] ?? reviews.ToArray();
+        var res = reviewsArr.Length == 0 ? 0d : reviewsArr.Average(r => r.Value);
+
+        return res;
     }
-    catch (InvalidOperationException)
-    {
-    }
-    return res;
-}
 }
 
 <h2>Test manager</h2>
