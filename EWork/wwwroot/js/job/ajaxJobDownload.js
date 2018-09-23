@@ -69,6 +69,14 @@ function addJob(job) {
     tags.forEach(tag => tagsContainer.append(tag));
     $('#jobs-container').append(container);
 
+    if (job.employerUserName === currentUserUserName && job.hiredFreelancerUserName === "") {
+        const deleteJobForm = `<form type="post" action="/DeleteJob">
+                                <input type="hidden" name="jobId" value="${job.id}" />
+                                <input type="submit" class="close-job" value="&Chi;" />
+                            </form>`;
+        container.append(deleteJobForm);
+    }
+
     function removeSecondsFromDateString(dateString) {
         const lastColonIndex = dateString.lastIndexOf(':');
         let firstWhitespaceAfterLastColon = dateString.indexOf(' ', lastColonIndex);
