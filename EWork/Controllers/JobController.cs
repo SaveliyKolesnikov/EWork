@@ -60,7 +60,7 @@ namespace EWork.Controllers
             public double EmployerRatingTo
             {
                 get => _employerRatingTo;
-                set => _employerRatingTo = value < 0 ? 0 : value;
+                set => _employerRatingTo = value < 0.001 ? 10d : value;
             }
 
             public double BudgetFrom
@@ -72,8 +72,12 @@ namespace EWork.Controllers
             public double BudgetTo
             {
                 get => _budgetTo;
-                set => _budgetTo = value < 0 ? 0 : value;
+                set => _budgetTo = value < 0.001 ? double.MaxValue : value;
             }
+
+            public void ValidateValues()
+                => (BudgetFrom, BudgetTo, EmployerRatingFrom, EmployerRatingTo) =
+                    (BudgetFrom, BudgetTo, EmployerRatingFrom, EmployerRatingTo);
         }
 
         public async Task<IActionResult> JobBoard(FilterModel filterModel)
@@ -84,11 +88,7 @@ namespace EWork.Controllers
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
 
-            jobs = jobs
-                .Where(j => (j.Employer.Reviews.Count == 0 ? 0d : j.Employer.Reviews.Average(r => r.Value)) >= filterModel.EmployerRatingFrom &&
-                            (j.Employer.Reviews.Count == 0 ? 0d : j.Employer.Reviews.Average(r => r.Value)) <= filterModel.EmployerRatingTo)
-                .Where(j => (double)j.Budget >= filterModel.BudgetFrom && (double)j.Budget <= filterModel.BudgetTo)
-                .Take(TakeAmount);
+            jobs = jobs.Take(TakeAmount);
             var searchUrl = Url.Action("JobBoard");
             var ajaxSearchUrl = Url.Action("GetJobsAjax");
             var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, currentUser);
@@ -111,6 +111,7 @@ namespace EWork.Controllers
 
         private IQueryable<Job> GetJobsUsingFilters(FilterModel filterModel)
         {
+            filterModel.ValidateValues();
             var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
 
             if (!(filterModel.RequiredTags is null))
@@ -126,7 +127,11 @@ namespace EWork.Controllers
             if (filterModel.EmployerRatingTo < filterModel.EmployerRatingFrom)
                 (filterModel.EmployerRatingTo, filterModel.EmployerRatingFrom) = (filterModel.EmployerRatingFrom, filterModel.EmployerRatingTo);
 
-            return jobs.OrderByDescending(j => j.CreationDate);
+            return jobs
+                .Where(j => (j.Employer.Reviews.Count == 0 ? 0d : j.Employer.Reviews.Average(r => r.Value)) >= filterModel.EmployerRatingFrom &&
+                            (j.Employer.Reviews.Count == 0 ? 0d : j.Employer.Reviews.Average(r => r.Value)) <= filterModel.EmployerRatingTo)
+                .Where(j => (double)j.Budget >= filterModel.BudgetFrom && (double)j.Budget <= filterModel.BudgetTo)
+                .OrderByDescending(j => j.CreationDate);
         }
 
         [HttpPost]
