@@ -79,11 +79,12 @@ namespace EWork.Controllers
                 .Where(j => j.IsPaymentDenied)
                 .Take(_takeAmount)
                 .ToArrayAsync();
+
             var adminPageViewModel = new AdminPageViewModel<Job>(jobs, _takeAmount, searchString);
             return View(adminPageViewModel);
         }
 
-        protected IQueryable<Job> GetJobsByTitle(string title)
+        private IQueryable<Job> GetJobsByTitle(string title)
         {
             var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
 
@@ -92,7 +93,7 @@ namespace EWork.Controllers
                 jobs = jobs.Where(job => job.Title.StartsWith(title));
             }
 
-            return jobs.Take(_takeAmount);
+            return jobs;
         }
 
         [HttpPost]
@@ -180,7 +181,7 @@ namespace EWork.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GetUsersAjax(int skipAmount, int takeAmount, string searchString)
+        public async Task<JsonResult> GetUsersAjax(int skipAmount, int takeAmount, string searchString)
         {
             var users = await GetUsersByUserName(searchString).Skip(skipAmount).Take(takeAmount).ToArrayAsync();
             var res =  users.Select(u => new
@@ -203,18 +204,22 @@ namespace EWork.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult GetJobsAjax(int skipAmount, int takeAmount, string searchString)
+        public async Task<JsonResult> GetJobsAjax(int skipAmount, int takeAmount, string searchString)
         {
-            var users = GetJobsByTitle(searchString).Skip(skipAmount).Take(takeAmount);
-            var res = _jobMapper.MapRange(users);
+            var jobs = await GetJobsByTitle(searchString).Skip(skipAmount).Take(takeAmount).ToArrayAsync();
+            var res = _jobMapper.MapRange(jobs);
 
             return Json(res);
         }
 
-        public IActionResult GetDisputedJobsAjax(int skipAmount, int takeAmount, string searchString)
+        public async Task<JsonResult> GetDisputedJobsAjax(int skipAmount, int takeAmount, string searchString)
         {
-            var users = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied).Skip(skipAmount).Take(takeAmount);
-            var res = _jobMapper.MapRange(users);
+            var jobs = await GetJobsByTitle(searchString)
+                .Where(j => j.IsPaymentDenied)
+                .Skip(skipAmount)
+                .Take(takeAmount)
+                .ToArrayAsync();
+            var res = _jobMapper.MapRange(jobs);
 
             return Json(res);
         }

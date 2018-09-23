@@ -26,14 +26,14 @@ function addJobToTable(job, isActionsRequired = false) {
     const employerProfileTd = $('<td/>');
     employerProfileTd.append($('<a/>',
         { href: `/Profile/Profile?username=${job.employerUserName}`, text: job.employerUserName }));
-    employerProfileTd.append($('<rating/>', { text: `(Rating: ${job.employerRating})` }));
+    employerProfileTd.append($('<rating/>', { text: ` (Rating: ${job.employerRating})` }));
     jobRow.append(employerProfileTd);
 
     const freelancerProfileTd = $('<td/>');
     freelancerProfileTd.append($('<a/>',
         { href: `/Profile/Profile?username=${job.hiredFreelancerUserName}`, text: job.hiredFreelancerUserName }));
     if (job.hiredFreelancerUserName)
-        freelancerProfileTd.append($('<rating/>', { text: `(Rating: ${job.hiredFreelancerRating})` }));
+        freelancerProfileTd.append($('<rating/>', { text: ` (Rating: ${job.hiredFreelancerRating})` }));
     jobRow.append(freelancerProfileTd);
 
     if (isActionsRequired)
