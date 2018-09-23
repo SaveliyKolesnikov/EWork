@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using EWork.Config;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using EWork.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -15,17 +17,24 @@ namespace EWork.Controllers
     [Authorize]
     public class NotificationController : Controller
     {
-        private const int TakeAmount = 2;
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
+        private readonly int _takeAmount;
 
-        public NotificationController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager)
+        public NotificationController(IFreelancingPlatform freelancingPlatform, 
+            UserManager<User> userManager,
+            IOptions<FreelancingPlatformConfig> fpConfig)
         {
             _freelancingPlatform = freelancingPlatform;
             _userManager = userManager;
+            _takeAmount = fpConfig.Value.TakeAmount;
         }
 
-        public IActionResult UserNotificationsPage() => View();
+        public IActionResult UserNotificationsPage()
+        {
+            ViewBag.TakeAmount = _takeAmount;
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

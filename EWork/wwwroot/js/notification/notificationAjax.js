@@ -1,6 +1,5 @@
 ﻿$('#download-more-notifications').click(function () {
-    const downloadNotificationsAmount = 2;
-    downloadNotifications(downloadNotificationsAmount);
+    downloadNotifications(takeAmount || 5);
 });
 
 function downloadNotifications(takeAmount) {
@@ -17,10 +16,16 @@ function downloadNotifications(takeAmount) {
         },
         function (notifications) {
             notifications.forEach(addNotification);
+            if (notifications.length < takeAmount)
+                disableDownloadMoreNotificationsButton();
         }).fail(
             function (errorObj) {
                 console.error(errorObj.responseJSON.message);
             });
+}
+
+function disableDownloadMoreNotificationsButton() {
+    $('#download-more-notifications').unbind('click').prop({ disabled: true }).removeClass('blue');
 }
 
 function addNotification(notification) {

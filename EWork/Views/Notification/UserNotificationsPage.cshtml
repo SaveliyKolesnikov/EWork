@@ -40,6 +40,9 @@
 @Html.AntiForgeryToken()
 
 @section Scripts {
+    <script>
+        const takeAmount = @ViewBag.TakeAmount
+    </script>
     <script src="/js/deleteNotification.js"></script>
     <script src="/js/notification/notificationAjax.js"></script>
     <script>$('#download-more-notifications').click();</script>
