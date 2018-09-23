@@ -10,8 +10,6 @@
     {
         ViewBag.Heading = "Job Board";
     }
-
-    var isCurrentUserEmployer = Model.CurrentUser is Employer;
 }
 
 @section Styles {
@@ -30,28 +28,32 @@
                         <span class="glyphicon glyphicon-filter"></span>
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu padding-10" role="menu" aria-labelledby="dropdownMenu1">
+                    <ul class="dropdown-menu padding-10" role="menu" aria-labelledby="dropdownMenu1" style="width: 250px;">
                         <h5 class="text-center">Employer rating</h5>
                         <label for="employerRatingFrom">From</label>
-                        <input class="form-control" type="number" name="employerRatingFrom" value="@Model.FilterModel.EmployerRatingFrom"
+                        <input class="form-control" type="number" name="employerRatingFrom"
+                               placeholder="0"
                                value="@Model.FilterModel.EmployerRatingFrom"
                                id="employerRatingFrom" min="0" step="0.01" max="10" maxlength="5"/>
                         <div class="space-5"></div>
                         <label for="employerRatingTo">To</label>
                         <input class="form-control" type="number" name="employerRatingTo"
-                               value="@(Model.FilterModel.EmployerRatingTo < 0.001 ? 10d : Model.FilterModel.EmployerRatingTo)"
+                               placeholder="10"
+                               value="@Model.FilterModel.EmployerRatingTo"
                                id="employerRatingTo" min="0" step="0.01" max="10" maxlength="5"/>
                         <div class="space-20"></div>
 
                         <h5 class="text-center">Budget</h5>
                         <label for="budgetFrom">From</label>
-                        <input class="form-control" type="number" name="budgetFrom" value="@Model.FilterModel.BudgetFrom"
+                        <input class="form-control" type="number" name="budgetFrom"
+                               placeholder="0"
                                value="@Model.FilterModel.BudgetFrom"
                                id="budgetFrom" min="0" step="0.01" maxlength="5"/>
                         <div class="space-5"></div>
                         <label for="budgetTo">To</label>
                         <input class="form-control" type="number" name="budgetTo" 
-                               value="@((Model.FilterModel.BudgetTo < 0.001 ? double.MaxValue.ToString("F") : Model.FilterModel.BudgetTo.ToString("F")).Substring(0, 10))"
+                               placeholder="@double.MaxValue.ToString("F").Substring(0, 10)"
+                               value="@Model.FilterModel.BudgetTo.ToString("F").Substring(0, 10)"
                                id="budgetTo" min="0" step="0.01" maxlength="5"/>
                     </ul>
                 </div>
@@ -109,7 +111,7 @@
                     {
                         <form asp-action="DeleteJob">
                             <input type="hidden" name="jobId" value="@job.Id" />
-                            <input type="submit" class="close-job" style="" value="&Chi;" />
+                            <input type="submit" class="close-job" value="&Chi;" />
                         </form>
                     }
                 </div>
