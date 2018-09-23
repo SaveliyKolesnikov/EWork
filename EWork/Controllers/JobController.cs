@@ -93,7 +93,7 @@ namespace EWork.Controllers
             jobs = jobs.Take(_takeAmount);
             var searchUrl = Url.Action("JobBoard");
             var ajaxSearchUrl = Url.Action("GetJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
             return View(jobBoardViewModel);
         }
 
@@ -247,7 +247,7 @@ namespace EWork.Controllers
 
             var searchUrl = Url.Action("FreelancerContracts");
             var ajaxSearchUrl = Url.Action("FreelancerContractsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, _takeAmount);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount);
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
             return View("JobBoard", jobBoardViewModel);
@@ -280,7 +280,7 @@ namespace EWork.Controllers
 
             var searchUrl = Url.Action("EmployerOpenedJobs");
             var ajaxSearchUrl = Url.Action("EmployerOpenedJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
 
             ViewData["Title"] = "Jobs";
             ViewBag.Heading = "Opened Jobs";
@@ -314,7 +314,7 @@ namespace EWork.Controllers
 
             var searchUrl = Url.Action("EmployerContracts");
             var ajaxSearchUrl = Url.Action("EmployerContractsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
 
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
@@ -347,7 +347,7 @@ namespace EWork.Controllers
 
             var searchUrl = Url.Action("AllFreelancerProposals");
             var ajaxSearchUrl = Url.Action("AllFreelancerProposalsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, _takeAmount);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount);
 
             ViewData["Title"] = "Proposals";
             ViewBag.Heading = "Jobs with Your Proposal";
