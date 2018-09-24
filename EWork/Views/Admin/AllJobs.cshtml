@@ -6,22 +6,22 @@
     var jobs = Model.Items;
 }
 
-@functions {
-double GetUserRating(IEnumerable<Review> reviews)
+@section Styles
 {
-    if (reviews is null)
-        return 0;
-
-    var res = 0d;
-    try
-    {
-        res = reviews.Average(r => r.Value);
-    }
-    catch (InvalidOperationException)
-    {
-    }
-    return res;
+    <link rel="stylesheet" href="/css/admin/jobsPage.css"/>
 }
+
+@functions {
+    double GetUserRating(IEnumerable<Review> reviews)
+    {
+        if (reviews is null)
+            return 0;
+
+        var reviewsArr = reviews as Review[] ?? reviews.ToArray();
+        var res = reviewsArr.Length == 0 ? 0d : reviewsArr.Average(r => r.Value);
+
+        return res;
+    }
 }
 
 <h2>Test manager</h2>
@@ -88,7 +88,10 @@ double GetUserRating(IEnumerable<Review> reviews)
                     }
                 </td>
                 <td>
-                    <a asp-controller="Job" asp-action="DeleteJob" asp-route-jobid="@job.Id">Delete</a>
+                    <form asp-controller="Job" asp-action="DeleteJob">
+                        <input type="hidden" name="jobid" value="@job.Id"/>
+                        <input class="delete-job-input" type="submit" value="Delete"/>
+                    </form>
                 </td>
             </tr>
         }
@@ -96,12 +99,15 @@ double GetUserRating(IEnumerable<Review> reviews)
 </table>
 <div class="row">
     <div class="col-md-offset-3 col-md-6 text-center">
-        <button type="button" class="btn btn-primary" id="getMoreJobsButton">Load more jobs</button>
+        <button type="button" class="btn btn-primary" id="getMoreJobsButton" @(Model.Items.Count() < Model.TakeAmount ? "disabled" : "")>Load more jobs</button>
     </div>
 </div>
 @Html.AntiForgeryToken()
 @section Scripts
-    {
+{
+    <script>
+        const takeAmount = @Model.TakeAmount;
+    </script>
     <script type="text/javascript" src="/js/admin/ajaxJobsDownload.js"></script>
     <script type="text/javascript" src="/js/admin/allJobsDownload.js"></script>
 }

@@ -17,12 +17,11 @@ namespace EWork.Controllers
     [Authorize(Roles = "moderator, administrator")]
     public class AdminController : Controller
     {
-        private const int TakeAmount = 2;
-
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
         private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformOptions;
         private readonly IJobMapper _jobMapper;
+        private readonly int _takeAmount;
 
         public AdminController(IFreelancingPlatform freelancingPlatform, UserManager<User> userManager,
             IOptions<FreelancingPlatformConfig> freelancingPlatformOptions, IJobMapper jobMapper)
@@ -31,29 +30,30 @@ namespace EWork.Controllers
             _userManager = userManager;
             _freelancingPlatformOptions = freelancingPlatformOptions;
             _jobMapper = jobMapper;
+            _takeAmount = freelancingPlatformOptions.Value.TakeAmount;
         }
 
         public IActionResult Index() => View();
 
         [Authorize(Roles = "administrator")]
-        public IActionResult AllJobs(string searchString)
+        public async Task<IActionResult> AllJobs(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString).Take(TakeAmount);
-            var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
+            var jobs = await GetJobsByTitle(searchString).Take(_takeAmount).ToArrayAsync();
+            var adminPageViewModel = new AdminPageViewModel<Job>(jobs, _takeAmount, searchString);
             return View(adminPageViewModel);
         }
 
         [Authorize(Roles = "administrator")]
         public async Task<IActionResult> Users(string searchString)
         {
-            var users = GetUsersByUserName(searchString).Take(TakeAmount);
+            var users = GetUsersByUserName(searchString).Take(_takeAmount);
 
             foreach (var user in users)
             {
                 user.Jobs = await GetUserJobs(user.Id).ToListAsync();
             }
 
-            var adminPageViewModel = new AdminPageViewModel<User>(users, searchString);
+            var adminPageViewModel = new AdminPageViewModel<User>(await users.ToArrayAsync(), _takeAmount, searchString);
             return View(adminPageViewModel);
         }
 
@@ -73,14 +73,18 @@ namespace EWork.Controllers
             return users;
         }
 
-        public IActionResult OpenedDisputes(string searchString)
+        public async Task<IActionResult> OpenedDisputes(string searchString)
         {
-            var jobs = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied).Take(TakeAmount);
-            var adminPageViewModel = new AdminPageViewModel<Job>(jobs, searchString);
+            var jobs = await GetJobsByTitle(searchString)
+                .Where(j => j.IsPaymentDenied)
+                .Take(_takeAmount)
+                .ToArrayAsync();
+
+            var adminPageViewModel = new AdminPageViewModel<Job>(jobs, _takeAmount, searchString);
             return View(adminPageViewModel);
         }
 
-        protected IQueryable<Job> GetJobsByTitle(string title)
+        private IQueryable<Job> GetJobsByTitle(string title)
         {
             var jobs = _freelancingPlatform.JobManager.GetAll().Where(j => !j.IsClosed);
 
@@ -89,7 +93,7 @@ namespace EWork.Controllers
                 jobs = jobs.Where(job => job.Title.StartsWith(title));
             }
 
-            return jobs.Take(TakeAmount);
+            return jobs.OrderByDescending(j => j.CreationDate);
         }
 
         [HttpPost]
@@ -177,7 +181,7 @@ namespace EWork.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GetUsersAjax(int skipAmount, int takeAmount, string searchString)
+        public async Task<JsonResult> GetUsersAjax(int skipAmount, int takeAmount, string searchString)
         {
             var users = await GetUsersByUserName(searchString).Skip(skipAmount).Take(takeAmount).ToArrayAsync();
             var res =  users.Select(u => new
@@ -200,18 +204,22 @@ namespace EWork.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult GetJobsAjax(int skipAmount, int takeAmount, string searchString)
+        public async Task<JsonResult> GetJobsAjax(int skipAmount, int takeAmount, string searchString)
         {
-            var users = GetJobsByTitle(searchString).Skip(skipAmount).Take(takeAmount);
-            var res = _jobMapper.MapRange(users);
+            var jobs = await GetJobsByTitle(searchString).Skip(skipAmount).Take(takeAmount).ToArrayAsync();
+            var res = _jobMapper.MapRange(jobs);
 
             return Json(res);
         }
 
-        public IActionResult GetDisputedJobsAjax(int skipAmount, int takeAmount, string searchString)
+        public async Task<JsonResult> GetDisputedJobsAjax(int skipAmount, int takeAmount, string searchString)
         {
-            var users = GetJobsByTitle(searchString).Where(j => j.IsPaymentDenied).Skip(skipAmount).Take(takeAmount);
-            var res = _jobMapper.MapRange(users);
+            var jobs = await GetJobsByTitle(searchString)
+                .Where(j => j.IsPaymentDenied)
+                .Skip(skipAmount)
+                .Take(takeAmount)
+                .ToArrayAsync();
+            var res = _jobMapper.MapRange(jobs);
 
             return Json(res);
         }

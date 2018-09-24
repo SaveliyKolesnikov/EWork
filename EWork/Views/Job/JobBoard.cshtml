@@ -74,7 +74,7 @@ double GetUserRating(IEnumerable<Review> reviews)
                                id="budgetTo" min="0" step="0.01" maxlength="5" />
                         <div class="space-10"></div>
                         <div class="justify-content-container">
-                            <input id="resetFiltersButton" class="text-center button" type="button" value="Reset filters"/>
+                            <input id="resetFiltersButton" class="text-center button" type="button" value="Reset filters" />
                         </div>
                     </div>
                 </div>
@@ -139,17 +139,30 @@ double GetUserRating(IEnumerable<Review> reviews)
 <div class="container-fluid">
     <div class="row">
         <div class="justify-content-container">
-            <button class="button blue" id="download-more-notifications">Load more</button>
+            @{
+                var areAllJobsHaveBeenDownloaded = Model.Jobs.Length < Model.TakeAmount;
+            }
+            <button class="button @(areAllJobsHaveBeenDownloaded ? "" : "blue")" id="download-more-jobs"
+                    @(areAllJobsHaveBeenDownloaded ? "disabled" : "")>
+                Load more
+            </button>
         </div>
     </div>
 </div>
 
 @section Scripts
     {
+    <script>
+        const takeAmount = @Model.TakeAmount
+        const currentUserUserName = '@User.Identity.Name'
+    </script>
+    <script type="text/javascript" src="/js/job/jobBoard.js"></script>
     <script type="text/javascript" src="/lib/dateFormatter.min.js"></script>
     <script type="text/javascript" src="/js/job/searchingByClickingOnTags.js"></script>
     <script type="text/javascript" src="/js/job/ajaxJobDownload.js"></script>
-    <script type="text/javascript" src="/js/job/jobBoard.js"></script>
+    @if (areAllJobsHaveBeenDownloaded){ 
+        <script>disableDownloadMoreJobsButton()</script>
+    }
 }
 
 @* Job template *@

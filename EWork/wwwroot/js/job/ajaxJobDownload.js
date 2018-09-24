@@ -1,6 +1,7 @@
-﻿$('#download-more-notifications').click(function () {
-    const takeAmount = 2;
+﻿$('#download-more-jobs').click(function () {
     const amountOfJobsNow = $('.job-container').length;
+    if (!takeAmount)
+        takeAmount = 5;
     downloadJobs(takeAmount, amountOfJobsNow);
 });
 
@@ -26,6 +27,9 @@ function downloadJobs(takeAmount, skipAmount) {
         },
         function (jobs) {
             jobs.forEach(addJob);
+            if (jobs.length < takeAmount) {
+                disableDownloadMoreJobsButton();
+            }
         }).fail(
             function (errorObj) {
                 console.error(errorObj.responseJSON.message);
@@ -63,6 +67,14 @@ function addJob(job) {
     const tagsContainer = $('.job-tags', container);
     tags.forEach(tag => tagsContainer.append(tag));
     $('#jobs-container').append(container);
+
+    if (job.employerUserName === currentUserUserName && job.hiredFreelancerUserName === "") {
+        const deleteJobForm = `<form type="post" action="/DeleteJob">
+                                <input type="hidden" name="jobId" value="${job.id}" />
+                                <input type="submit" class="close-job" value="&Chi;" />
+                            </form>`;
+        container.append(deleteJobForm);
+    }
 
     function removeSecondsFromDateString(dateString) {
         const lastColonIndex = dateString.lastIndexOf(':');

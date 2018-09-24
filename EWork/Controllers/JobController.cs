@@ -23,17 +23,18 @@ namespace EWork.Controllers
     [Authorize(Roles = "employer, freelancer, moderator, administrator")]
     public class JobController : Controller
     {
-        private const int TakeAmount = 2;
         private readonly IFreelancingPlatform _freelancingPlatform;
         private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _environment;
         private readonly IOptions<PhotoConfig> _photoOptions;
         private readonly IJobMapper _jobMapper;
+        private readonly int _takeAmount;
 
         public JobController(IFreelancingPlatform freelancingPlatform,
             UserManager<User> userManager,
             IHostingEnvironment environment,
             IOptions<PhotoConfig> photoOptions,
+            IOptions<FreelancingPlatformConfig> fpOptions,
             IJobMapper jobMapper)
         {
             _freelancingPlatform = freelancingPlatform;
@@ -41,6 +42,7 @@ namespace EWork.Controllers
             _environment = environment;
             _photoOptions = photoOptions;
             _jobMapper = jobMapper;
+            _takeAmount = fpOptions.Value.TakeAmount;
         }
 
         public class FilterModel
@@ -54,7 +56,7 @@ namespace EWork.Controllers
             public double EmployerRatingFrom
             {
                 get => _employerRatingFrom;
-                set => _employerRatingFrom = value < 0 ? 0 : value;
+                set => _employerRatingFrom = value < 0.001 ? 0 : value;
             }
 
             public double EmployerRatingTo
@@ -66,7 +68,7 @@ namespace EWork.Controllers
             public double BudgetFrom
             {
                 get => _budgetFrom;
-                set => _budgetFrom = value < 0 ? 0 : value;
+                set => _budgetFrom = value < 0.001 ? 0 : value;
             }
 
             public double BudgetTo
@@ -88,10 +90,10 @@ namespace EWork.Controllers
             if (User.IsInRole("freelancer"))
                 jobs = jobs.Where(j => j.HiredFreelancer == null);
 
-            jobs = jobs.Take(TakeAmount);
+            jobs = jobs.Take(_takeAmount);
             var searchUrl = Url.Action("JobBoard");
             var ajaxSearchUrl = Url.Action("GetJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
             return View(jobBoardViewModel);
         }
 
@@ -157,10 +159,12 @@ namespace EWork.Controllers
             if (deletedJob is null)
                 return UnprocessableEntity(jobId);
 
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (deletedJob.Employer.Id != currentUser.Id)
-                return Forbid();
-
+            if (User.IsInRole("employer"))
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (deletedJob.Employer.Id != currentUser.Id)
+                    return Forbid();
+            }
             await _freelancingPlatform.JobManager.DeleteAsync(deletedJob);
             return Ok();
         }
@@ -241,11 +245,11 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Freelancer currentUser))
                 return Forbid();
 
-            var jobs = GetJobsUsingFilters(filterModel).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id).Take(TakeAmount);
+            var jobs = GetJobsUsingFilters(filterModel).Where(j => !j.IsClosed && j.HiredFreelancer.Id == currentUser.Id).Take(_takeAmount);
 
             var searchUrl = Url.Action("FreelancerContracts");
             var ajaxSearchUrl = Url.Action("FreelancerContractsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount);
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
             return View("JobBoard", jobBoardViewModel);
@@ -274,11 +278,11 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Forbid();
 
-            var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer == null).Take(TakeAmount);
+            var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer == null).Take(_takeAmount);
 
             var searchUrl = Url.Action("EmployerOpenedJobs");
             var ajaxSearchUrl = Url.Action("EmployerOpenedJobsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
 
             ViewData["Title"] = "Jobs";
             ViewBag.Heading = "Opened Jobs";
@@ -308,11 +312,11 @@ namespace EWork.Controllers
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Forbid();
 
-            var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null).Take(TakeAmount);
+            var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Employer.Id == currentUser.Id && j.HiredFreelancer != null).Take(_takeAmount);
 
             var searchUrl = Url.Action("EmployerContracts");
             var ajaxSearchUrl = Url.Action("EmployerContractsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl, currentUser);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount, currentUser);
 
             ViewData["Title"] = "Contracts";
             ViewBag.Heading = "Your Contracts";
@@ -341,11 +345,12 @@ namespace EWork.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
 
-            var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id)).Take(TakeAmount);
+            var jobs = GetJobsUsingFilters(filterModel).Where(j => j.Proposals.Any(p => p.Sender.Id == currentUser.Id)).Take(_takeAmount);
 
             var searchUrl = Url.Action("AllFreelancerProposals");
             var ajaxSearchUrl = Url.Action("AllFreelancerProposalsAjax");
-            var jobBoardViewModel = new JobBoardViewModel(jobs, filterModel, searchUrl, ajaxSearchUrl);
+            var jobBoardViewModel = new JobBoardViewModel(await jobs.ToArrayAsync(), filterModel, searchUrl, ajaxSearchUrl, _takeAmount);
+
             ViewData["Title"] = "Proposals";
             ViewBag.Heading = "Jobs with Your Proposal";
             return View("~/Views/Job/JobBoard.cshtml", jobBoardViewModel);

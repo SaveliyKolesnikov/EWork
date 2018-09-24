@@ -7,21 +7,16 @@
 }
 
 @functions {
-double GetUserRating(IEnumerable<Review> reviews)
-{
-    if (reviews is null)
-        return 0;
+    double GetUserRating(IEnumerable<Review> reviews)
+    {
+        if (reviews is null)
+            return 0;
 
-    var res = 0d;
-    try
-    {
-        res = reviews.Average(r => r.Value);
+        var reviewsArr = reviews as Review[] ?? reviews.ToArray();
+        var res = reviewsArr.Length == 0 ? 0d : reviewsArr.Average(r => r.Value);
+
+        return res;
     }
-    catch (InvalidOperationException)
-    {
-    }
-    return res;
-}
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -90,12 +85,15 @@ double GetUserRating(IEnumerable<Review> reviews)
 </table>
 <div class="row">
     <div class="col-md-offset-3 col-md-6 text-center">
-        <button type="button" class="btn btn-primary" id="getMoreJobsButton">Load more jobs</button>
+        <button type="button" class="btn btn-primary" id="getMoreJobsButton"  @(Model.Items.Count() < Model.TakeAmount ? "disabled" : "")>Load more jobs</button>
     </div>
 </div>
 
 @section Scripts
 {
+    <script>
+        const takeAmount = @Model.TakeAmount
+    </script>
     <script type="text/javascript" src="/js/admin/ajaxJobsDownload.js"></script>
     <script type="text/javascript" src="/js/admin/disputedJobsDownload.js"></script>
 }
