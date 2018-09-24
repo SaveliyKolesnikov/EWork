@@ -2,6 +2,13 @@
     Layout = "/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Freelancing platform management";
 }
+
+@section Styles
+    {
+    @RenderSection("Styles", required: false)
+}
+
+
 @if (User.IsInRole("admin"))
 {
     <h2>Administration</h2>
@@ -23,6 +30,6 @@
 </div>
 
 @section Scripts
-{
+    {
     @RenderSection("Scripts", required: false)
 }

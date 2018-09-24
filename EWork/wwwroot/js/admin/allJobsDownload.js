@@ -1,4 +1,4 @@
 ﻿$('#getMoreJobsButton').click(function () {
     const amountOfUsersNow = $('#jobsContainer tr').length;
-    downloadJobs('/Admin/GetJobsAjax', takeAmount || 5, amountOfUsersNow, true);
+    downloadJobs('/Admin/GetJobsAjax', takeAmount || 5, amountOfUsersNow, true, () => this.disabled = true);
 });

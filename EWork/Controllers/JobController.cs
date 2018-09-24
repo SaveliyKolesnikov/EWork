@@ -159,10 +159,12 @@ namespace EWork.Controllers
             if (deletedJob is null)
                 return UnprocessableEntity(jobId);
 
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (deletedJob.Employer.Id != currentUser.Id)
-                return Forbid();
-
+            if (User.IsInRole("employer"))
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (deletedJob.Employer.Id != currentUser.Id)
+                    return Forbid();
+            }
             await _freelancingPlatform.JobManager.DeleteAsync(deletedJob);
             return Ok();
         }

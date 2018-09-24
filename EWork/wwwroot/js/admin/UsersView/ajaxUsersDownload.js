@@ -1,9 +1,9 @@
 ﻿$('#getMoreUsersButton').click(function () {
     const amountOfUsersNow = $('#usersContainer tr').length;
-    downloadJobs(takeAmount || 5, amountOfUsersNow);
+    downloadUsers(takeAmount || 5, amountOfUsersNow, () => this.disabled = true);
 });
 
-function downloadJobs(takeAmount, skipAmount) {
+function downloadUsers(takeAmount, skipAmount, noMoreUsersAction) {
     const token = $('input[name="__RequestVerificationToken"]').first().val();
     const searchString = $('#SearchString').val();
 
@@ -16,6 +16,8 @@ function downloadJobs(takeAmount, skipAmount) {
         },
         function (users) {
             users.forEach(addUserToTable);
+            if (users.length < takeAmount)
+                noMoreUsersAction();
         }).fail(
         function (errorObj) {
             console.error(errorObj.responseJSON.message);

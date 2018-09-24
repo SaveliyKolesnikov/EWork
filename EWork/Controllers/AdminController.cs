@@ -93,7 +93,7 @@ namespace EWork.Controllers
                 jobs = jobs.Where(job => job.Title.StartsWith(title));
             }
 
-            return jobs;
+            return jobs.OrderByDescending(j => j.CreationDate);
         }
 
         [HttpPost]
