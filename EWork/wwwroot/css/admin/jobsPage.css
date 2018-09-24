@@ -1,0 +1,15 @@
+﻿.delete-job-input {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    color: #23527c;
+    outline: none;
+}
+
+    .delete-job-input:disabled {
+        color: #333;
+        cursor: inherit;
+        text-decoration: none;
+    }
