@@ -105,7 +105,6 @@
                             </a><br />
                             <input type="hidden" name="userid" value="@user.Id" />
                             <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
                         </form>
                     }
                     else
@@ -116,7 +115,6 @@
                             </a><br />
                             <input type="hidden" name="userId" value="@user.Id" />
                             <input id="blockUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
                         </form>
                     }
                     @if (User.IsInRole("administrator"))
@@ -127,7 +125,6 @@
                             </a><br />
                             <input type="hidden" name="userId" value="@user.Id" />
                             <input id="deleteUserSubmit" data-username="@user.UserName" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
                         </form>
 
                         <form asp-action="ReplenishBalance" class="replenish-balance-form" data-balanceid="@user.Balance.Id">
@@ -138,7 +135,6 @@
                             <input type="hidden" name="balanceId" value="@user.Balance.Id" />
                             <input id="amountOfReplenishmentInput" type="hidden" name="amount" value="0" />
                             <input id="replenishBalanceSubmit" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
                         </form>
 
                         <form asp-action="DecreaseBalance" class="decrease-balance-form" data-balanceid="@user.Balance.Id">
@@ -149,7 +145,6 @@
                             <input type="hidden" name="balanceId" value="@user.Balance.Id" />
                             <input id="decreaseAmountInput" type="hidden" name="amount" value="0" />
                             <input id="decreaseBalanceSubmit" type="submit" style="display: none;" />
-                            @Html.AntiForgeryToken()
                         </form>
                     }
                 </td>
