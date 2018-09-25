@@ -8,21 +8,21 @@ namespace EWork.Data
 {
     public class FreelancingPlatformBalanceChecker
     {
-        private readonly IBalanceManager _repository;
+        private readonly IBalanceManager _balanceManager;
         private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformOptions;
 
-        public FreelancingPlatformBalanceChecker(IBalanceManager repository,
+        public FreelancingPlatformBalanceChecker(IBalanceManager balanceManager,
             IOptions<FreelancingPlatformConfig> freelancingPlatformOptions)
         {
-            _repository = repository;
+            _balanceManager = balanceManager;
             _freelancingPlatformOptions = freelancingPlatformOptions;
         }
 
         public async Task CheckAsync()
         {
-            var balanceId = _freelancingPlatformOptions.Value.BalanceId;
-            if (await _repository.FindAsync(b => b.Id == balanceId) is null)
-                throw new DbNotInitializedBalanceException("A freelancing platform balance doesn't exist. Please, add it manually to database and write its id to the config file.");
+            var freelancingPlatformBalance = await _balanceManager.GetFreelancingPlatformBalanceAsync();
+            if (freelancingPlatformBalance is null)
+                throw new DbNotInitializedBalanceException("A freelancing platform balance doesn't exist. Please, add it manually to database by writing its owner username to the config file.");
         }
     }
 }

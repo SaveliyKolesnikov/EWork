@@ -29,20 +29,40 @@ namespace EWork.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             CreateJobTagsModel();
 
             modelBuilder.Entity<User>(userBuilder =>
             {
                 userBuilder.HasIndex(u => u.UserName).IsUnique();
                 userBuilder.HasIndex(u => u.Email).IsUnique();
+
                 userBuilder.HasOne(u => u.Balance)
                     .WithOne(b => b.User)
                     .OnDelete(DeleteBehavior.Cascade);
+
                 userBuilder.HasMany(u => u.Reviews)
-                    .WithOne(r => r.User);
+                    .WithOne(r => r.User)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                userBuilder.HasMany(u => u.SentReviews)
+                    .WithOne(r => r.Sender)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                userBuilder.HasMany(u => u.SentMessages)
+                    .WithOne(m => m.Sender)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                userBuilder.HasMany(u => u.ReceivedMessages)
+                    .WithOne(m => m.Receiver)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Proposal>()
+                .HasOne(p => p.Sender)
+                .WithMany(f => f.Proposals)
+                .OnDelete(DeleteBehavior.Restrict);
 
             void CreateJobTagsModel()
             {
