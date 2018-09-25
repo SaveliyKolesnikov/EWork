@@ -6,9 +6,7 @@ namespace EWork.Models
 {
     public class Freelancer : User
     {
-        [Required]
-        public List<Proposal> Proposals { get; set; }
-        [NotMapped]
-        public override string Role { get; } = "freelancer";
+        [Required] public List<Proposal> Proposals { get; set; }
+        [NotMapped] public override string Role { get; } = "freelancer";
     }
 }

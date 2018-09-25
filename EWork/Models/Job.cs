@@ -8,12 +8,13 @@ namespace EWork.Models
     {
         public int Id { get; set; }
 
-        public Employer Employer { get; set; }
+        [Required] public Employer Employer { get; set; }
+
         public Freelancer HiredFreelancer { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 6, ErrorMessage = "{0} length must be in the range 6..50")]
-        [Display(Name="Title")]
+        [Display(Name = "Title")]
         public string Title { get; set; }
 
         [Required]
@@ -31,6 +32,7 @@ namespace EWork.Models
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime CreationDate { get; set; }
+
         public List<Proposal> Proposals { get; set; }
         public List<JobTags> JobTags { get; set; }
     }

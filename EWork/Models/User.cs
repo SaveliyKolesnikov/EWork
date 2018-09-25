@@ -24,16 +24,18 @@ namespace EWork.Models
 
         public string ProfilePhotoName { get; set; }
 
-        public DateTime SignUpDate { get; set; }
-        public Balance Balance { get; set; }
+        [Required] public DateTime SignUpDate { get; set; }
+        [Required] public Balance Balance { get; set; }
+        
         public List<Review> Reviews { get; set; }
+        public List<Review> SentReviews { get; set; }
         public List<Job> Jobs { get; set; }
         public List<Notification> Notifications { get; set; }
+        public List<Message> SentMessages { get; set; }
+        public List<Message> ReceivedMessages { get; set; }
 
-        [NotMapped]
-        public string FullName => $"{Name} {Surname}";
+        [NotMapped] public string FullName => $"{Name} {Surname}";
 
-        [NotMapped]
-        public abstract string Role { get; }
+        [NotMapped] public abstract string Role { get; }
     }
 }

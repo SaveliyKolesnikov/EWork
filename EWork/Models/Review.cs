@@ -16,10 +16,11 @@ namespace EWork.Models
         [Display(Name = "Review message")]
         public string Text { get; set; }
 
-        public User User { get; set; }
+        [Required] public User User { get; set; }
 
-        public User Sender { get; set; }
+        [Required] public User Sender { get; set; }
 
+        [Required]
         [DataType(DataType.DateTime)]
         public DateTime SendDate { get; set; }
     }
