@@ -176,6 +176,9 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateJob(Job job, string tags)
         {
+            ModelState.Remove(nameof(job.Employer));
+            ModelState.Remove(nameof(job.Proposals));
+            ModelState.Remove(nameof(job.CreationDate));
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 

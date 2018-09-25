@@ -141,21 +141,18 @@ namespace EWork.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReplenishBalance(int balanceId, decimal amount) =>
-            await DoTransferAsync(_freelancingPlatformOptions.Value.BalanceId, balanceId, amount);
+            await DoTransferAsync(await GetFreelancingPlatformId(), balanceId, amount);
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DecreaseBalance(int balanceId, decimal amount) =>
-            await DoTransferAsync(balanceId, _freelancingPlatformOptions.Value.BalanceId, amount);
+            await DoTransferAsync(balanceId, await GetFreelancingPlatformId(), amount);
+
+        private async Task<int> GetFreelancingPlatformId() =>
+            (await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync()).Id;
 
         private async Task<IActionResult> DoTransferAsync(int senderBalanceId, int recipientBalanceId, decimal amount)
         {
-            if (amount < 0)
-                return UnprocessableEntity(amount);
-
-            if (amount == 0)
-                return RedirectToAction("Users");
-
             var senderBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.Id == senderBalanceId);
             if (senderBalance is null)
                 return UnprocessableEntity(recipientBalanceId);
@@ -163,6 +160,17 @@ namespace EWork.Controllers
             var recipientBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.Id == recipientBalanceId);
             if (recipientBalance is null)
                 return UnprocessableEntity(recipientBalanceId);
+
+            return await DoTransferAsync(senderBalance, recipientBalance, amount);
+        }
+
+        private async Task<IActionResult> DoTransferAsync(Balance senderBalance, Balance recipientBalance, decimal amount)
+        {
+            if (amount < 0)
+                return UnprocessableEntity(amount);
+
+            if (amount == 0)
+                return RedirectToAction("Users");
 
             try
             {
