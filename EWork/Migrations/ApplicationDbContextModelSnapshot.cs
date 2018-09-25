@@ -528,7 +528,7 @@ namespace EWork.Migrations
                     b.HasOne("EWork.Models.User", "Sender")
                         .WithMany("SentReviews")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EWork.Models.User", "User")
                         .WithMany("Reviews")

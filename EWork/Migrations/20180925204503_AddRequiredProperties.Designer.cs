@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EWork.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180925150025_AddRequiredProperties")]
+    [Migration("20180925204503_AddRequiredProperties")]
     partial class AddRequiredProperties
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -530,7 +530,7 @@ namespace EWork.Migrations
                     b.HasOne("EWork.Models.User", "Sender")
                         .WithMany("SentReviews")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EWork.Models.User", "User")
                         .WithMany("Reviews")

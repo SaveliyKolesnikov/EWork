@@ -30,14 +30,12 @@ namespace EWork.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             CreateJobTagsModel();
 
             modelBuilder.Entity<User>(userBuilder =>
             {
                 userBuilder.HasIndex(u => u.UserName).IsUnique();
                 userBuilder.HasIndex(u => u.Email).IsUnique();
-
                 userBuilder.HasOne(u => u.Balance)
                     .WithOne(b => b.User)
                     .OnDelete(DeleteBehavior.Cascade);
@@ -47,22 +45,23 @@ namespace EWork.Data
                     .OnDelete(DeleteBehavior.Restrict);
 
                 userBuilder.HasMany(u => u.SentReviews)
+                    .WithOne(r => r.Sender);
+
+                userBuilder.HasMany(u => u.SentMessages)
                     .WithOne(r => r.Sender)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                userBuilder.HasMany(u => u.SentMessages)
-                    .WithOne(m => m.Sender)
+                userBuilder.HasMany(u => u.ReceivedMessages)
+                    .WithOne(r => r.Receiver)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                userBuilder.HasMany(u => u.ReceivedMessages)
-                    .WithOne(m => m.Receiver)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Proposal>()
-                .HasOne(p => p.Sender)
-                .WithMany(f => f.Proposals)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Freelancer>()
+                .HasMany(f => f.Proposals)
+                .WithOne(p => p.Sender)
+                .OnDelete(DeleteBehavior.Restrict); ;
+
 
             void CreateJobTagsModel()
             {
