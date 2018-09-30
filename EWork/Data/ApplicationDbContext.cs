@@ -31,6 +31,7 @@ namespace EWork.Data
         {
             base.OnModelCreating(modelBuilder);
             CreateJobTagsModel();
+            CreateFreelancerTagsModel();
 
             modelBuilder.Entity<User>(userBuilder =>
             {
@@ -75,7 +76,23 @@ namespace EWork.Data
 
                 modelBuilder.Entity<JobTags>()
                     .HasOne(jt => jt.Tag)
-                    .WithMany(o => o.JobTags)
+                    .WithMany()
+                    .HasForeignKey(jt => jt.TagId);
+            }
+
+            void CreateFreelancerTagsModel()
+            {
+                modelBuilder.Entity<FreelancerTags>()
+                    .HasKey(o => new { o.FreelancerId, o.TagId });
+
+                modelBuilder.Entity<FreelancerTags>()
+                    .HasOne(jt => jt.Freelancer)
+                    .WithMany(j => j.Tags)
+                    .HasForeignKey(jt => jt.FreelancerId);
+
+                modelBuilder.Entity<FreelancerTags>()
+                    .HasOne(jt => jt.Tag)
+                    .WithMany()
                     .HasForeignKey(jt => jt.TagId);
             }
         }
