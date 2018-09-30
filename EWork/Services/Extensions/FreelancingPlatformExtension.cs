@@ -12,7 +12,7 @@ namespace EWork.Services.Extensions
     public static class FreelancingPlatformExtension
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
-            service.AddFreelancingPlatformDbContext().AddMappers().AddRepositories()
+            service.AddFreelancingPlatformDbContext().AddMappers().AddTagManager().AddRepositories()
                 .AddModelManagers().AddMessageMapper().AddUserExtractor()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
@@ -21,8 +21,8 @@ namespace EWork.Services.Extensions
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
             service
                 .AddJobManager().AddProposalManager()
-                .AddModeratorManager().AddTagManager()
-                .AddNotificationManager().AddReviewManager()
+                .AddNotificationManager()
+                .AddModeratorManager().AddReviewManager()
                 .AddMessageManager().AddBalanceManager();
 
         private static IServiceCollection AddBalanceManager(this IServiceCollection service) =>
@@ -77,6 +77,7 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddReviewRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Review>, ReviewRepository>();
+
         #endregion
 
         #region Mappers
