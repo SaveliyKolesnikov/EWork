@@ -10,15 +10,17 @@ namespace EWork.Services.Interfaces
         /// <summary>
         /// Add new tags to db which gives them an id.
         /// </summary>
-        /// <param name="inputTags"></param>
+        /// <param name="tags"></param>
         /// <returns>Input tags with id from db</returns>
-        Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<string> inputTags);
+        Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<string> tags);
 
         /// <summary>
         /// Add new tags to db which gives them an id.
         /// </summary>
-        /// <param name="inputTags"></param>
+        /// <param name="tags"></param>
         /// <returns>Input tags with id from db</returns>
-        Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<Tag> inputTags);
+        Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<Tag> tags);
+
+        Task RemoveTagsRangeAsync(IEnumerable<Tag> tags);
     }
 }
