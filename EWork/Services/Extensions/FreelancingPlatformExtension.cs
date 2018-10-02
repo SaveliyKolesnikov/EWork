@@ -20,8 +20,8 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
             service
+                .AddNotificationManager().AddJobRecommenderService()
                 .AddJobManager().AddProposalManager()
-                .AddNotificationManager()
                 .AddModeratorManager().AddReviewManager()
                 .AddMessageManager().AddBalanceManager();
 
@@ -92,6 +92,9 @@ namespace EWork.Services.Extensions
             service.AddSingleton<IJobMapper, JobMapper>();
 
         #endregion
+
+        private static IServiceCollection AddJobRecommenderService(this IServiceCollection service) =>
+            service.AddScoped<IJobRecommender, JobRecommederService>();
 
         private static IServiceCollection AddUserExtractor(this IServiceCollection service) =>
             service.AddScoped<IUserExtractor, UserExtractor>();
