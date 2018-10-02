@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using EWork.Data.Extensions;
 using EWork.Data.Interfaces;
 using EWork.Models;
+using EWork.Services;
+using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,13 +16,15 @@ namespace EWork.Data.Repositories
 {
     public class JobRepository : IRepository<Job>
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
         private readonly UserManager<User> _userManager;
+        private readonly ITagManager _tagManager;
 
-        public JobRepository(IFreelancingPlatiformDbContext db, UserManager<User> userManager)
+        public JobRepository(IFreelancingPlatformDbContext db, UserManager<User> userManager, ITagManager tagManager)
         {
             _db = db;
             _userManager = userManager;
+            _tagManager = tagManager;
         }
 
         public async Task AddAsync(Job job)
@@ -48,7 +52,11 @@ namespace EWork.Data.Repositories
             if (job is null)
                 return;
 
+            var deletedJobsTags = job.JobTags.Select(jt => jt.Tag);
+
             _db.Jobs.Remove(job);
+            await _tagManager.RemoveRangeAsync(deletedJobsTags);
+
             await _db.SaveChangesAsync();
         }
 

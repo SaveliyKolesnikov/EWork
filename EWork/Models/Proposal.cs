@@ -8,12 +8,12 @@ namespace EWork.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(4096, MinimumLength = 30, ErrorMessage = "{0} length must be in the range 1..4096")]
+        [StringLength(4096, MinimumLength = 30, ErrorMessage = "{0} length must be in the range 30..4096")]
         [Display(Name = "Proposal")]
         public string Text { get; set; }
 
-        public DateTime SendDate { get; set; }
-        public Freelancer Sender { get; set; }
-        public Job Job { get; set; }
+        [Required] public DateTime SendDate { get; set; }
+        [Required] public Freelancer Sender { get; set; }
+        [Required] public Job Job { get; set; }
     }
 }

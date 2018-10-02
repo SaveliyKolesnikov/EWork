@@ -4,7 +4,6 @@ namespace EWork.Models
 {
     public class Employer : User
     {
-        [NotMapped]
         public override string Role { get; } = "employer";
     }
 }

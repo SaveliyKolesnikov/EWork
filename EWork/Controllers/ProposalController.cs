@@ -67,6 +67,9 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateProposal(Proposal proposal, int jobId)
         {
+            ModelState.Remove(nameof(proposal.Sender));
+            ModelState.Remove(nameof(proposal.Job));
+            ModelState.Remove(nameof(proposal.SendDate));
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
@@ -92,6 +95,9 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProposal(Proposal proposal, bool isDeleting)
         {
+            ModelState.Remove($"{nameof(proposal)}.{nameof(proposal.Sender)}");
+            ModelState.Remove($"{nameof(proposal)}.{nameof(proposal.Job)}");
+            ModelState.Remove($"{nameof(proposal)}.{nameof(proposal.SendDate)}");
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 

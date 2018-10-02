@@ -66,6 +66,9 @@ namespace EWork.Controllers
             if (!await IsUserCanAddReviewAsync(reviewedUser: reviewedUser, senderOfReview: currentUser))
                 return Forbid();
 
+            ModelState.Remove(nameof(review.User));
+            ModelState.Remove(nameof(review.Sender));
+            ModelState.Remove(nameof(review.SendDate));
             if (ModelState.IsValid)
             {
                 review.SendDate = DateTime.Now;
@@ -96,6 +99,9 @@ namespace EWork.Controllers
             if (review is null)
                 throw new ArgumentNullException(nameof(review));
 
+            ModelState.Remove(nameof(review.User));
+            ModelState.Remove(nameof(review.Sender));
+            ModelState.Remove(nameof(review.SendDate));
             if (ModelState.IsValid)
             {
                 var reviewFromDb = await _freelancingPlatform.ReviewManager

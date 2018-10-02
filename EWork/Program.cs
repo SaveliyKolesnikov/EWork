@@ -42,7 +42,7 @@ namespace EWork
                 {
                     var repository = services.GetRequiredService<IBalanceManager>();
                     var freelancingPlatformOptions = services.GetRequiredService<IOptions<FreelancingPlatformConfig>>();
-                    var balanceChecker = new FreelancingPlatformBalanceChecker(repository, freelancingPlatformOptions);
+                    var balanceChecker = new FreelancingPlatformBalanceChecker(repository);
                     await balanceChecker.CheckAsync();
                 }
                 catch (DbNotInitializedBalanceException e)

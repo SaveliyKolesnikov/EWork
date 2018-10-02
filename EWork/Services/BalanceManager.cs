@@ -5,6 +5,7 @@ using EWork.Data.Interfaces;
 using EWork.Exceptions;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
 namespace EWork.Services
@@ -13,19 +14,30 @@ namespace EWork.Services
     {
         private readonly IBalanceRepository _repository;
         private readonly IOptions<FreelancingPlatformConfig> _freelancingPlatformOptions;
+        private readonly UserManager<User> _userManager;
+        private static Balance _freelancingPlatformBalance;
 
-        public BalanceManager(IBalanceRepository repository, IOptions<FreelancingPlatformConfig> freelancingPlatformOptions)
+        public BalanceManager(IBalanceRepository repository, 
+            IOptions<FreelancingPlatformConfig> freelancingPlatformOptions,
+            UserManager<User> userManager)
         {
             _repository = repository;
             _freelancingPlatformOptions = freelancingPlatformOptions;
+            _userManager = userManager;
         }
 
         public Task<Balance> FindAsync(Predicate<Balance> predicate) => _repository.FindAsync(predicate);
 
-        public Task<Balance> GetFreelancingPlatformBalanceAsync() =>
-            _repository.FindAsync(b => b.Id == _freelancingPlatformOptions.Value.BalanceId);
+        public async Task<Balance> GetFreelancingPlatformBalanceAsync()
+        {
+            var balanceOwner = 
+                await _userManager.FindByNameAsync(_freelancingPlatformOptions.Value.BalanceOwner);
 
-        public async Task<bool> ReplenishBalanceAsync(Balance balance, decimal amount)
+            return _freelancingPlatformBalance ?? (_freelancingPlatformBalance =
+                       await FindAsync(b => b.UserId == balanceOwner.Id));
+        }
+
+        public async Task<bool> ReplenishAsync(Balance balance, decimal amount)
         {
             if (amount < 0)
                 throw new ArgumentException("The amount of replenishment must be greater than 0", nameof(amount));
@@ -53,7 +65,7 @@ namespace EWork.Services
 
             senderBalance.Money -= amount;
             recipientBalance.Money += amount;
-            await _repository.UpdateRangeAsync(new[] {senderBalance, recipientBalance});
+            await _repository.UpdateRangeAsync(new[] { senderBalance, recipientBalance });
 
             return true;
         }

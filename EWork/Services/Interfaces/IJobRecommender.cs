@@ -3,8 +3,8 @@ using EWork.Models;
 
 namespace EWork.Services.Interfaces
 {
-    public interface IModeratorManager
+    public interface IJobRecommender
     {
-        Task<Moderator> GetAsync();
+        Task RecommendAsync(Job job);
     }
 }

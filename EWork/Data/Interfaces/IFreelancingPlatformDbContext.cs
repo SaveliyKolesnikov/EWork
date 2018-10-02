@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EWork.Data.Interfaces
 {
-    public interface IFreelancingPlatiformDbContext : IDisposable
+    public interface IFreelancingPlatformDbContext : IDisposable
     {
         DbSet<Job> Jobs { get; set; }
         DbSet<Tag> Tags { get; set; }
@@ -20,6 +20,7 @@ namespace EWork.Data.Interfaces
         DbSet<Freelancer> Freelancers { get; set; }
         DbSet<Notification> Notifications { get; set; }
         DbSet<Administrator> Administrators { get; set; }
+        DbSet<FreelancerTags> FreelancerTags { get; set; }
 
         Task SaveChangesAsync();
         EntityEntry<T> Entry<T>(T obj) where T : class;

@@ -11,9 +11,9 @@ namespace EWork.Data.Repositories
 {
     public class MessageRepository : IRepository<Message>
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
 
-        public MessageRepository(IFreelancingPlatiformDbContext db) => _db = db;
+        public MessageRepository(IFreelancingPlatformDbContext db) => _db = db;
 
         public async Task AddAsync(Message message)
         {

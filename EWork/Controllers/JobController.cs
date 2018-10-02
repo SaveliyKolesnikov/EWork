@@ -165,6 +165,7 @@ namespace EWork.Controllers
                 if (deletedJob.Employer.Id != currentUser.Id)
                     return Forbid();
             }
+
             await _freelancingPlatform.JobManager.DeleteAsync(deletedJob);
             return Ok();
         }
@@ -176,18 +177,21 @@ namespace EWork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateJob(Job job, string tags)
         {
+            ModelState.Remove(nameof(job.Employer));
+            ModelState.Remove(nameof(job.Proposals));
+            ModelState.Remove(nameof(job.CreationDate));
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
             if (!(await _userManager.GetUserAsync(User) is Employer currentUser))
                 return Forbid();
 
-            var platformBalance = await _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
-            var currentUserBalance = await _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id);
+            var platformBalanceTask = _freelancingPlatform.BalanceManager.GetFreelancingPlatformBalanceAsync();
+            var currentUserBalanceTask = _freelancingPlatform.BalanceManager.FindAsync(b => b.UserId == currentUser.Id);
 
             try
             {
-                await _freelancingPlatform.BalanceManager.TransferMoneyAsync(currentUserBalance, platformBalance,
+                await _freelancingPlatform.BalanceManager.TransferMoneyAsync(await currentUserBalanceTask, await platformBalanceTask,
                     job.Budget);
             }
             catch (NotEnoughMoneyException e)
@@ -202,8 +206,8 @@ namespace EWork.Controllers
 
             if (!(tags is null))
             {
-                var splitTags = tags.Trim().Split(' ').Where(tag => tag.Length <= 20);
-                var newTags = await _freelancingPlatform.TagManager.AddTagsRangeAsync(splitTags);
+                var splitTags = tags.Trim().Split(' ').Where(tag => tag.Length > 0 && tag.Length <= 20);
+                var newTags = await _freelancingPlatform.TagManager.AddRangeAsync(splitTags);
                 foreach (var tag in newTags)
                     job.JobTags.Add(new JobTags { Tag = tag });
             }

@@ -4,14 +4,16 @@ using EWork.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EWork.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180925204503_AddRequiredProperties")]
+    partial class AddRequiredProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,19 +38,6 @@ namespace EWork.Migrations
                         .IsUnique();
 
                     b.ToTable("Balances");
-                });
-
-            modelBuilder.Entity("EWork.Models.FreelancerTags", b =>
-                {
-                    b.Property<string>("FreelancerId");
-
-                    b.Property<int>("TagId");
-
-                    b.HasKey("FreelancerId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("FreelancerTags");
                 });
 
             modelBuilder.Entity("EWork.Models.Job", b =>
@@ -469,19 +458,6 @@ namespace EWork.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("EWork.Models.FreelancerTags", b =>
-                {
-                    b.HasOne("EWork.Models.Freelancer", "Freelancer")
-                        .WithMany("Tags")
-                        .HasForeignKey("FreelancerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("EWork.Models.Tag", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("EWork.Models.Job", b =>
                 {
                     b.HasOne("EWork.Models.Administrator")
@@ -510,7 +486,7 @@ namespace EWork.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EWork.Models.Tag", "Tag")
-                        .WithMany()
+                        .WithMany("JobTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
