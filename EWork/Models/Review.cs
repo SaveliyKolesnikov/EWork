@@ -7,6 +7,7 @@ namespace EWork.Models
     {
         public int Id { get; set; }
 
+        [Required]
         [Range(0.1d, 10d, ErrorMessage = "{0} must be in the range 0,1..10")]
         [Display(Name = "Rating")]
         public double Value { get; set; }
