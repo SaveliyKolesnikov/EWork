@@ -12,7 +12,7 @@ namespace EWork.Services.Extensions
     public static class FreelancingPlatformExtension
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
-            service.AddFreelancingPlatformDbContext().AddMappers().AddRepositories()
+            service.AddFreelancingPlatformDbContext().AddMappers().AddTagManager().AddRepositories()
                 .AddModelManagers().AddMessageMapper().AddUserExtractor()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
@@ -20,9 +20,9 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddModelManagers(this IServiceCollection service) =>
             service
+                .AddNotificationManager().AddJobRecommenderService()
                 .AddJobManager().AddProposalManager()
-                .AddModeratorManager().AddTagManager()
-                .AddNotificationManager().AddReviewManager()
+                .AddModeratorManager().AddReviewManager()
                 .AddMessageManager().AddBalanceManager();
 
         private static IServiceCollection AddBalanceManager(this IServiceCollection service) =>
@@ -77,6 +77,7 @@ namespace EWork.Services.Extensions
 
         private static IServiceCollection AddReviewRepository(this IServiceCollection service) =>
             service.AddScoped<IRepository<Review>, ReviewRepository>();
+
         #endregion
 
         #region Mappers
@@ -92,10 +93,13 @@ namespace EWork.Services.Extensions
 
         #endregion
 
+        private static IServiceCollection AddJobRecommenderService(this IServiceCollection service) =>
+            service.AddScoped<IJobRecommender, JobRecommederService>();
+
         private static IServiceCollection AddUserExtractor(this IServiceCollection service) =>
             service.AddScoped<IUserExtractor, UserExtractor>();
 
         private static IServiceCollection AddFreelancingPlatformDbContext(this IServiceCollection service) =>
-            service.AddScoped<IFreelancingPlatiformDbContext, ApplicationDbContext>();
+            service.AddScoped<IFreelancingPlatformDbContext, ApplicationDbContext>();
     }
 }

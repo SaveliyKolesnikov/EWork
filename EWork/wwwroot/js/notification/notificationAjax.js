@@ -42,6 +42,7 @@ function addNotification(notification) {
 
     let deleteLink = $('<button/>', { text: 'Delete', class: 'delete-notification' })
         .data('notificationid', notification.id).addClass('delete-notification').click(deleteNotificationPost);
+
     tr.append($('<td/>').append(deleteLink));
     $('#notificationsTable').append(tr);
 }

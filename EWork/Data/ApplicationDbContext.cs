@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User>, IFreelancingPlatiformDbContext
+    public class ApplicationDbContext : IdentityDbContext<User>, IFreelancingPlatformDbContext
     {
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Tag> Tags { get; set; }
@@ -19,8 +19,9 @@ namespace EWork.Data
         public DbSet<Freelancer> Freelancers { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Administrator> Administrators { get; set; }
+        public DbSet<FreelancerTags> FreelancerTags { get; set; }
 
-        async Task IFreelancingPlatiformDbContext.SaveChangesAsync() => await SaveChangesAsync();
+        async Task IFreelancingPlatformDbContext.SaveChangesAsync() => await SaveChangesAsync();
 
         public ApplicationDbContext(DbContextOptions options)
             : base(options)
@@ -31,6 +32,7 @@ namespace EWork.Data
         {
             base.OnModelCreating(modelBuilder);
             CreateJobTagsModel();
+            CreateFreelancerTagsModel();
 
             modelBuilder.Entity<User>(userBuilder =>
             {
@@ -75,7 +77,23 @@ namespace EWork.Data
 
                 modelBuilder.Entity<JobTags>()
                     .HasOne(jt => jt.Tag)
-                    .WithMany(o => o.JobTags)
+                    .WithMany()
+                    .HasForeignKey(jt => jt.TagId);
+            }
+
+            void CreateFreelancerTagsModel()
+            {
+                modelBuilder.Entity<FreelancerTags>()
+                    .HasKey(o => new { o.FreelancerId, o.TagId });
+
+                modelBuilder.Entity<FreelancerTags>()
+                    .HasOne(jt => jt.Freelancer)
+                    .WithMany(j => j.Tags)
+                    .HasForeignKey(jt => jt.FreelancerId);
+
+                modelBuilder.Entity<FreelancerTags>()
+                    .HasOne(jt => jt.Tag)
+                    .WithMany()
                     .HasForeignKey(jt => jt.TagId);
             }
         }

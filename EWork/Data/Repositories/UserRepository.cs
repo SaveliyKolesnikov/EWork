@@ -12,10 +12,10 @@ namespace EWork.Data.Repositories
 {
     public class UserRepository : IRepository<User>
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
         private readonly UserManager<User> _userManager;
 
-        public UserRepository(IFreelancingPlatiformDbContext db, UserManager<User> userManager)
+        public UserRepository(IFreelancingPlatformDbContext db, UserManager<User> userManager)
         {
             _db = db;
             _userManager = userManager;

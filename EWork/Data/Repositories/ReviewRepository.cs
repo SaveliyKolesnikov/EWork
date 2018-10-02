@@ -11,9 +11,9 @@ namespace EWork.Data.Repositories
 {
     public class ReviewRepository : IRepository<Review>
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
 
-        public ReviewRepository(IFreelancingPlatiformDbContext db)
+        public ReviewRepository(IFreelancingPlatformDbContext db)
         {
             _db = db;
         }

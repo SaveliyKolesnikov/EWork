@@ -10,10 +10,10 @@ using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EWork.Config;
+using EWork.Data.Interfaces;
 using EWork.Models;
 using EWork.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -27,27 +27,27 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
     [Authorize]
     public partial class IndexModel : PageModel
     {
-        private readonly IHostingEnvironment _env;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IBalanceManager _balanceManager;
         private readonly IOptions<PhotoConfig> _photoConfig;
+        private readonly ITagManager _tagManager;
+        private readonly IFreelancingPlatformDbContext _freelancingPlatformDbContext;
 
         public IndexModel(
-            IHostingEnvironment env,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailSender emailSender,
-            IBalanceManager balanceManager,
-            IOptions<PhotoConfig> photoConfig)
+            IOptions<PhotoConfig> photoConfig,
+            ITagManager tagManager,
+            IFreelancingPlatformDbContext freelancingPlatformDbContext)
         {
-            _env = env;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
-            _balanceManager = balanceManager;
             _photoConfig = photoConfig;
+            _tagManager = tagManager;
+            _freelancingPlatformDbContext = freelancingPlatformDbContext;
         }
 
         public string Username { get; set; }
@@ -83,6 +83,10 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
             [Range(0, double.MaxValue)]
             [Display(Name = "Amount of replenishment")]
             public decimal AmountOfReplenishment { get; set; }
+
+            [StringLength(4096, ErrorMessage = "{0} length must be in the range 1..4096")]
+            [Display(Name = "Skills")]
+            public string Skills { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -112,10 +116,19 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                 AmountOfReplenishment = 0
             };
 
+            if (user is Freelancer freelancer)
+                Input.Skills = string.Join(' ', (await GetFreelancersTagsAsync(freelancer)).Select(t => t.Tag.Text));
+
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
 
             return Page();
         }
+
+        private async Task<IEnumerable<FreelancerTags>> GetFreelancersTagsAsync(Freelancer freelancer) =>
+            await _freelancingPlatformDbContext.FreelancerTags
+                .Where(ft => ft.FreelancerId == freelancer.Id)
+                .Include(ft => ft.Tag)
+                .ToArrayAsync();
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -179,11 +192,31 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            //var curUserBalance = await _balanceManager.FindAsync(b => b.UserId == user.Id);
-            //if (Input.AmountOfReplenishment > 0)
-            //{
-            //    await _balanceManager.ReplenishBalanceAsync(curUserBalance, Input.AmountOfReplenishment);
-            //}
+            if (user is Freelancer freelancer)
+            {
+                freelancer.Tags = (await GetFreelancersTagsAsync(freelancer)).ToList();
+                var skills = freelancer.Tags.Select(t => t.Tag.Text).ToArray();
+                var inputSkills = Input.Skills?.Trim().Split(' ').Where(tag => tag.Length > 0 && tag.Length <= 20).ToArray() ?? new string[] { };
+
+                var newTagsValues = inputSkills.Except(skills).ToArray();
+                var newTags = Enumerable.Empty<Tag>();
+                if (newTagsValues.Length != 0)
+                    newTags = await (await _tagManager.AddRangeAsync(newTagsValues)).ToArrayAsync();
+
+                var deletedTags = skills.Except(inputSkills).ToArray();
+                var deletedFreelancerTags = freelancer.Tags?.Where(ft => deletedTags.Any(tag => ft.Tag.Text == tag)).ToArray();
+
+                foreach (var deletedFreelancerTag in deletedFreelancerTags)
+                    _freelancingPlatformDbContext.FreelancerTags.Remove(deletedFreelancerTag);
+
+                freelancer.Tags.AddRange(newTags.Select(newTag => new FreelancerTags { Tag = newTag }));
+
+                _freelancingPlatformDbContext.Freelancers.Update(freelancer);
+                await _freelancingPlatformDbContext.SaveChangesAsync();
+
+                if (deletedTags.Length != 0)
+                    await _tagManager.RemoveRangeAsync(deletedFreelancerTags.Select(ft => ft.Tag));
+            }
 
             if (!(Input.UploadedImage is null || Input.UploadedImage.Length == 0))
             {
@@ -213,7 +246,7 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                     using (var inputStream = new MemoryStream())
                     {
                         await Input.UploadedImage.CopyToAsync(inputStream);
-                            
+
                         // A check on a hacking try.
                         var content = System.Text.Encoding.UTF8.GetString(inputStream.GetBuffer());
                         if (Regex.IsMatch(content, @"<script|<html|<head|<title|<body|<pre|<table|<a\s+href|<img|<plaintext|<cross\-domain\-policy",
@@ -267,7 +300,7 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                             else if (image.Width < image.Height)
                             {
                                 const int startX = 0;
-                                var startY = (image.Height - image.Width) / 2; 
+                                var startY = (image.Height - image.Width) / 2;
                                 var sourceSize = image.Width;
                                 var res = CropImage(image, startX, startY, sourceSize, sourceSize, sourceSize, sourceSize);
                                 res.Save(pathToNewImage);

@@ -14,10 +14,10 @@ namespace EWork.Data.Repositories
 {
     public class ProposalRepository : IRepository<Proposal>
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
         private readonly UserManager<User> _userManager;
 
-        public ProposalRepository(IFreelancingPlatiformDbContext db, UserManager<User> userManager)
+        public ProposalRepository(IFreelancingPlatformDbContext db, UserManager<User> userManager)
         {
             _db = db;
             _userManager = userManager;

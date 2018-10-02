@@ -11,10 +11,19 @@ namespace EWork.Services
     public class JobManager : IJobManager
     {
         private readonly IRepository<Job> _repository;
+        private readonly IJobRecommender _jobRecommender;
 
-        public JobManager(IRepository<Job> repository) => _repository = repository;
+        public JobManager(IRepository<Job> repository, IJobRecommender jobRecommender)
+        {
+            _repository = repository;
+            _jobRecommender = jobRecommender;
+        }
 
-        public Task AddAsync(Job item) => _repository.AddAsync(item);
+        public async Task AddAsync(Job item)
+        {
+            await _repository.AddAsync(item);
+            await _jobRecommender.RecommendAsync(await FindAsync(j => j.CreationDate == item.CreationDate && j.Budget == item.Budget && j.Title == item.Title));
+        }
 
         public Task DeleteAsync(Job item)
         {

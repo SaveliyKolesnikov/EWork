@@ -11,9 +11,9 @@ namespace EWork.Data.Repositories
 {
     public class NotificationRepository : IRepository<Notification>
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
 
-        public NotificationRepository(IFreelancingPlatiformDbContext db) => _db = db;
+        public NotificationRepository(IFreelancingPlatformDbContext db) => _db = db;
 
         public async Task AddAsync(Notification notification)
         {
