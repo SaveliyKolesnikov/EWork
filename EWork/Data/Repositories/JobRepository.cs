@@ -16,11 +16,11 @@ namespace EWork.Data.Repositories
 {
     public class JobRepository : IRepository<Job>
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
         private readonly UserManager<User> _userManager;
         private readonly ITagManager _tagManager;
 
-        public JobRepository(IFreelancingPlatiformDbContext db, UserManager<User> userManager, ITagManager tagManager)
+        public JobRepository(IFreelancingPlatformDbContext db, UserManager<User> userManager, ITagManager tagManager)
         {
             _db = db;
             _userManager = userManager;
@@ -55,7 +55,7 @@ namespace EWork.Data.Repositories
             var deletedJobsTags = job.JobTags.Select(jt => jt.Tag);
 
             _db.Jobs.Remove(job);
-            await _tagManager.RemoveTagsRangeAsync(deletedJobsTags);
+            await _tagManager.RemoveRangeAsync(deletedJobsTags);
 
             await _db.SaveChangesAsync();
         }

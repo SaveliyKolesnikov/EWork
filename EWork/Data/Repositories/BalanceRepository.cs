@@ -11,9 +11,9 @@ namespace EWork.Data.Repositories
 {
     public class BalanceRepository : IBalanceRepository
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
 
-        public BalanceRepository(IFreelancingPlatiformDbContext db)
+        public BalanceRepository(IFreelancingPlatformDbContext db)
         {
             _db = db;
         }
