@@ -5,16 +5,17 @@ using System.Threading.Tasks;
 using EWork.Data.Interfaces;
 using EWork.Models;
 using EWork.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EWork.Services
 {
     public class TagManager : ITagManager
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
 
-        public TagManager(IFreelancingPlatiformDbContext db) => _db = db;
+        public TagManager(IFreelancingPlatformDbContext db) => _db = db;
 
-        public async Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<string> tags)
+        public async Task<IQueryable<Tag>> AddRangeAsync(IEnumerable<string> tags)
         {
             if (tags is null)
                 throw new ArgumentNullException(nameof(tags));
@@ -34,10 +35,10 @@ namespace EWork.Services
             return commonTags.Union(newTagsFromBd);
         }
 
-        public Task<IQueryable<Tag>> AddTagsRangeAsync(IEnumerable<Tag> tags) =>
-            AddTagsRangeAsync(tags.Select(tag => tag.Text));
+        public Task<IQueryable<Tag>> AddRangeAsync(IEnumerable<Tag> tags) =>
+            AddRangeAsync(tags.Select(tag => tag.Text));
 
-        public async Task RemoveTagsRangeAsync(IEnumerable<Tag> tags)
+        public async Task RemoveRangeAsync(IEnumerable<Tag> tags)
         {
             var notUsedTags = tags.Where(tag => _db.Jobs.All(j => j.JobTags.All(jt => jt.Tag.Id != tag.Id)) &&
                                                            _db.Freelancers.All(f => f.Tags.All(ft => ft.Tag.Id != tag.Id)));
@@ -45,5 +46,8 @@ namespace EWork.Services
             _db.Tags.RemoveRange(notUsedTags);
             await _db.SaveChangesAsync();
         }
+
+        public IQueryable<Tag> FindByFirstLetters(string tagStart) =>
+            _db.Tags.Where(tag => tag.Text.StartsWith(tagStart));
     }
 }
