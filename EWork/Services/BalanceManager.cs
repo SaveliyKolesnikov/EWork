@@ -37,7 +37,7 @@ namespace EWork.Services
                        await FindAsync(b => b.UserId == balanceOwner.Id));
         }
 
-        public async Task<bool> ReplenishBalanceAsync(Balance balance, decimal amount)
+        public async Task<bool> ReplenishAsync(Balance balance, decimal amount)
         {
             if (amount < 0)
                 throw new ArgumentException("The amount of replenishment must be greater than 0", nameof(amount));

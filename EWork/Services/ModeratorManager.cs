@@ -8,11 +8,11 @@ namespace EWork.Services
 {
     public class ModeratorManager : IModeratorManager
     {
-        private readonly IFreelancingPlatiformDbContext _db;
+        private readonly IFreelancingPlatformDbContext _db;
 
-        public ModeratorManager(IFreelancingPlatiformDbContext db) => _db = db;
+        public ModeratorManager(IFreelancingPlatformDbContext db) => _db = db;
 
-        public async Task<Moderator> GetModeratorAsync()
+        public async Task<Moderator> GetAsync()
         {
             var moderators = _db.Moderators.Include(m => m.Notifications);
             var minNotifications = await moderators.MinAsync(m => m.Notifications.Count);

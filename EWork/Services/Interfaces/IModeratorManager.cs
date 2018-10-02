@@ -5,6 +5,6 @@ namespace EWork.Services.Interfaces
 {
     public interface IModeratorManager
     {
-        Task<Moderator> GetModeratorAsync();
+        Task<Moderator> GetAsync();
     }
 }
