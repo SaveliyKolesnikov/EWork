@@ -1,0 +1,25 @@
+﻿.popup-hints-wrapper {
+    min-width: 10em;
+    position: relative;
+}
+
+    .popup-hints-wrapper > .hints {
+        position: absolute;
+        z-index: 999;
+        max-height: 250px;
+        visibility: hidden;
+        background: rgba(248, 248, 255, 0.8);
+        width: 100%;
+    }
+        .popup-hints-wrapper > .hints > .hint {
+            margin: 0;
+            padding: 5px;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+            height: 30px;
+        }
+
+        .popup-hints-wrapper > .hints > .hint:hover {
+            background: rgba(236, 236, 248, 1);
+            cursor: pointer;
+        }
