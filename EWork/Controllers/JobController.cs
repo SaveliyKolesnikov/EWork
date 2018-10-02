@@ -165,6 +165,7 @@ namespace EWork.Controllers
                 if (deletedJob.Employer.Id != currentUser.Id)
                     return Forbid();
             }
+
             await _freelancingPlatform.JobManager.DeleteAsync(deletedJob);
             return Ok();
         }
