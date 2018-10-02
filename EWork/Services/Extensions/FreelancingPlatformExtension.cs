@@ -97,6 +97,6 @@ namespace EWork.Services.Extensions
             service.AddScoped<IUserExtractor, UserExtractor>();
 
         private static IServiceCollection AddFreelancingPlatformDbContext(this IServiceCollection service) =>
-            service.AddScoped<IFreelancingPlatiformDbContext, ApplicationDbContext>();
+            service.AddScoped<IFreelancingPlatformDbContext, ApplicationDbContext>();
     }
 }

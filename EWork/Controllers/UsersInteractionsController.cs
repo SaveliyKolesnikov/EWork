@@ -124,7 +124,7 @@ namespace EWork.Controllers
             await _freelancingPlatform.JobManager.UpdateAsync(job);
             var notification = new Notification
             {
-                Receiver = await _moderatorManager.GetModeratorAsync(),
+                Receiver = await _moderatorManager.GetAsync(),
                 CreatedDate = DateTime.UtcNow,
                 Source = Url.Action("JobInfo", "Job", new { jobId }),
                 Title = $"{job.Employer} wants to deny a job. Please follow the link and choose an action."
