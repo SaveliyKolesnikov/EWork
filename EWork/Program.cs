@@ -41,7 +41,6 @@ namespace EWork
                 try
                 {
                     var repository = services.GetRequiredService<IBalanceManager>();
-                    var freelancingPlatformOptions = services.GetRequiredService<IOptions<FreelancingPlatformConfig>>();
                     var balanceChecker = new FreelancingPlatformBalanceChecker(repository);
                     await balanceChecker.CheckAsync();
                 }

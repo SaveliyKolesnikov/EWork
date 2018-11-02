@@ -5,11 +5,21 @@
 @section Styles {
     <link href="/css/jobboard.css" rel="stylesheet" type="text/css" />
     <link href="/css/space.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/notification.css" rel="stylesheet" type="text/css" />
     <link href="/css/button.css" rel="stylesheet" type="text/css" />
     <link href="/css/usersNotifications.css" rel="stylesheet" type="text/css" />
 }
 
 <h2 class="page-title">Your Notifications</h2>
+<div class="row">
+    <h4 class="col-xs-6 col-md-offset-4 col-md-2 text-right autodeletion-text">Autodeletion:</h4>
+    <div class="col-xs-6 col-md-2">
+        <button class="button blue autodeletion-button pull-left">
+            ON
+        </button>
+        <input type="checkbox" checked="checked" class="autodeletion-checkbox"/>
+    </div>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -44,13 +54,14 @@
         const takeAmount = @ViewBag.TakeAmount
     </script>
     <script src="/js/notification/deleteNotification.js"></script>
+    <script src="/js/notification/notification-autodeletion.js"></script>
     <script src="/js/notification/notificationAjax.js"></script>
     <script>
-        const downloadPromise = downloadNotifications(takeAmount);
-        downloadPromise.then(function() {
-            if ($('#notificationsTable tr').length === 0) {
-                document.getElementById('delete-all-notifications').disabled = true;
-            }
-        });
+                                    const downloadPromise = downloadNotifications(takeAmount);
+            downloadPromise.then(function () {
+                if ($('#notificationsTable tr').length === 0) {
+                    document.getElementById('delete-all-notifications').disabled = true;
+                }
+            });
     </script>
 }
