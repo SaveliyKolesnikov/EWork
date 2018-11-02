@@ -34,7 +34,7 @@ function addNotification(notification) {
     tr.append($('<td/>', { text: notification.title }));
 
     let notificationSource = $('<a/>', { href: notification.source, text: 'link' });
-    let sourceLinkTd = $('<td/>').append(notificationSource);
+    let sourceLinkTd = $('<td/>').append(notificationSource).click(onSourceLinkClick);
     tr.append(sourceLinkTd);
 
     let formattedDate = new Date(notification.createdDate);
