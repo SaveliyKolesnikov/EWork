@@ -29,7 +29,7 @@ namespace EWork.Services
 
             var matchedFreelancers = await _dbContext.FreelancerTags
                                     .Where(ft => jobTags.Any(tag => tag.Id == ft.TagId))
-                                    .Include(ft => ft.Freelancer)
+                                    .Include(ft => ft.Freelancer).Distinct()
                                     .Select(ft => ft.Freelancer).ToArrayAsync();
 
             foreach (var matchedFreelancer in matchedFreelancers)
