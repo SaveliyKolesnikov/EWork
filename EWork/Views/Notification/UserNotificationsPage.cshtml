@@ -54,10 +54,10 @@
         const takeAmount = @ViewBag.TakeAmount
     </script>
     <script src="/js/notification/deleteNotification.js"></script>
-    <script src="/js/notification/notificationAjax.js"></script>
     <script src="/js/notification/notification-autodeletion.js"></script>
+    <script src="/js/notification/notificationAjax.js"></script>
     <script>
-                    const downloadPromise = downloadNotifications(takeAmount);
+                                    const downloadPromise = downloadNotifications(takeAmount);
             downloadPromise.then(function () {
                 if ($('#notificationsTable tr').length === 0) {
                     document.getElementById('delete-all-notifications').disabled = true;
