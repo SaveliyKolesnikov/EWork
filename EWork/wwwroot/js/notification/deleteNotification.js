@@ -1,11 +1,11 @@
 ﻿function deleteNotificationPost() {
-    let token = $('input[name="__RequestVerificationToken"]').first().val();
-    let notificationAmount = $('#numOfNotifications');
-    let data = {
+    const token = $('input[name="__RequestVerificationToken"]').first().val();
+    const notificationAmount = $('#numOfNotifications');
+    const data = {
         'notificationId': $(this).data('notificationid'),
         '__RequestVerificationToken': token
     };
-    let elem = this;
+    const elem = this;
     $.post("/Notification/DeleteNotification",
         data,
         function () {
