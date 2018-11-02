@@ -17,6 +17,7 @@
         <button class="button blue autodeletion-button pull-left">
             ON
         </button>
+        <input type="checkbox" checked="checked" class="autodeletion-checkbox"/>
     </div>
 </div>
 <table class="table">
@@ -54,8 +55,9 @@
     </script>
     <script src="/js/notification/deleteNotification.js"></script>
     <script src="/js/notification/notificationAjax.js"></script>
+    <script src="/js/notification/notification-autodeletion.js"></script>
     <script>
-                const downloadPromise = downloadNotifications(takeAmount);
+                    const downloadPromise = downloadNotifications(takeAmount);
             downloadPromise.then(function () {
                 if ($('#notificationsTable tr').length === 0) {
                     document.getElementById('delete-all-notifications').disabled = true;

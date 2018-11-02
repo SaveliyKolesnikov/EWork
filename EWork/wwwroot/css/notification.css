@@ -7,3 +7,7 @@
 h4.autodeletion-text {
     margin-top: 4px;
 }
+
+.autodeletion-checkbox {
+    display: none;
+}
