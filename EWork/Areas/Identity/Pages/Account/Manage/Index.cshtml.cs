@@ -191,33 +191,6 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                     throw new InvalidOperationException($"Unexpected error occurred setting user description for user with ID '{userId}'.");
                 }
             }
-
-            if (user is Freelancer freelancer)
-            {
-                freelancer.Tags = (await GetFreelancersTagsAsync(freelancer)).ToList();
-                var skills = freelancer.Tags.Select(t => t.Tag.Text).ToArray();
-                var inputSkills = Input.Skills?.Trim().Split(' ').Where(tag => tag.Length > 0 && tag.Length <= 20).ToArray() ?? new string[] { };
-
-                var newTagsValues = inputSkills.Except(skills).ToArray();
-                var newTags = Enumerable.Empty<Tag>();
-                if (newTagsValues.Length != 0)
-                    newTags = await (await _tagManager.AddRangeAsync(newTagsValues)).ToArrayAsync();
-
-                var deletedTags = skills.Except(inputSkills).ToArray();
-                var deletedFreelancerTags = freelancer.Tags?.Where(ft => deletedTags.Any(tag => ft.Tag.Text == tag)).ToArray();
-
-                foreach (var deletedFreelancerTag in deletedFreelancerTags)
-                    _freelancingPlatformDbContext.FreelancerTags.Remove(deletedFreelancerTag);
-
-                freelancer.Tags.AddRange(newTags.Select(newTag => new FreelancerTags { Tag = newTag }));
-
-                _freelancingPlatformDbContext.Freelancers.Update(freelancer);
-                await _freelancingPlatformDbContext.SaveChangesAsync();
-
-                if (deletedTags.Length != 0)
-                    await _tagManager.RemoveRangeAsync(deletedFreelancerTags.Select(ft => ft.Tag));
-            }
-
             if (!(Input.UploadedImage is null || Input.UploadedImage.Length == 0))
             {
                 var maxFileSize = _photoConfig.Value.MaxSize;
@@ -331,6 +304,34 @@ namespace EWork.Areas.Identity.Pages.Account.Manage
                     await _userManager.UpdateAsync(user);
                 }
             }
+
+            if (user is Freelancer freelancer)
+            {
+                freelancer.Tags = (await GetFreelancersTagsAsync(freelancer)).ToList();
+                var skills = freelancer.Tags.Select(t => t.Tag.Text).ToArray();
+                var inputSkills = Input.Skills?.Trim().Split(' ').Where(tag => tag.Length > 0 && tag.Length <= 20).ToArray() ?? new string[] { };
+
+                var newTagsValues = inputSkills.Except(skills).ToArray();
+                var newTags = Enumerable.Empty<Tag>();
+                if (newTagsValues.Length != 0)
+                    newTags = await (await _tagManager.AddRangeAsync(newTagsValues)).ToArrayAsync();
+
+                var deletedTags = skills.Except(inputSkills).ToArray();
+                var deletedFreelancerTags = freelancer.Tags?.Where(ft => deletedTags.Any(tag => ft.Tag.Text == tag)).ToArray();
+
+                foreach (var deletedFreelancerTag in deletedFreelancerTags)
+                    _freelancingPlatformDbContext.FreelancerTags.Remove(deletedFreelancerTag);
+
+                freelancer.Tags.AddRange(newTags.Select(newTag => new FreelancerTags { Tag = newTag }));
+
+                _freelancingPlatformDbContext.Freelancers.Update(freelancer);
+                await _freelancingPlatformDbContext.SaveChangesAsync();
+
+                if (deletedTags.Length != 0)
+                    await _tagManager.RemoveRangeAsync(deletedFreelancerTags.Select(ft => ft.Tag));
+            }
+
+            
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
