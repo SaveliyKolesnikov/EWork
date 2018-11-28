@@ -13,7 +13,7 @@ namespace EWork.Services.Extensions
     {
         public static IServiceCollection AddEWork(this IServiceCollection service) =>
             service.AddFreelancingPlatformDbContext().AddMappers().AddTagManager().AddRepositories()
-                .AddModelManagers().AddMessageMapper().AddUserExtractor()
+                .AddModelManagers().AddMessageMapper().AddUserExtractor().AddPdfReportGenerator()
                 .AddScoped<IFreelancingPlatform, EWork>();
 
         #region Managers
@@ -92,6 +92,9 @@ namespace EWork.Services.Extensions
             service.AddSingleton<IJobMapper, JobMapper>();
 
         #endregion
+
+        private static IServiceCollection AddPdfReportGenerator(this IServiceCollection service) =>
+            service.AddSingleton<IReportGenerator, PdfReportGenerator>();
 
         private static IServiceCollection AddJobRecommenderService(this IServiceCollection service) =>
             service.AddScoped<IJobRecommender, JobRecommederService>();
