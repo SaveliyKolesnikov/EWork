@@ -30,6 +30,8 @@
                 <ul class="nav navbar-nav">
                     @if (User.Identity.IsAuthenticated)
                     {
+                        var isUserEmployer = User.IsInRole("employer");
+                        var isUserFreelancer = User.IsInRole("freelancer");
                         <form method="get" class="navbar-form col-md-7 visible-xs visible-lg" asp-controller="Job" asp-action="JobBoard" role="search">
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Search" name="RequiredTags" id="SearchString">
@@ -47,16 +49,20 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a asp-area="" asp-controller="Job" asp-action="JobBoard">Job Board</a></li>
-                                @if (User.IsInRole("employer"))
+                                @if (isUserEmployer)
                                 {
                                     <li><a asp-area="" asp-controller="Job" asp-action="EmployerOpenedJobs">Opened Jobs</a></li>
                                     <li><a asp-area="" asp-controller="Job" asp-action="EmployerContracts">My Contracts</a></li>
                                     <li><a asp-area="" asp-controller="Job" asp-action="CreateJob">Create Job</a></li>
                                 }
-                                else if (User.IsInRole("freelancer"))
+                                else if (isUserFreelancer)
                                 {
                                     <li><a asp-area="" asp-controller="Job" asp-action="FreelancerContracts">My Contracts</a></li>
                                     <li><a asp-area="" asp-controller="Job" asp-action="AllFreelancerProposals">My Proposals</a></li>
+                                }
+                                @if (isUserFreelancer || isUserEmployer)
+                                {
+                                    <li><a asp-area="" asp-controller="Report" asp-action="GetContractsReport">Contracts Report</a></li>
                                 }
                             </ul>
                         </li>
