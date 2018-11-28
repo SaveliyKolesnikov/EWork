@@ -32,16 +32,19 @@ namespace EWork.Controllers
             switch (user)
             {
                 case Employer _:
-                    userContracts = _jobManager.GetAll().Where(j => j.Employer.Id == user.Id);
+                    userContracts = GetActiveJobs().Where(j => j.Employer.Id == user.Id);
                     break;
                 case Freelancer _:
-                    userContracts = _jobManager.GetAll().Where(j => j.HiredFreelancer != null && j.HiredFreelancer.Id == user.Id);
+                    userContracts = GetActiveJobs().Where(j => j.HiredFreelancer.Id == user.Id);
                     break;
             }
             var report = _reportGenerator.JobsReport(user, userContracts);
-            var fileType = "application/pdf";
+            const string fileType = "application/pdf";
             var fileName = $"{user.UserName} contracts {DateTime.Now:u}.pdf";
             return File(report, fileType, fileName);
         }
+
+        private IQueryable<Job> GetActiveJobs() =>
+            _jobManager.GetAll().Where(j => !j.IsClosed && j.HiredFreelancer != null);
     }
 }
