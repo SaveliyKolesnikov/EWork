@@ -3,7 +3,7 @@ EWork is a freelance platform that connects a database of freelance professional
 
 About
 ------------
-Freelancing platform is a platform where users are able to find work in almost any field, making it ideal for anyone that is looking for extra work.
+EWork is a platform where users can find a work in almost any field. It's a perfect choice for anyone who is looking for an extra work.
 
 1) Roles:
 
@@ -22,23 +22,23 @@ Employer - creates jobs for freelancers.
 Role-based registration  (freelancer or employer).
 
 Employer has a balance and he has to replenish it for creating a new job. 
-When employer creates a job money from his balance is transfered to freelancing platform balance.
+When an employer creates a job money from his balance is transfered to the freelancing platform balance.
 
-There are job board where users see current list of the works.
+There are a job board where users can check out a current list of works.
 Each job has its own info page. 
-On the job info page freelancer can send a proposal for a job. If he wants he can update his proposal or delete it.
+On the job info page a freelancer can send a proposal to be applyed as an executive to a job. If he wants he can update his proposal or delete it.
 
-On the job info page employer who created this job can see all proposals including freelancer who sent it and can submit that proposal.
+On the job info page employer who created this job can see all proposals including freelancers who sent them and can submit a proposal that he likes.
 
 Employer and freelancer can chat with each other. 
-If employer wants to cancel his job, he presses a button and if the job has realizer realizer has to confirm cancelling. 
-If realizer doesn't confirm proposal cancellation, moderator decision is required.
+If an employer wants to cancel his job, he presses a button and if the job has an executive then the executive has to confirm cancelling. 
+If realizer doesn't confirm proposal cancellation, moderator's decision is required.
 
-If job is done successfully employer confirms it and money is transfered to realizer's balance.
-After successfully job ending employer and freelancer can leave reference about each other. 
-Then this rating based on all references is shown at user profile. 
+If job was done successfully an employer confirms it and money is transfered to an executive's balance.
+Only after a deal employer and freelancer can leave a reference about each other on their personal pages. Reference includes a rate. 
+A user rating is created based on these references.
 
-Each user profile has profile photo, desciption and list of references.
+Each user profile has a profile photo, desciption and a list of references.
 
 Employer has such tabs: Job Board, Create Job, Contracts.
 Freelancer has such tabs: Job Board, My Proposals, Contracts.
